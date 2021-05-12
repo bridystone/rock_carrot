@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'country_material.dart';
 
 class YacGuideFlutterMaterial extends StatelessWidget {
   @override
@@ -6,11 +7,7 @@ class YacGuideFlutterMaterial extends StatelessWidget {
     // create Material
     return MaterialApp(
       title: 'YacGuideFlutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("YacGuideFlutter"),
-        ),
-      ),
+      home: CountryMaterial(),
     );
   }
 }
