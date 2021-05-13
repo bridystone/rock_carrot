@@ -47,18 +47,26 @@ class SqlYacGuideFlutter {
   /* 
     Tables created for empty new database
   */
-  FutureOr<void> _onCreate(db, id) async {
+  FutureOr<void> _onCreate(Database db, id) async {
     print("create Tables");
     db.execute(
-      "CREATE TABLE land (land TEXT PRIMARY KEY, ISO3166 TEXT, KFZ TEXT)",
-    );
+        "CREATE TABLE land (land TEXT PRIMARY KEY, ISO3166 TEXT, KFZ TEXT)");
+    db.execute(
+        "CREATE TABLE gebiet (gebiet_ID INT PRIMARY KEY, gebiet TEXT, land TEXT, sprache2 TEXT, gdefaultanzeige TEXT, schwskala TEXT)");
   }
 
+  /* 
+    country stuff
+  */
   FutureOr<int> deleteCountries() async {
     return database.then((db) => db.delete('land'));
   }
 
-  FutureOr<int> insertCountry(country, iso, kfz) async {
+  FutureOr<int> insertCountry(
+    String country,
+    String iso,
+    String kfz,
+  ) async {
     return database.then((db) => db.insert(
           'land',
           {
@@ -73,6 +81,49 @@ class SqlYacGuideFlutter {
     return database.then((db) => db.query(
           'land',
           columns: ['land'],
+        ));
+  }
+
+  /*
+    area stuff
+    */
+  FutureOr<int> deleteAreas(String land) async {
+    return database.then(
+      (db) => db.delete(
+        'gebiet',
+        where: "land = ?",
+        whereArgs: [land],
+      ),
+    );
+  }
+
+  FutureOr<int> insertAreas(
+    int gebietID,
+    String gebiet,
+    String land,
+    String sprache2,
+    String gdefaultanzeige,
+    String schwskala,
+  ) async {
+    return database.then((db) => db.insert(
+          'gebiet',
+          {
+            'gebiet_ID': gebietID,
+            'gebiet': gebiet,
+            'land': land,
+            'sprache2': land,
+            'gdefaultanzeige': land,
+            'schwskala': land,
+          },
+        ));
+  }
+
+  Future<List<Map<String, Object?>>> queryAreas(String land) async {
+    return database.then((db) => db.query(
+          'gebiet',
+          columns: ['gebiet', 'land'],
+          where: "land = ?",
+          whereArgs: [land],
         ));
   }
 }
