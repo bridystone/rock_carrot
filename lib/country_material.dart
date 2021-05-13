@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yacguide_flutter/areas_material.dart';
+import 'areas_material.dart';
 import 'Countries.dart';
 
 class CountryMaterial extends StatefulWidget {
@@ -33,14 +33,11 @@ class _CountryMaterialState extends State<CountryMaterial> {
           ),
         ],
       ),
-      body: CountriesWidget(),
+      body: _countriesBody(),
     );
   }
-}
 
-class CountriesWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  _countriesBody() {
     return FutureBuilder(
       future: Countries().getCountries(),
       builder: _countriesBuilder,
@@ -54,11 +51,11 @@ class CountriesWidget extends StatelessWidget {
         child: Text(snapshot.error.toString()),
       );
     } else {
-      if (snapshot.data == null) {
+      if (!snapshot.hasData) {
         // TODO: Check if this is a problem -> ocurse only at first start, because futureBuilder is running, but database is not yet initialized
         // it seems not to wait for finishing the first time - is this a problem of async?!
-        return Center(
-          child: Text("LOADING DATA..."),
+        return const Center(
+          child: CircularProgressIndicator(),
         );
       }
       List<Map<String, Object?>> sqlCountries = snapshot.data;

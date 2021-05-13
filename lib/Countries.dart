@@ -9,7 +9,10 @@ class Country {
   Country(this.name, this.areaCount);
 
   factory Country.fromSql(Map<String, Object?> sqlResult) {
-    return Country(sqlResult['land'].toString(), 2);
+    return Country(
+      sqlResult['land'].toString(),
+      sqlResult['land'].toString().length, // should be areacount
+    );
   }
 }
 
