@@ -1,92 +1,81 @@
 import 'package:flutter/material.dart';
-import 'Areas.dart';
-import 'subareas_material.dart';
 
-class AreasMaterial extends StatefulWidget {
-  final String country;
-  AreasMaterial(this.country);
+import 'AreasMaterial.dart';
+import '../Baseitems/Countries.dart';
 
-  // transfer country to state object
+class CountryMaterial extends StatefulWidget {
   @override
-  _AreasMaterialState createState() {
-    return _AreasMaterialState(this.country);
-  }
+  _CountryMaterialState createState() => _CountryMaterialState();
 }
 
-class _AreasMaterialState extends State<AreasMaterial> {
-  final String country;
-  _AreasMaterialState(this.country);
-
-  Areas _areas = Areas();
+class _CountryMaterialState extends State<CountryMaterial> {
+  Countries _countries = Countries();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(country),
+        title: Text("Countries"),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              _areas.deleteItems(queryItem: country);
+              _countries.deleteItems();
               setState(() {});
             },
           ),
           IconButton(
             icon: Icon(Icons.update),
             onPressed: () async {
-              await _areas.fetchFromWeb(
-                'gebiet',
-                queryKey: 'land',
-                queryValue: country,
-              );
+              await _countries.fetchFromWeb('land');
               //refresh Scaffold
               setState(() {});
             },
           ),
         ],
       ),
-      body: _areasBody(country),
+      body: _countriesBody(),
     );
   }
 
-  _areasBody(String country) {
+  _countriesBody() {
     return FutureBuilder(
-      builder: _areasBuilder,
-      future: _areas.getItems(queryItem: country),
+      future: _countries.getItems(),
+      builder: _countriesBuilder,
     );
   }
 
-  Widget _areasBuilder(context, AsyncSnapshot snapshot) {
+  Widget _countriesBuilder(context, AsyncSnapshot snapshot) {
     if (snapshot.hasError) {
       print("ERROR" + snapshot.error.toString());
       return Center(
         child: Text(snapshot.error.toString()),
       );
     } else {
-      if (snapshot.data == null) {
+      if (!snapshot.hasData) {
         // TODO: Check if this is a problem -> ocurse only at first start, because futureBuilder is running, but database is not yet initialized
         // it seems not to wait for finishing the first time - is this a problem of async?!
-        return Center(
-          child: Text("LOADING DATA..."),
+        return const Center(
+          child: CircularProgressIndicator(),
         );
       }
-      List<Map<String, Object?>> sqlAreas = snapshot.data;
-      final areas = sqlAreas.map((item) => Area.fromSql(item)).toList();
+      List<Map<String, Object?>> sqlCountries = snapshot.data;
+      final countries =
+          sqlCountries.map((item) => Country.fromSql(item)).toList();
 
       return ListView.builder(
         padding: EdgeInsets.all(0),
-        itemCount: areas.length,
+        itemCount: countries.length,
         itemBuilder: (context, i) {
           return Column(children: [
             ListTile(
-              title: Text(areas[i].name),
-              trailing: Text("(" + areas[i].subareaCount.toString() + ")"),
+              title: Text(countries[i].name),
+              trailing: Text("(" + countries[i].areaCount.toString() + ")"),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return SubAreasMaterial(areas[i].name);
+                    return AreasMaterial(countries[i].name);
                   }),
                 );
               },

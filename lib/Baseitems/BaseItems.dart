@@ -1,13 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'sql.dart';
 import 'dart:async';
+
+import '../Database/sql.dart';
 
 abstract class BaseItems {
   SqlYacGuideFlutter sqlHelper = SqlYacGuideFlutter();
   /*
     fetch Countries to DB
     */
+  //TODO: Sonderzeichen fukntionieren noch nicht (Türkei/Großbritanien) -> urlencode?
   FutureOr<void> fetchFromWeb(String target,
       {String queryKey = "", String queryValue = ""}) async {
     // add "secret" key :)
