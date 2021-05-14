@@ -2,12 +2,14 @@ import 'dart:async';
 import 'BaseItems.dart';
 
 class Area {
+  int areaid;
   String name;
   int subareaCount;
-  Area(this.name, this.subareaCount);
+  Area(this.areaid, this.name, this.subareaCount);
 
   factory Area.fromSql(Map<String, Object?> sqlResult) {
     return Area(
+      int.parse(sqlResult['gebiet_ID'].toString()),
       sqlResult['gebiet'].toString(),
       sqlResult['gebiet'].toString().length, // should be subareacount
     );

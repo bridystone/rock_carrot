@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 
+import '../Baseitems/Countries.dart';
 import '../Baseitems/Areas.dart';
 import 'SubareasMaterial.dart';
 
 class AreasMaterial extends StatefulWidget {
-  final String country;
-  AreasMaterial(this.country);
+  final Country _country;
+  AreasMaterial(this._country);
 
   // transfer country to state object
   @override
   _AreasMaterialState createState() {
-    return _AreasMaterialState(this.country);
+    return _AreasMaterialState(this._country);
   }
 }
 
 class _AreasMaterialState extends State<AreasMaterial> {
-  final String country;
-  _AreasMaterialState(this.country);
+  final Country _country;
+  _AreasMaterialState(this._country);
 
   Areas _areas = Areas();
 
@@ -24,12 +25,12 @@ class _AreasMaterialState extends State<AreasMaterial> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(country),
+        title: Text(_country.name),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              _areas.deleteItems(queryItem: country);
+              _areas.deleteItems(queryItem: _country.name);
               setState(() {});
             },
           ),
@@ -39,7 +40,7 @@ class _AreasMaterialState extends State<AreasMaterial> {
               await _areas.fetchFromWeb(
                 'gebiet',
                 queryKey: 'land',
-                queryValue: country,
+                queryValue: _country.name,
               );
               //refresh Scaffold
               setState(() {});
@@ -47,7 +48,7 @@ class _AreasMaterialState extends State<AreasMaterial> {
           ),
         ],
       ),
-      body: _areasBody(country),
+      body: _areasBody(_country.name),
     );
   }
 
@@ -87,7 +88,7 @@ class _AreasMaterialState extends State<AreasMaterial> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return SubAreasMaterial(areas[i].name);
+                    return SubAreasMaterial(areas[i]);
                   }),
                 );
               },

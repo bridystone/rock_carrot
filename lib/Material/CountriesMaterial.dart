@@ -75,7 +75,7 @@ class _CountryMaterialState extends State<CountryMaterial> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return AreasMaterial(countries[i].name);
+                    return AreasMaterial(countries[i]);
                   }),
                 );
               },
