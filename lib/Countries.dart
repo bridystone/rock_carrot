@@ -1,7 +1,5 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'sql.dart';
 import 'dart:async';
+import 'BaseItems.dart';
 
 class Country {
   String name;
@@ -16,30 +14,7 @@ class Country {
   }
 }
 
-class Countries {
-  SqlYacGuideFlutter sqlHelper = SqlYacGuideFlutter();
-  /*
-    fetch Countries to DB
-    */
-  FutureOr<void> fetchCountries() async {
-    final response = await http.get(Uri.http(
-      'db-sandsteinklettern.gipfelbuch.de',
-      'jsonland.php',
-      {'app': 'yacguide'},
-    ));
-    if (response.statusCode == 200) {
-      final List<dynamic> body = json.decode(response.body);
-      await sqlHelper.deleteCountries();
-
-      //TODO: check if other activation than .toList() is possible
-      body.map((item) {
-        sqlFromJson(item);
-      }).toList(); //toList() -> only to activate the map
-    } else {
-      throw Exception('failed this receice data');
-    }
-  }
-
+class Countries extends BaseItems {
   FutureOr<int> sqlFromJson(Map<String, dynamic> json) {
     return sqlHelper.insertCountry(
       json['land'],
@@ -48,11 +23,11 @@ class Countries {
     );
   }
 
-  Future<List<Map<String, Object?>>> getCountries() async {
+  Future<List<Map<String, Object?>>> getItems({String queryItem = ""}) async {
     return await sqlHelper.queryCountries();
   }
 
-  FutureOr<int> deleteCountries() {
+  FutureOr<int> deleteItems({String queryItem = ""}) {
     return sqlHelper.deleteCountries();
   }
 }

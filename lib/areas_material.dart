@@ -28,14 +28,18 @@ class _AreasMaterialState extends State<AreasMaterial> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              _areas.deleteAreas(country);
+              _areas.deleteItems(queryItem: country);
               setState(() {});
             },
           ),
           IconButton(
             icon: Icon(Icons.update),
             onPressed: () async {
-              await _areas.fetchAreas(country);
+              await _areas.fetchFromWeb(
+                'gebiet',
+                queryKey: 'land',
+                queryValue: country,
+              );
               //refresh Scaffold
               setState(() {});
             },
@@ -48,7 +52,9 @@ class _AreasMaterialState extends State<AreasMaterial> {
 
   _areasBody(String country) {
     return FutureBuilder(
-        builder: _areasBuilder, future: _areas.getAreas(country));
+      builder: _areasBuilder,
+      future: _areas.getItems(queryItem: country),
+    );
   }
 
   Widget _areasBuilder(context, AsyncSnapshot snapshot) {

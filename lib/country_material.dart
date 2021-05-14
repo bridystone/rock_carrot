@@ -19,14 +19,14 @@ class _CountryMaterialState extends State<CountryMaterial> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              _countries.deleteCountries();
+              _countries.deleteItems();
               setState(() {});
             },
           ),
           IconButton(
             icon: Icon(Icons.update),
             onPressed: () async {
-              await _countries.fetchCountries();
+              await _countries.fetchFromWeb('land');
               //refresh Scaffold
               setState(() {});
             },
@@ -39,7 +39,7 @@ class _CountryMaterialState extends State<CountryMaterial> {
 
   _countriesBody() {
     return FutureBuilder(
-      future: Countries().getCountries(),
+      future: _countries.getItems(),
       builder: _countriesBuilder,
     );
   }
