@@ -1,8 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart'; // for runApp
 
-import 'main_material.dart';
-import 'main_cupertino.dart';
+import 'package:yacguide_flutter/main_cupertino.dart';
+import 'package:yacguide_flutter/main_material.dart';
 
 void main() {
   try {

@@ -159,7 +159,7 @@ class SqlYacGuideFlutter {
     String sektornameCZ,
   ) async {
     return database.then((db) => db.insert(
-          'gebiet',
+          'teilgebiet',
           {
             'sektor_ID': sektorID,
             'gebietid': gebietid,
@@ -172,9 +172,10 @@ class SqlYacGuideFlutter {
 
   Future<List<Map<String, Object?>>> querySubareas(int gebietid) async {
     return database.then((db) => db.query(
-          'gebiet',
+          'teilgebiet',
           columns: [
             'sektor_ID',
+            'sektornr',
             'sektorname_d',
             'sektorname_cz',
           ],

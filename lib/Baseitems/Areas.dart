@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'BaseItems.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 
-class Area {
-  int areaid;
+class Area extends BaseItem {
+  int id;
   String name;
   int subareaCount;
-  Area(this.areaid, this.name, this.subareaCount);
+  Area(this.id, this.name, this.subareaCount) : super(id, name, subareaCount);
 
   factory Area.fromSql(Map<String, Object?> sqlResult) {
     return Area(
@@ -17,6 +18,8 @@ class Area {
 }
 
 class Areas extends BaseItems {
+  Areas(parent) : super(parent);
+
   FutureOr<int> sqlFromJson(Map<String, dynamic> json) {
     return sqlHelper.insertAreas(
       int.parse(json['gebiet_ID']),
@@ -28,11 +31,25 @@ class Areas extends BaseItems {
     );
   }
 
-  Future<List<Map<String, Object?>>> getItems({String queryItem = ""}) async {
-    return await sqlHelper.queryAreas(queryItem);
+  FutureOr<void> fetchFromWeb(
+    String queryValue, [
+    String queryKey = 'land',
+    String target = "gebiet",
+  ]) async {
+    await super.fetchFromWeb(target, queryKey, queryValue);
   }
 
-  FutureOr<int> deleteItems({String queryItem = ""}) {
-    return sqlHelper.deleteAreas(queryItem);
+  Future<List<Map<String, Object?>>> getItems({
+    String queryItemString = "",
+    int queryItemInt = 0,
+  }) async {
+    return await sqlHelper.queryAreas(queryItemString);
+  }
+
+  FutureOr<int> deleteItems({
+    String queryItemString = "",
+    int queryItemInt = 0,
+  }) {
+    return sqlHelper.deleteAreas(queryItemString);
   }
 }

@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'BaseItems.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 
-class Country {
+class Country extends BaseItem {
   String name;
   int areaCount;
-  Country(this.name, this.areaCount);
+  Country(this.name, this.areaCount) : super(0, name, 0);
 
   factory Country.fromSql(Map<String, Object?> sqlResult) {
     return Country(
@@ -15,6 +16,8 @@ class Country {
 }
 
 class Countries extends BaseItems {
+  Countries(parent) : super(parent);
+
   FutureOr<int> sqlFromJson(Map<String, dynamic> json) {
     return sqlHelper.insertCountry(
       json['land'],
@@ -23,11 +26,25 @@ class Countries extends BaseItems {
     );
   }
 
-  Future<List<Map<String, Object?>>> getItems({String queryItem = ""}) async {
-    return await sqlHelper.queryCountries();
+  FutureOr<void> fetchFromWeb([
+    String queryValue = "",
+    String queryKey = '',
+    String target = "land",
+  ]) async {
+    await super.fetchFromWeb(target, queryKey, queryValue);
   }
 
-  FutureOr<int> deleteItems({String queryItem = ""}) {
+  Future<List<Map<String, Object?>>> getItems({
+    String queryItemString = "",
+    int queryItemInt = 0,
+  }) {
+    return sqlHelper.queryCountries();
+  }
+
+  FutureOr<int> deleteItems({
+    String queryItemString = "",
+    int queryItemInt = 0,
+  }) {
     return sqlHelper.deleteCountries();
   }
 }

@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
-
-import '../Baseitems/Areas.dart';
-import '../Baseitems/Subareas.dart';
+import 'dart:async';
+import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
+import 'package:yacguide_flutter/Baseitems/Areas.dart';
+import 'package:yacguide_flutter/Baseitems/Subareas.dart';
+import 'package:yacguide_flutter/Material/BaseItemsMaterial.dart';
 
 class SubAreasMaterial extends StatefulWidget {
-  final Area _area;
-  SubAreasMaterial(this._area);
+  final Area parentItem;
+  SubAreasMaterial(this.parentItem);
 
   // transfer country to state object
   @override
   _SubAreasMaterialState createState() {
-    return _SubAreasMaterialState(this._area);
+    return _SubAreasMaterialState(this.parentItem);
   }
 }
 
-class _SubAreasMaterialState extends State<SubAreasMaterial> {
-  final Area _area;
-  _SubAreasMaterialState(this._area);
+class _SubAreasMaterialState
+    extends BaseItemsMaterialStatefulState<SubAreasMaterial> {
+  final Area parentItem;
+  late Subareas subareas;
 
-  Subareas _subareas = Subareas();
+  _SubAreasMaterialState(this.parentItem)
+      : subareas = Subareas(parentItem),
+        super(parentItem);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(_area.name),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                _subareas.deleteItems(queryItem: _area.areaid.toString());
-                setState(() {});
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.update),
-              onPressed: () async {
-//              await _areas.fetchAreas(country);
-                //refresh Scaffold
-                setState(() {});
-              },
-            ),
-          ],
-        ),
-        body: Center(child: Text("TODO")));
+  FutureBuilder itemsBody(BaseItem parentItem) {
+    return FutureBuilder(
+      builder: baseitemsBuilder,
+      future: subareas.getItems(queryItemInt: parentItem.id),
+/*      initialData: <Map<String, Object?>>[
+        {"gebiet_ID": "1"}
+      ],*/
+    );
+  }
+
+  @override
+  List<BaseItem> getItemsData(snapshot) {
+    List<Map<String, Object?>> sqlSubareas = snapshot.data;
+    return sqlSubareas.map((item) => Subarea.fromSql(item)).toList();
+  }
+
+  @override
+  FutureOr<int> deleteItems() {
+    return subareas.deleteItems(queryItemString: parentItem.name);
+  }
+
+  @override
+  FutureOr<void> fetchFromWeb() {
+    return subareas.fetchFromWeb(parentItem.id.toString());
   }
 }
