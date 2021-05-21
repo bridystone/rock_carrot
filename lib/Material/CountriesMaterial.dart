@@ -36,8 +36,9 @@ class _CountryMaterialState
     return countries.deleteItems();
   }
 
+  /// update data from web
   @override
   FutureOr<void> fetchFromWeb() async {
-    await countries.fetchFromWeb();
+    await countries.updateData();
   }
 }

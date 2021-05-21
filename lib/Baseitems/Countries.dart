@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Database/sqlCountries.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 /// the basic country item -> direct relation to land in database
 class Country extends BaseItem {
@@ -25,9 +26,10 @@ class Country extends BaseItem {
   }
 }
 
-class Countries extends BaseItems {
+class Countries extends BaseItems with Sandstein {
   Countries(BaseItem parent) : super(parent);
 
+  /// get Items from database and transform them into a list of items
   @override
   Future<List<Country>> getItems() async {
     final sqlCountries = await sqlHelper.queryCountries();
@@ -36,8 +38,18 @@ class Countries extends BaseItems {
         .toList();
   }
 
+  /// delete all data from Countries-Table
   @override
-  FutureOr<int> deleteItems() {
+  Future<int> deleteItems() {
     return sqlHelper.deleteCountries();
+  }
+
+  /// update data from Sandsteinklettern
+  ///
+  /// fetch the data, then delete records, finally insert new data
+  Future<int> updateData() async {
+    var jsonData = fetchJsonFromWeb(Sandstein.countriesWebTarget);
+    await deleteItems();
+    return sqlHelper.insertCountries(jsonData);
   }
 }

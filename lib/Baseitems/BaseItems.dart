@@ -15,6 +15,8 @@ abstract class BaseItems {
 
   /// this name is used for checking if this is a legitimate delete/insert for Routes/Comments
   static const dummyName = '__DUMMY__NAME__';
+
+//TODO: DON'T Do this
   static const webTargetQueries = {
     'Countries': {'target': 'land', 'query': ''},
     'Areas': {'target': 'gebiet', 'query': 'land'},
@@ -26,6 +28,7 @@ abstract class BaseItems {
 
   SqlHandler sqlHelper = SqlHandler();
 
+  // TODO: GET RID OF THIS -> USE Sandstein.dart stuff
   /// fetch data via http request from db-sandsteinklettern
   ///
   /// generates URL from json+[target]+.php with the querystring

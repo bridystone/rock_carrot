@@ -20,6 +20,15 @@ class SqlHandler {
     return _singleton;
   }
 
+  /// static constants for all tablenames
+  static const countriesTablename = 'land';
+  static const areasTablename = 'gebiet';
+  static const subareasTablename = 'teilgebiet';
+  static const rocksTablename = 'gipfel';
+  static const routesTablename = 'wege';
+  static const commentsTablename = 'komment';
+
+  // TODO: get rid of - no usage of runtimetype!
   static const databaseRuntimetypeTables = {
     'Countries': 'land',
     'Areas': 'gebiet',
@@ -29,6 +38,8 @@ class SqlHandler {
     'Comments': 'komment',
   };
 
+  // TODO: transform hash to different hash -> remove name & type
+  // will make it more prone to null-issues
   static const databaseTableColumns = {
     'land': [
       {'name': 'land', 'type': 'TEXT PRIMARY KEY'},
