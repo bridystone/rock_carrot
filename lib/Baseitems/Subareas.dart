@@ -28,11 +28,13 @@ class Subareas extends BaseItems {
   Subareas(Area parent) : super(parent);
 
   @override
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString = '',
-    int queryItemInt = 0,
-  }) {
-    return sqlHelper.querySubareas(queryItemInt);
+  Future<List<Subarea>> getItems() async {
+    final sqlSubareas = await sqlHelper.querySubareas(parent.id);
+    return sqlSubareas
+        .map(
+          (sqlResultRow) => Subarea.fromSql(sqlResultRow),
+        )
+        .toList();
   }
 
   @override

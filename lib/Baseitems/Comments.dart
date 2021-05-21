@@ -68,10 +68,7 @@ class Comments extends BaseItems {
   Comments(BaseItem parent) : super(parent);
 
   @override
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString = '',
-    int queryItemInt = 0,
-  }) {
+  Future<List<Comment>> getItems() {
     throw Exception('not to be called - should be deleted from rocks');
   }
 

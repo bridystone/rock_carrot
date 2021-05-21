@@ -23,20 +23,20 @@ class RoutesMaterial extends StatefulWidget {
 
 class _RoutesMaterialState
     extends BaseItemsMaterialStatefulState<RoutesMaterial> {
-  final Rock _parentItem;
-  final Routes _routes;
+  final Rock parentItem;
+  final Routes routes;
   Comments comments;
 
-  _RoutesMaterialState(this._parentItem)
-      : _routes = Routes(_parentItem),
-        comments = Comments(_parentItem),
-        super(_parentItem);
+  _RoutesMaterialState(this.parentItem)
+      : routes = Routes(parentItem),
+        comments = Comments(parentItem),
+        super(parentItem);
 
   @override
   FutureBuilder futureBuilderListItems(BaseItem parentItem) {
-    return FutureBuilder<List<Map<String, Object?>>>(
+    return FutureBuilder<List<Route>>(
       builder: baseitemsBuilder,
-      future: _routes.getItems(queryItemInt: _parentItem.gipfelId),
+      future: routes.getItems(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
       ],*/
@@ -50,20 +50,19 @@ class _RoutesMaterialState
     }
 
     if (snapshot.connectionState == ConnectionState.done) {
-      final items = getItemsData(snapshot);
       return buildListRoutes(
-          items); // use Routesbuilder instead of baseitembuilder
+          snapshot.data); // use Routesbuilder instead of baseitembuilder
     }
 
     return futureBuilderLoadingMessage(snapshot);
   }
 
-  Widget buildListRoutes(List<Route> routes) {
+  Widget buildListRoutes(List<Route> items) {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: routes.length,
+      itemCount: items.length,
       itemBuilder: (context, i) {
-        final route = routes[i];
+        final route = items[i];
         return Column(children: [
           ExpansionTile(
             /*
@@ -134,7 +133,7 @@ class _RoutesMaterialState
                       ),
                       builder: (BuildContext context) {
                         return FutureBuilder<List<Comment>>(
-                          future: _routes.getComments(route),
+                          future: routes.getComments(route),
                           builder: routeInformationBuilder,
                         );
                       });
@@ -151,19 +150,13 @@ class _RoutesMaterialState
   }
 
   @override
-  List<Route> getItemsData(snapshot) {
-    List<Map<String, Object?>> sqlRoutes = snapshot.data;
-    return sqlRoutes.map((item) => Route.fromSql(item)).toList();
-  }
-
-  @override
   FutureOr<int> deleteItems() {
-    return _routes.deleteItems();
+    return routes.deleteItems();
   }
 
   @override
   FutureOr<void> fetchFromWeb() {
-    return _routes.fetchFromWeb();
+    return routes.fetchFromWeb();
   }
 
   List<Route> getCommentsFromSnapshot(AsyncSnapshot snapshot) {

@@ -27,19 +27,13 @@ class _SubAreasMaterialState
 
   @override
   FutureBuilder futureBuilderListItems(BaseItem parentItem) {
-    return FutureBuilder<List<Map<String, Object?>>>(
+    return FutureBuilder<List<Subarea>>(
       builder: baseitemsBuilder,
-      future: subareas.getItems(queryItemInt: parentItem.id),
+      future: subareas.getItems(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
       ],*/
     );
-  }
-
-  @override
-  List<BaseItem> getItemsData(snapshot) {
-    List<Map<String, Object?>> sqlSubareas = snapshot.data;
-    return sqlSubareas.map((item) => Subarea.fromSql(item)).toList();
   }
 
   @override

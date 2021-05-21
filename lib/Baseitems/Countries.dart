@@ -29,11 +29,11 @@ class Countries extends BaseItems {
   Countries(BaseItem parent) : super(parent);
 
   @override
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString = '',
-    int queryItemInt = 0,
-  }) {
-    return sqlHelper.queryCountries();
+  Future<List<Country>> getItems() async {
+    final sqlCountries = await sqlHelper.queryCountries();
+    return sqlCountries
+        .map((sqlResultRow) => Country.fromSql(sqlResultRow))
+        .toList();
   }
 
   @override

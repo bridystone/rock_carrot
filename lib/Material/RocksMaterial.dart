@@ -27,19 +27,13 @@ class _RocksMaterialState
 
   @override
   FutureBuilder futureBuilderListItems(BaseItem parentItem) {
-    return FutureBuilder<List<Map<String, Object?>>>(
+    return FutureBuilder<List<Rock>>(
       builder: baseitemsBuilder,
-      future: rocks.getItems(queryItemInt: parentItem.id),
+      future: rocks.getItems(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
       ],*/
     );
-  }
-
-  @override
-  List<BaseItem> getItemsData(snapshot) {
-    List<Map<String, Object?>> sqlRocks = snapshot.data;
-    return sqlRocks.map((item) => Rock.fromSql(item)).toList();
   }
 
   @override

@@ -3,11 +3,15 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
+import 'package:yacguide_flutter/Baseitems/Routes.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 abstract class BaseItems {
   BaseItem parent;
   BaseItems(this.parent);
+
+  /// list of elements in this Object
+  List<BaseItem> elements = [];
 
   /// this name is used for checking if this is a legitimate delete/insert for Routes/Comments
   static const dummyName = '__DUMMY__NAME__';
@@ -105,7 +109,7 @@ abstract class BaseItems {
         SqlHandler.databaseRuntimetypeTables[runtimeType.toString()];
     // special for Routes -> add 'sektorid' to table
     // this is missing, when i want to update the tables from Rock-Fetch
-    if (runtimeType.toString() == 'Routes') {
+    if (this is Routes) {
       json['sektorid'] = parent.id;
     }
     return sqlHelper.insertDataFromJson(
@@ -114,11 +118,8 @@ abstract class BaseItems {
     );
   }
 
-  // TODO: get rid of parameters
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString,
-    int queryItemInt,
-  });
+  /// get the items from the database
+  Future<List<BaseItem>> getItems();
 
   FutureOr<int> deleteItems();
 }

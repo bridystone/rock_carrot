@@ -28,19 +28,10 @@ class _AreasMaterialState
 
   @override
   FutureBuilder futureBuilderListItems(BaseItem parentItem) {
-    return FutureBuilder<List<Map<String, Object?>>>(
+    return FutureBuilder<List<Area>>(
       builder: baseitemsBuilder,
-      future: areas.getItems(queryItemString: parentItem.name),
-      initialData: <Map<String, Object?>>[
-        {'gebiet_ID': '1'}
-      ],
+      future: areas.getItems(),
     );
-  }
-
-  @override
-  List<BaseItem> getItemsData(AsyncSnapshot snapshot) {
-    List<Map<String, Object?>> sqlAreas = snapshot.data;
-    return sqlAreas.map((item) => Area.fromSql(item)).toList();
   }
 
   @override

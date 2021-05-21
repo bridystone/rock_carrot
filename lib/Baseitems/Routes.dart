@@ -41,7 +41,7 @@ class Route extends BaseItem {
     this.wegstatus,
     this.wegnr,
     this.routeCount,
-  ) : super(id, wegname, routeCount);
+  ) : super(gipfelId, wegname, routeCount);
 
   factory Route.fromSql(Map<String, Object?> sqlResult) {
     return Route(
@@ -66,20 +66,23 @@ class Route extends BaseItem {
 }
 
 class Routes extends BaseItems {
-  Routes(Rock parent) : super(parent);
+  final Rock _parentRock;
+  Routes(this._parentRock) : super(_parentRock);
 
   @override
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString = '',
-    int queryItemInt = 0,
-  }) {
-    return sqlHelper.queryRoutes(queryItemInt);
+  Future<List<Route>> getItems() async {
+    final sqlRoutes = await sqlHelper.queryRoutes(_parentRock.gipfelId);
+    return sqlRoutes
+        .map(
+          (sqlResultRow) => Route.fromSql(sqlResultRow),
+        )
+        .toList();
   }
 
   @override
   FutureOr<int> deleteItems() {
     if (parent.name == BaseItems.dummyName) {
-      return sqlHelper.deleteRoutes(parent.id); // should be sektor_id
+      return sqlHelper.deleteRoutes(_parentRock.id); // should be sektor_id
     }
     throw Exception('not to be called - should be deleted from rocks');
   }

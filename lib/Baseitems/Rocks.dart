@@ -57,11 +57,13 @@ class Rocks extends BaseItems {
   Rocks(Subarea parent) : super(parent);
 
   @override
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString = '',
-    int queryItemInt = 0,
-  }) {
-    return sqlHelper.queryRocks(queryItemInt);
+  Future<List<Rock>> getItems() async {
+    final sqlRocks = await sqlHelper.queryRocks(parent.id);
+    return sqlRocks
+        .map(
+          (sqlResultRow) => Rock.fromSql(sqlResultRow),
+        )
+        .toList();
   }
 
   @override

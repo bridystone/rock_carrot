@@ -22,19 +22,13 @@ class _CountryMaterialState
 
   @override
   FutureBuilder futureBuilderListItems(BaseItem parentItem) {
-    return FutureBuilder<List<Map<String, Object?>>>(
+    return FutureBuilder<List<Country>>(
       builder: baseitemsBuilder,
       future: countries.getItems(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
       ],*/
     );
-  }
-
-  @override
-  List<BaseItem> getItemsData(snapshot) {
-    List<Map<String, Object?>> sqlCountries = snapshot.data;
-    return sqlCountries.map((item) => Country.fromSql(item)).toList();
   }
 
   @override

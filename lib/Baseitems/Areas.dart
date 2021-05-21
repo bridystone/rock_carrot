@@ -25,11 +25,13 @@ class Areas extends BaseItems {
   Areas(Country parent) : super(parent);
 
   @override
-  Future<List<Map<String, Object?>>> getItems({
-    String queryItemString = '',
-    int queryItemInt = 0,
-  }) {
-    return sqlHelper.queryAreas(queryItemString);
+  Future<List<Area>> getItems() async {
+    final sqlAreas = await sqlHelper.queryAreas(parent.name);
+    return sqlAreas
+        .map(
+          (sqlResultRow) => Area.fromSql(sqlResultRow),
+        )
+        .toList();
   }
 
   @override

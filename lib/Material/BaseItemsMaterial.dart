@@ -40,17 +40,13 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
   FutureOr<int> deleteItems();
   FutureOr<void> fetchFromWeb();
 
-  // Dummy - to be overwritten!
-  List<BaseItem> getItemsData(AsyncSnapshot snapshot);
-
   Widget baseitemsBuilder(BuildContext context, AsyncSnapshot snapshot) {
     if (snapshot.hasError) {
       return futureBuilderErrorMessage(snapshot);
     }
 
     if (snapshot.connectionState == ConnectionState.done) {
-      final items = getItemsData(snapshot);
-      return buildList(items);
+      return buildList(snapshot.data);
     }
 
     return futureBuilderLoadingMessage(snapshot);
