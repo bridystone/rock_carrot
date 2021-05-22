@@ -3,8 +3,10 @@ import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
+import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRoutes.dart';
 import 'package:yacguide_flutter/Database/sqlComments.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Route extends BaseItem {
   @override
@@ -65,7 +67,7 @@ class Route extends BaseItem {
   }
 }
 
-class Routes extends BaseItems {
+class Routes extends BaseItems with Sandstein {
   final Rock _parentRock;
   Routes(this._parentRock) : super(_parentRock);
 
@@ -87,17 +89,27 @@ class Routes extends BaseItems {
     throw Exception('not to be called - should be deleted from rocks');
   }
 
-  /// ensure that this is only called from Rocks and not directly
-  @override
-  FutureOr<void> fetchFromWeb() async {
-    if (parent.name == BaseItems.dummyName) {
-      return super.fetchFromWeb(); // should be sektor_id
-    }
-    throw Exception('not to be called - should be deleted from rocks');
-  }
-
   /// get Comment data from SQLite
   Future<List<Comment>> getComments(Route route) {
     return sqlHelper.queryRouteComments(route.wegId);
+  }
+
+  /// update data from Sandsteinklettern
+  ///
+  /// fetch the data, then delete records, finally insert new data
+  Future<int> updateData() async {
+    var jsonData = fetchJsonFromWeb(
+      Sandstein.routesWebTarget,
+      Sandstein.routesWebQuery,
+      parent.id.toString(),
+    );
+    await deleteItems();
+    // add missing sektorid to table
+    await jsonData.then((jsonDataFinal) {
+      jsonDataFinal.forEach((dynamic jsonDataRow) {
+        jsonDataRow['sektorid'] = parent.id;
+      });
+    });
+    return sqlHelper.insertJsonData(SqlHandler.routesTablename, jsonData);
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
+import 'package:yacguide_flutter/Baseitems/Comments.dart';
+import 'package:yacguide_flutter/Baseitems/Routes.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Material/BaseItemsMaterial.dart';
@@ -42,7 +44,9 @@ class _RocksMaterialState
   }
 
   @override
-  FutureOr<void> fetchFromWeb() {
-    return rocks.fetchFromWeb();
+  FutureOr<void> fetchFromWeb() async {
+    await rocks.updateData();
+    await Routes(Rock.dummyRock(rocks.parent.id)).updateData();
+    await Comments(Rock.dummyRock(rocks.parent.id)).updateData();
   }
 }

@@ -5,7 +5,7 @@ extension SqlHandlerSubareas on SqlHandler {
   FutureOr<int> deleteSubareas(int gebietid) {
     return database.then(
       (db) => db.delete(
-        'teilgebiet',
+        SqlHandler.subareasTablename,
         where: 'gebietid = ?',
         whereArgs: [gebietid],
       ),

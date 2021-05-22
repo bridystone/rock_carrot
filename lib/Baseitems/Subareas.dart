@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
+import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlSubareas.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Subarea extends BaseItem {
   @override
@@ -24,7 +26,7 @@ class Subarea extends BaseItem {
   }
 }
 
-class Subareas extends BaseItems {
+class Subareas extends BaseItems with Sandstein {
   Subareas(Area parent) : super(parent);
 
   @override
@@ -40,5 +42,18 @@ class Subareas extends BaseItems {
   @override
   FutureOr<int> deleteItems() {
     return sqlHelper.deleteSubareas(parent.id);
+  }
+
+  /// update data from Sandsteinklettern
+  ///
+  /// fetch the data, then delete records, finally insert new data
+  Future<int> updateData() async {
+    var jsonData = fetchJsonFromWeb(
+      Sandstein.subareasWebTarget,
+      Sandstein.subareasWebQuery,
+      parent.id.toString(),
+    );
+    await deleteItems();
+    return sqlHelper.insertJsonData(SqlHandler.subareasTablename, jsonData);
   }
 }

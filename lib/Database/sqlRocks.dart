@@ -5,7 +5,7 @@ extension SqlHandlerRocks on SqlHandler {
   FutureOr<int> deleteRocks(int sektorid) {
     return database.then(
       (db) => db.delete(
-        'gipfel',
+        SqlHandler.rocksTablename,
         where: 'sektorid = ?',
         whereArgs: [sektorid],
       ),

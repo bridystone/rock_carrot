@@ -5,7 +5,7 @@ extension SqlHandlerRoutes on SqlHandler {
   FutureOr<int> deleteRoutes(int sektorid) {
     return database.then(
       (db) => db.delete(
-        'wege',
+        SqlHandler.routesTablename,
         where: 'sektorid = ?',
         whereArgs: [sektorid],
       ),
@@ -16,7 +16,7 @@ extension SqlHandlerRoutes on SqlHandler {
     int gipfelid,
   ) {
     return database.then((db) => db.query(
-          'wege',
+          SqlHandler.routesTablename,
           columns: [
             'sektorid',
             'Weg_ID',

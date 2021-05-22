@@ -43,6 +43,6 @@ class _SubAreasMaterialState
 
   @override
   FutureOr<void> fetchFromWeb() {
-    return subareas.fetchFromWeb();
+    return subareas.updateData();
   }
 }

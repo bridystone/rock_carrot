@@ -7,7 +7,9 @@ http://db-sandsteinklettern.gipfelbuch.de/jsonkomment.php?app=yacguide&sektorid=
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Database/sqlRoutes.dart';
+import 'package:yacguide_flutter/Database/sql.dart';
+import 'package:yacguide_flutter/Database/sqlComments.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Comment extends BaseItem {
   int kommentId;
@@ -64,7 +66,7 @@ class Comment extends BaseItem {
   }
 }
 
-class Comments extends BaseItems {
+class Comments extends BaseItems with Sandstein {
   Comments(BaseItem parent) : super(parent);
 
   @override
@@ -75,17 +77,22 @@ class Comments extends BaseItems {
   @override
   FutureOr<int> deleteItems() {
     if (parent.name == BaseItems.dummyName) {
-      return sqlHelper.deleteRoutes(parent.id); // should be sektor_id
+      return sqlHelper.deleteComments(parent.id); // should be sektor_id
     }
     throw Exception('not to be called - should be deleted from rocks');
   }
 
-  /// ensure that this is only called from Rocks and not directly
-  @override
-  FutureOr<void> fetchFromWeb() async {
-    if (parent.name == BaseItems.dummyName) {
-      return super.fetchFromWeb(); // should be sektor_id
-    }
-    throw Exception('not to be called - should be deleted from rocks');
+  /// update data from Sandsteinklettern
+  ///
+  /// fetch the data, then delete records, finally insert new data
+  Future<int> updateData() async {
+    var jsonData = fetchJsonFromWeb(
+      Sandstein.commentsWebTarget,
+      Sandstein.commentsWebQuery,
+      parent.id.toString(),
+    );
+    await deleteItems();
+
+    return sqlHelper.insertJsonData(SqlHandler.commentsTablename, jsonData);
   }
 }

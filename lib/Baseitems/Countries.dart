@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
+import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlCountries.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
@@ -50,6 +51,6 @@ class Countries extends BaseItems with Sandstein {
   Future<int> updateData() async {
     var jsonData = fetchJsonFromWeb(Sandstein.countriesWebTarget);
     await deleteItems();
-    return sqlHelper.insertCountries(jsonData);
+    return sqlHelper.insertJsonData(SqlHandler.countriesTablename, jsonData);
   }
 }

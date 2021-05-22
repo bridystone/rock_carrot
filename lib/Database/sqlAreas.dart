@@ -5,7 +5,7 @@ extension SqlHandlerAreas on SqlHandler {
   FutureOr<int> deleteAreas(String land) {
     return database.then(
       (db) => db.delete(
-        'gebiet',
+        SqlHandler.areasTablename,
         where: 'land = ?',
         whereArgs: [land],
       ),

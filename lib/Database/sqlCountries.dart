@@ -17,21 +17,4 @@ extension SqlHandlerCountries on SqlHandler {
           ' GROUP BY land.land',
         ));
   }
-
-  /// insert all countries from retreived json data into datbase
-  Future<int> insertCountries(Future<List<dynamic>> jsonData) async {
-    var rowCount = 0;
-    await jsonData.then((finalJsonData) async {
-      final db = await SqlHandler().database;
-      finalJsonData.forEach((dynamic jsonRow) {
-        // insert data into database
-        db.insert(
-          SqlHandler.countriesTablename,
-          jsonRow,
-        );
-        rowCount++;
-      });
-    });
-    return rowCount;
-  }
 }

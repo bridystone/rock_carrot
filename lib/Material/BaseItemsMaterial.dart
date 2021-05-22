@@ -15,8 +15,8 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
-            onPressed: () {
-              deleteItems();
+            onPressed: () async {
+              await deleteItems();
               setState(() {});
             },
           ),

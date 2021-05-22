@@ -151,12 +151,12 @@ class _RoutesMaterialState
 
   @override
   FutureOr<int> deleteItems() {
-    return routes.deleteItems();
+    throw Exception('not handled from routesMaterial');
   }
 
   @override
   FutureOr<void> fetchFromWeb() {
-    return routes.fetchFromWeb();
+    throw Exception('not handled from routesMaterial');
   }
 
   List<Route> getCommentsFromSnapshot(AsyncSnapshot snapshot) {

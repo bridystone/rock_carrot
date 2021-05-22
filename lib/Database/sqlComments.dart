@@ -3,10 +3,10 @@ import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 extension SqlHandlerComments on SqlHandler {
-  FutureOr<int> deleteComment(int sektorid) {
+  FutureOr<int> deleteComments(int sektorid) {
     return database.then(
       (db) => db.delete(
-        'komment',
+        SqlHandler.commentsTablename,
         where: 'sektorid = ?',
         whereArgs: [sektorid],
       ),
@@ -17,7 +17,7 @@ extension SqlHandlerComments on SqlHandler {
     int wegid,
   ) async {
     final sqlResults = await database.then((db) => db.query(
-          'komment',
+          SqlHandler.commentsTablename,
           columns: SqlHandler.databaseTableColumns['komment']!
               .map((tableRow) => tableRow['name']!)
               .toList(),
@@ -37,7 +37,7 @@ extension SqlHandlerComments on SqlHandler {
     int wegid,
   ) {
     return database.then((db) => db.query(
-          'komment',
+          SqlHandler.commentsTablename,
           columns: [
             'komment_ID',
             'userid',

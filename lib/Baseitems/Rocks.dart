@@ -4,7 +4,9 @@ import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Routes.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
+import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRocks.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Rock extends BaseItem {
   @override
@@ -53,7 +55,7 @@ class Rock extends BaseItem {
   }
 }
 
-class Rocks extends BaseItems {
+class Rocks extends BaseItems with Sandstein {
   Rocks(Subarea parent) : super(parent);
 
   @override
@@ -67,22 +69,24 @@ class Rocks extends BaseItems {
   }
 
   @override
-  FutureOr<int> deleteItems() async {
+  FutureOr<int> deleteItems() {
     // delete Routes as well with a dummy Rock Items
-    var _ = await Routes(Rock.dummyRock(parent.id)).deleteItems();
-    _ = await Comments(Rock.dummyRock(parent.id)).deleteItems();
+    var _ = Routes(Rock.dummyRock(parent.id)).deleteItems();
+    _ = Comments(Rock.dummyRock(parent.id)).deleteItems();
 
     return sqlHelper.deleteRocks(parent.id);
   }
 
-  /// special overide for Rocks
-  /// will as well fetch data for Routes & Comments
-  @override
-  FutureOr<void> fetchFromWeb() async {
-    // fetch Rocks
-    await super.fetchFromWeb();
-    // fetch Routes
-    await Routes(Rock.dummyRock(parent.id)).fetchFromWeb();
-    await Comments(Rock.dummyRock(parent.id)).fetchFromWeb();
+  /// update data from Sandsteinklettern
+  ///
+  /// fetch the data, then delete records, finally insert new data
+  Future<int> updateData() async {
+    var jsonData = fetchJsonFromWeb(
+      Sandstein.rocksWebTarget,
+      Sandstein.rocksWebQuery,
+      parent.id.toString(),
+    );
+    await deleteItems();
+    return sqlHelper.insertJsonData(SqlHandler.rocksTablename, jsonData);
   }
 }

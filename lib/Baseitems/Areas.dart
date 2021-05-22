@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
+import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlAreas.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Area extends BaseItem {
   @override
@@ -12,6 +14,7 @@ class Area extends BaseItem {
   int subareaCount;
   Area(this.id, this.name, this.subareaCount) : super(id, name, subareaCount);
 
+  // TODO: all fields & usage of integer
   factory Area.fromSql(Map<String, Object?> sqlResult) {
     return Area(
       int.parse(sqlResult['gebiet_ID'].toString()),
@@ -21,7 +24,7 @@ class Area extends BaseItem {
   }
 }
 
-class Areas extends BaseItems {
+class Areas extends BaseItems with Sandstein {
   Areas(Country parent) : super(parent);
 
   @override
@@ -37,5 +40,18 @@ class Areas extends BaseItems {
   @override
   FutureOr<int> deleteItems() {
     return sqlHelper.deleteAreas(parent.name);
+  }
+
+  /// update data from Sandsteinklettern
+  ///
+  /// fetch the data, then delete records, finally insert new data
+  Future<int> updateData() async {
+    var jsonData = fetchJsonFromWeb(
+      Sandstein.areasWebTarget,
+      Sandstein.areasWebQuery,
+      parent.name,
+    );
+    await deleteItems();
+    return sqlHelper.insertJsonData(SqlHandler.areasTablename, jsonData);
   }
 }

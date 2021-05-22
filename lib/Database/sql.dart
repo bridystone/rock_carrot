@@ -179,6 +179,24 @@ class SqlHandler {
         */
   }
 
+  /// insert all items from retreived json data into datbase
+  Future<int> insertJsonData(
+      String tablename, Future<List<dynamic>> jsonData) async {
+    var rowCount = 0;
+    await jsonData.then((finalJsonData) async {
+      final db = await SqlHandler().database;
+      finalJsonData.forEach((dynamic jsonRow) {
+        // insert data into database
+        db.insert(
+          tablename,
+          jsonRow,
+        );
+        rowCount++;
+      });
+    });
+    return rowCount;
+  }
+
   /// Inserts a Country row into the database
   FutureOr<int> insertDataFromJson(
       String tableName, Map<String, dynamic> jsonData) {
