@@ -1,20 +1,18 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlCountries.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 /// the basic country item -> direct relation to land in database
-class Country extends BaseItem {
+class Country {
   // fields from the database
   String land;
   String iso3166;
   String kfz;
+  int areaCount;
 
   /// super = Parent = Baseitem (id, name, childCount) => UI=> "name (count)"
-  Country(this.land, this.iso3166, this.kfz, int childCount)
-      : super(0, land, childCount);
+  Country(this.land, this.iso3166, this.kfz, this.areaCount);
 
   /// create new countryelement from sqlResult
   // TODO: use sqlHandler Table information to get this in
@@ -28,11 +26,24 @@ class Country extends BaseItem {
   }
 }
 
-class Countries extends BaseItems with Sandstein {
-  Countries(BaseItem parent) : super(parent);
+class Countries with Sandstein {
+  SqlHandler sqlHelper = SqlHandler();
+
+  /// initialize list of countries empty
+  List<Country> _countries = [];
+
+  set elements(List<Country> newCountries) {
+    _countries = newCountries;
+    // TODO: perfomring reorder etc...
+    // or rather in getter?
+  }
+
+  List<Country> get elements {
+    //_countries.sort();
+    return _countries;
+  }
 
   /// get Items from database and transform them into a list of items
-  @override
   Future<List<Country>> getItems() {
     final sqlResults = sqlHelper.queryCountries();
     return sqlResults.then(

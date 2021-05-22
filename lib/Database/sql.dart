@@ -108,7 +108,7 @@ class SqlHandler {
   ///
   /// will be opened once, if not yet initialized
   Future<Database> get database {
-    _db ??= _openConnection(resetDatabase: true);
+    _db ??= _openConnection(resetDatabase: false);
     return _db!;
   }
 

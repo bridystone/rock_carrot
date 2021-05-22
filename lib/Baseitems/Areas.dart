@@ -38,7 +38,7 @@ class Area extends BaseItem {
 }
 
 class Areas extends BaseItems with Sandstein {
-  Areas(Country parent) : super(parent);
+  Areas(Country parent) : super(BaseItem(0, parent.land, 0));
 
   @override
   Future<List<Area>> getItems() async {

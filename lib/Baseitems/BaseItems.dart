@@ -5,8 +5,10 @@ import 'package:yacguide_flutter/Database/sql.dart';
 
 abstract class BaseItems {
   // TODO: get rid of parent in this class use specific parents in subclasses
-  BaseItem parent;
-  BaseItems(this.parent);
+  BaseItem parent = BaseItem(0, '', 0);
+  BaseItems([BaseItem? parent_parameter]) {
+    parent = parent_parameter ?? BaseItem(0, '', 0);
+  }
 
   /// list of elements in this Object
   List<BaseItem> elements = [];

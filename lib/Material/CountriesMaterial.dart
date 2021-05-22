@@ -1,29 +1,57 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
-import 'package:yacguide_flutter/Material/BaseItemsMaterial.dart';
+import 'package:yacguide_flutter/Material/CountryTile.dart';
+import 'package:yacguide_flutter/Material/FuturesHelper.dart';
 
 class CountryMaterial extends StatefulWidget {
-  final BaseItem parentItem;
-  CountryMaterial(this.parentItem);
   @override
-  _CountryMaterialState createState() => _CountryMaterialState(parentItem);
+  _CountryMaterialState createState() => _CountryMaterialState();
 }
 
-class _CountryMaterialState
-    extends BaseItemsMaterialStatefulState<CountryMaterial> {
-  final BaseItem parentItem;
-  Countries countries;
+class _CountryMaterialState extends State<CountryMaterial> with FuturesHelper {
+  Countries countries = Countries();
 
-  _CountryMaterialState(this.parentItem)
-      : countries = Countries(parentItem),
-        super(parentItem);
+  _CountryMaterialState();
 
+  /// build the Scaffold
   @override
-  FutureBuilder futureBuilderListItems(BaseItem parentItem) {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: generateAppbar('Countries', true, true),
+      body: futureBuilderListItems(),
+    );
+  }
+
+  /// generate appbar
+  AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
+    return AppBar(
+      title: Text('Countries'),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () async {
+            // delete all items in the database and refresh
+            await countries.deleteItems();
+            setState(() {});
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.update),
+          onPressed: () async {
+            // update items in the database from webseite and refresh list
+            await countries.updateData();
+
+            setState(() {});
+          },
+        ),
+      ],
+    );
+  }
+
+  /// prepare FutureBuilder
+  FutureBuilder futureBuilderListItems() {
     return FutureBuilder<List<Country>>(
-      builder: baseitemsBuilder,
+      builder: futureBuilderCountries,
       future: countries.getItems(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
@@ -31,14 +59,40 @@ class _CountryMaterialState
     );
   }
 
-  @override
-  FutureOr<int> deleteItems() {
-    return countries.deleteItems();
+  Widget futureBuilderCountries(BuildContext context, AsyncSnapshot snapshot) {
+    if (snapshot.hasError) {
+      return futureBuilderErrorMessage(snapshot);
+    }
+
+    if (snapshot.connectionState == ConnectionState.done) {
+      // push data into protected storage
+      countries.elements = snapshot.data;
+      return buildCountryList();
+    }
+
+    return futureBuilderLoadingMessage(snapshot);
   }
 
-  /// update data from web
-  @override
-  FutureOr<void> fetchFromWeb() async {
-    await countries.updateData();
+  /// generate Listview with all Country Data
+  Widget buildCountryList() {
+    return ListView.builder(
+      padding: EdgeInsets.all(0),
+      itemCount: countries.elements.length,
+      itemBuilder: (context, i) {
+        final country = countries.elements[i];
+        return Column(children: [
+          // only first time generate a devider
+          (i == 0)
+              ? Divider(
+                  thickness: 1,
+                )
+              : Container(),
+          CountryTile(country),
+          Divider(
+            thickness: 1,
+          ),
+        ]);
+      },
+    );
   }
 }

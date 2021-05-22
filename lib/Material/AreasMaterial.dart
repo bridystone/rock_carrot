@@ -19,12 +19,13 @@ class AreasMaterial extends StatefulWidget {
 
 class _AreasMaterialState
     extends BaseItemsMaterialStatefulState<AreasMaterial> {
-  final Country parentItem;
+  Country parentItem;
   Areas areas;
 
-  _AreasMaterialState(this.parentItem)
-      : areas = Areas(parentItem),
-        super(parentItem);
+  _AreasMaterialState(Country country)
+      : parentItem = country,
+        areas = Areas(country),
+        super(BaseItem(0, country.land, 0));
 
   @override
   FutureBuilder futureBuilderListItems(BaseItem parentItem) {

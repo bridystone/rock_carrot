@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
@@ -16,13 +15,12 @@ class YacGuideFlutterMaterial extends StatelessWidget {
     // create Material
     return MaterialApp(
       title: 'YacGuideFlutter',
-      home: CountryMaterial(BaseItem(-1, 'Countries', -1)),
+      home: CountryMaterial(),
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
-            final base = settings.arguments as BaseItem;
             return MaterialPageRoute<CountryMaterial>(
-                builder: (context) => CountryMaterial(base));
+                builder: (context) => CountryMaterial());
           case '/Country':
             final country = settings.arguments as Country;
             return MaterialPageRoute<AreasMaterial>(
