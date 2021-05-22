@@ -17,6 +17,4 @@ abstract class BaseItems {
 
   /// get the items from the database
   Future<List<BaseItem>> getItems();
-
-  FutureOr<int> deleteItems();
 }

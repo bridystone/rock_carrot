@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Baseitems/Comments.dart';
-import 'package:yacguide_flutter/Baseitems/Routes.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRocks.dart';
@@ -68,13 +66,9 @@ class Rocks extends BaseItems with Sandstein {
         .toList();
   }
 
-  @override
-  FutureOr<int> deleteItems() {
+  Future<int> deleteItems() {
     // delete Routes as well with a dummy Rock Items
-    var _ = Routes(Rock.dummyRock(parent.id)).deleteItems();
-    _ = Comments(Rock.dummyRock(parent.id)).deleteItems();
-
-    return sqlHelper.deleteRocks(parent.id);
+    return sqlHelper.deleteRocksIncludingSubitems(parent.id);
   }
 
   /// update data from Sandsteinklettern

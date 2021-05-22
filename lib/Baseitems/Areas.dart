@@ -37,7 +37,6 @@ class Areas extends BaseItems with Sandstein {
         .toList();
   }
 
-  @override
   FutureOr<int> deleteItems() {
     return sqlHelper.deleteAreas(parent.name);
   }

@@ -40,7 +40,6 @@ class Countries extends BaseItems with Sandstein {
   }
 
   /// delete all data from Countries-Table
-  @override
   Future<int> deleteItems() {
     return sqlHelper.deleteCountries();
   }

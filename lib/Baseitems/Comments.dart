@@ -7,8 +7,8 @@ http://db-sandsteinklettern.gipfelbuch.de/jsonkomment.php?app=yacguide&sektorid=
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
+import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Database/sqlComments.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Comment extends BaseItem {
@@ -74,24 +74,27 @@ class Comments extends BaseItems with Sandstein {
     throw Exception('not to be called - should be deleted from rocks');
   }
 
-  @override
-  FutureOr<int> deleteItems() {
-    if (parent.name == BaseItems.dummyName) {
-      return sqlHelper.deleteComments(parent.id); // should be sektor_id
-    }
-    throw Exception('not to be called - should be deleted from rocks');
-  }
-
   /// update data from Sandsteinklettern
   ///
   /// fetch the data, then delete records, finally insert new data
   Future<int> updateData() async {
+    // decision, if comments are called for Subareas (gebietid )
+    // or Rocks (sektorid)
+    final String queryKey;
+    if (parent is Rock) {
+      queryKey = Sandstein.commentsWebQueryRocks;
+    } else {
+      queryKey = Sandstein.commentsWebQuerySubareas;
+    }
+    // fetch from db-sandsteinklettern
     var jsonData = fetchJsonFromWeb(
       Sandstein.commentsWebTarget,
-      Sandstein.commentsWebQuery,
+      queryKey,
       parent.id.toString(),
     );
-    await deleteItems();
+
+    // should have been deleted by relevant Parent
+    // await deleteItems();
 
     return sqlHelper.insertJsonData(SqlHandler.commentsTablename, jsonData);
   }

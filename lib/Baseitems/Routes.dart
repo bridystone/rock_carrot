@@ -81,14 +81,6 @@ class Routes extends BaseItems with Sandstein {
         .toList();
   }
 
-  @override
-  FutureOr<int> deleteItems() {
-    if (parent.name == BaseItems.dummyName) {
-      return sqlHelper.deleteRoutes(_parentRock.id); // should be sektor_id
-    }
-    throw Exception('not to be called - should be deleted from rocks');
-  }
-
   /// get Comment data from SQLite
   Future<List<Comment>> getComments(Route route) {
     return sqlHelper.queryRouteComments(route.wegId);
@@ -103,7 +95,9 @@ class Routes extends BaseItems with Sandstein {
       Sandstein.routesWebQuery,
       parent.id.toString(),
     );
-    await deleteItems();
+    // should have been deleted by relevant Parent
+    // await deleteItems();
+
     // add missing sektorid to table
     await jsonData.then((jsonDataFinal) {
       jsonDataFinal.forEach((dynamic jsonDataRow) {

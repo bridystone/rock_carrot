@@ -3,16 +3,6 @@ import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 extension SqlHandlerComments on SqlHandler {
-  FutureOr<int> deleteComments(int sektorid) {
-    return database.then(
-      (db) => db.delete(
-        SqlHandler.commentsTablename,
-        where: 'sektorid = ?',
-        whereArgs: [sektorid],
-      ),
-    );
-  }
-
   Future<List<Comment>> queryRouteComments(
     int wegid,
   ) async {

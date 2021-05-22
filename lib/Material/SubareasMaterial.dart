@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
+import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Material/BaseItemsMaterial.dart';
 
@@ -36,13 +37,18 @@ class _SubAreasMaterialState
     );
   }
 
+  /// delete subareas & its comments
   @override
   FutureOr<int> deleteItems() {
     return subareas.deleteItems();
   }
 
+  /// receive subareas & comments from db sandsteinklettern
+  ///
+  /// tables will be cleared & rewritten
   @override
-  FutureOr<void> fetchFromWeb() {
-    return subareas.updateData();
+  FutureOr<void> fetchFromWeb() async {
+    await subareas.updateData();
+    await Comments(Subarea.dummySubarea(subareas.parent.id)).updateData();
   }
 }

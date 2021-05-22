@@ -12,6 +12,7 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
     return Scaffold(
       appBar: AppBar(
         title: Text(baseitem.name),
+        // TODO: add show comments for subareas & rocks
         actions: [
           IconButton(
             icon: Icon(Icons.delete),

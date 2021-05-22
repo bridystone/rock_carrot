@@ -2,14 +2,21 @@ import 'dart:async';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 extension SqlHandlerSubareas on SqlHandler {
-  FutureOr<int> deleteSubareas(int gebietid) {
-    return database.then(
-      (db) => db.delete(
+  FutureOr<int> deleteSubareasIncludingComments(int gebietid) {
+    return database.then((db) {
+      // delete comments
+      db.delete(
+        SqlHandler.commentsTablename,
+        where: 'gebietid = ?',
+        whereArgs: [gebietid],
+      );
+      // delete subareas
+      return db.delete(
         SqlHandler.subareasTablename,
         where: 'gebietid = ?',
         whereArgs: [gebietid],
-      ),
-    );
+      );
+    });
   }
 
   Future<List<Map<String, Object?>>> querySubareas(int gebietid) {

@@ -21,7 +21,8 @@ class Sandstein {
   static const routesWebQuery = 'sektorid';
   // comments
   static const commentsWebTarget = 'komment';
-  static const commentsWebQuery = 'sektorid';
+  static const commentsWebQueryRocks = 'sektorid';
+  static const commentsWebQuerySubareas = 'gebietid';
 
   /// fetch data via http request from db-sandsteinklettern
   ///

@@ -24,6 +24,12 @@ class Subarea extends BaseItem {
       int.parse(sqlResult['count'].toString()), // should be Subareacount
     );
   }
+
+  /// this is used this delete/insert Comments
+  /// since only gebiet is important and this is not a real parent
+  factory Subarea.dummySubarea(int gebietid) {
+    return Subarea(gebietid, 0, BaseItems.dummyName, 0);
+  }
 }
 
 class Subareas extends BaseItems with Sandstein {
@@ -39,9 +45,9 @@ class Subareas extends BaseItems with Sandstein {
         .toList();
   }
 
-  @override
+  /// delete all subareas including their comemnts
   FutureOr<int> deleteItems() {
-    return sqlHelper.deleteSubareas(parent.id);
+    return sqlHelper.deleteSubareasIncludingComments(parent.id);
   }
 
   /// update data from Sandsteinklettern

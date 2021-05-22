@@ -2,16 +2,6 @@ import 'dart:async';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 extension SqlHandlerRoutes on SqlHandler {
-  FutureOr<int> deleteRoutes(int sektorid) {
-    return database.then(
-      (db) => db.delete(
-        SqlHandler.routesTablename,
-        where: 'sektorid = ?',
-        whereArgs: [sektorid],
-      ),
-    );
-  }
-
   Future<List<Map<String, Object?>>> queryRoutes(
     int gipfelid,
   ) {
