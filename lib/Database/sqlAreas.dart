@@ -14,7 +14,7 @@ extension SqlHandlerAreas on SqlHandler {
 
   Future<List<Map<String, Object?>>> queryAreas(String land) {
     return database.then((db) => db.rawQuery(
-          'SELECT gebiet_ID, gebiet, COUNT(teilgebiet.gebietid) as count'
+          'SELECT gebiet.*, COUNT(teilgebiet.gebietid) as count'
           ' FROM gebiet'
           ' LEFT OUTER JOIN teilgebiet'
           ' ON gebiet.gebiet_ID = teilgebiet.gebietid'

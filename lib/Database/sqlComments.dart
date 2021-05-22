@@ -1,24 +1,18 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 extension SqlHandlerComments on SqlHandler {
-  Future<List<Comment>> queryRouteComments(
+  Future<List<Map<String, Object?>>> queryRouteComments(
     int wegid,
-  ) async {
-    final sqlResults = await database.then((db) => db.query(
+  ) {
+    return database.then((db) => db.query(
           SqlHandler.commentsTablename,
-          columns: SqlHandler.databaseTableColumns['komment']!
-              .map((tableRow) => tableRow['name']!)
+          columns: SqlHandler
+              .databaseTableColumns[SqlHandler.commentsTablename]!.keys
               .toList(),
           where: 'wegid = ?',
           whereArgs: [wegid],
         ));
-    return sqlResults
-        .map(
-          (sqlRow) => Comment.fromSql(sqlRow),
-        )
-        .toList();
   }
 
   Future<List<Map<String, Object?>>> queryComment(

@@ -1,9 +1,3 @@
-/*
-Gebiet:
-http://db-sandsteinklettern.gipfelbuch.de/jsonkomment.php?app=yacguide&gebietid=29
-Sektor:
-http://db-sandsteinklettern.gipfelbuch.de/jsonkomment.php?app=yacguide&sektorid=95 (but also )
-*/
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';

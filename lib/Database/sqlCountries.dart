@@ -7,10 +7,10 @@ extension SqlHandlerCountries on SqlHandler {
     return database.then((db) => db.delete(SqlHandler.countriesTablename));
   }
 
-  /// retrieve all Countries from the database
+  /// retrieve all items from the database
   Future<List<Map<String, Object?>>> queryCountries() {
     return database.then((db) => db.rawQuery(
-          'SELECT land.land, land.iso3166, land.kfz, COUNT(gebiet) as count'
+          'SELECT land.*, COUNT(gebiet) as count'
           ' FROM land'
           ' LEFT OUTER JOIN gebiet'
           ' ON land.land = gebiet.land'

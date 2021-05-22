@@ -7,28 +7,43 @@ import 'package:yacguide_flutter/Database/sqlSubareas.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Subarea extends BaseItem {
-  @override
-  int id;
-  int nr;
-  @override
-  String name;
+  int sektorid;
+  int gebietid;
+  String sektornr;
+  String sektornameD;
+  String sektornameCZ;
   int rockCount;
-  Subarea(this.id, this.nr, this.name, this.rockCount)
-      : super(id, name, rockCount);
+  Subarea(
+    this.sektorid,
+    this.gebietid,
+    this.sektornr,
+    this.sektornameD,
+    this.sektornameCZ,
+    this.rockCount,
+  ) : super(sektorid, sektornameD, rockCount); //parent information
 
   factory Subarea.fromSql(Map<String, Object?> sqlResult) {
     return Subarea(
-      int.parse(sqlResult['sektor_ID'].toString()),
-      int.parse(sqlResult['sektornr'].toString()),
-      sqlResult['sektorname_d'].toString(),
-      int.parse(sqlResult['count'].toString()), // should be Subareacount
+      int.parse(sqlResult.values.elementAt(0).toString()),
+      int.parse(sqlResult.values.elementAt(1).toString()),
+      sqlResult.values.elementAt(2).toString(),
+      sqlResult.values.elementAt(3).toString(),
+      sqlResult.values.elementAt(4).toString(),
+      int.parse(sqlResult.values.elementAt(5).toString()),
     );
   }
 
   /// this is used this delete/insert Comments
   /// since only gebiet is important and this is not a real parent
   factory Subarea.dummySubarea(int gebietid) {
-    return Subarea(gebietid, 0, BaseItems.dummyName, 0);
+    return Subarea(
+      gebietid,
+      0,
+      '',
+      BaseItems.dummyName,
+      '',
+      0,
+    );
   }
 }
 
@@ -37,12 +52,15 @@ class Subareas extends BaseItems with Sandstein {
 
   @override
   Future<List<Subarea>> getItems() async {
-    final sqlSubareas = await sqlHelper.querySubareas(parent.id);
-    return sqlSubareas
-        .map(
-          (sqlResultRow) => Subarea.fromSql(sqlResultRow),
-        )
-        .toList();
+    final sqlResults = sqlHelper.querySubareas(parent.id);
+    // maps sqlResults to Subareas and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Subarea.fromSql(sqlRow),
+          )
+          .toList(),
+    );
   }
 
   /// delete all subareas including their comemnts

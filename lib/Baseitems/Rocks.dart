@@ -7,49 +7,58 @@ import 'package:yacguide_flutter/Database/sqlRocks.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Rock extends BaseItem {
-  @override
-  int id; /*sektorid!!*/
   int gipfelId;
   String gipfelNr;
   String gipfelName;
   String gipfelNameCZ;
   String gipfelStatus;
   String gipfelTyp;
+  String vgrd;
+  String ngrd;
+  String posfehler;
   String schartenhoehe;
   String talhoehe;
+  int sektorid;
   int routeCount;
   Rock(
-    this.id,
     this.gipfelId,
     this.gipfelNr,
     this.gipfelName,
     this.gipfelNameCZ,
     this.gipfelStatus,
     this.gipfelTyp,
+    this.vgrd,
+    this.ngrd,
+    this.posfehler,
     this.schartenhoehe,
     this.talhoehe,
+    this.sektorid,
     this.routeCount,
-  ) : super(id, gipfelName, routeCount);
+  ) : super(sektorid, gipfelName, routeCount);
 
   factory Rock.fromSql(Map<String, Object?> sqlResult) {
     return Rock(
-      int.parse(sqlResult['sektorid'].toString()),
-      int.parse(sqlResult['gipfel_ID'].toString()),
-      sqlResult['gipfelnr'].toString(),
-      sqlResult['gipfelname_d'].toString(),
-      sqlResult['gipfelname_cz'].toString(),
-      sqlResult['status'].toString(),
-      sqlResult['typ'].toString(),
-      sqlResult['schartenhoehe'].toString(),
-      sqlResult['talhoehe'].toString(),
-      int.parse(sqlResult['count'].toString()), // should be Subareacount
+      int.parse(sqlResult.values.elementAt(0).toString()),
+      sqlResult.values.elementAt(1).toString(),
+      sqlResult.values.elementAt(2).toString(),
+      sqlResult.values.elementAt(3).toString(),
+      sqlResult.values.elementAt(4).toString(),
+      sqlResult.values.elementAt(5).toString(),
+      sqlResult.values.elementAt(6).toString(),
+      sqlResult.values.elementAt(7).toString(),
+      sqlResult.values.elementAt(8).toString(),
+      sqlResult.values.elementAt(9).toString(),
+      sqlResult.values.elementAt(10).toString(),
+      int.parse(sqlResult.values.elementAt(11).toString()),
+      int.parse(sqlResult.values.elementAt(12).toString()),
     );
   }
 
   /// this is used this delete/insert Routes/Comments
   /// since only sektorid is important and this is not a real parent
   factory Rock.dummyRock(int sektorId) {
-    return Rock(sektorId, 0, '', BaseItems.dummyName, '', '', '', '', '', 0);
+    return Rock(0, '', '', BaseItems.dummyName, '', '', '', '', '', '', '',
+        sektorId, 0);
   }
 }
 
@@ -58,12 +67,15 @@ class Rocks extends BaseItems with Sandstein {
 
   @override
   Future<List<Rock>> getItems() async {
-    final sqlRocks = await sqlHelper.queryRocks(parent.id);
-    return sqlRocks
-        .map(
-          (sqlResultRow) => Rock.fromSql(sqlResultRow),
-        )
-        .toList();
+    final sqlResults = sqlHelper.queryRocks(parent.id);
+    // maps sqlResults to Rock and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Rock.fromSql(sqlRow),
+          )
+          .toList(),
+    );
   }
 
   Future<int> deleteItems() {

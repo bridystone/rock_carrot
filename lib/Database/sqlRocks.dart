@@ -54,13 +54,12 @@ extension SqlHandlerRocks on SqlHandler {
     });
   }
 
+  // TODO: add comment count
   Future<List<Map<String, Object?>>> queryRocks(
     int sektorid,
   ) {
     return database.then((db) => db.rawQuery(
-          'SELECT gipfel_ID, gipfelnr, gipfelname_d, gipfelname_cz, '
-          '   status, typ, schartenhoehe, talhoehe, gipfel.sektorid, '
-          '   COUNT(wege.gipfelid) as count'
+          'SELECT gipfel.*, COUNT(wege.gipfelid) as count'
           ' FROM gipfel'
           '   LEFT OUTER JOIN wege'
           '   ON gipfel.gipfel_ID = wege.gipfelid'

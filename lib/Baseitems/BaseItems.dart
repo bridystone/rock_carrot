@@ -4,6 +4,7 @@ import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 abstract class BaseItems {
+  // TODO: get rid of parent in this class use specific parents in subclasses
   BaseItem parent;
   BaseItems(this.parent);
 

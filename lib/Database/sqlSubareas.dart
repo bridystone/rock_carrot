@@ -19,9 +19,10 @@ extension SqlHandlerSubareas on SqlHandler {
     });
   }
 
+  // TODO: add comment count
   Future<List<Map<String, Object?>>> querySubareas(int gebietid) {
     return database.then((db) => db.rawQuery(
-          'SELECT sektor_ID, sektornr, sektorname_d, sektorname_cz, COUNT(gipfel.sektorid) as count'
+          'SELECT teilgebiet.*, COUNT(gipfel.sektorid) as count'
           ' FROM teilgebiet'
           ' LEFT OUTER JOIN gipfel'
           ' ON teilgebiet.sektor_ID = gipfel.sektorid'

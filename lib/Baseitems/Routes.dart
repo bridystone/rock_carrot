@@ -9,8 +9,6 @@ import 'package:yacguide_flutter/Database/sqlComments.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Route extends BaseItem {
-  @override
-  int id; /*sektorid!!*/
   int wegId;
   int gipfelId;
   String schwierigkeit;
@@ -27,7 +25,6 @@ class Route extends BaseItem {
   String wegnr;
   int routeCount;
   Route(
-    this.id,
     this.wegId,
     this.gipfelId,
     this.schwierigkeit,
@@ -47,22 +44,21 @@ class Route extends BaseItem {
 
   factory Route.fromSql(Map<String, Object?> sqlResult) {
     return Route(
-      0, //sektor id
-      int.parse(sqlResult['weg_ID'].toString()),
-      int.parse(sqlResult['gipfelid'].toString()),
-      sqlResult['schwierigkeit'].toString(),
-      sqlResult['erstbegvorstieg'].toString(),
-      sqlResult['erstbegnachstieg'].toString(),
-      sqlResult['erstbegdatum'].toString(),
-      sqlResult['ringzahl'].toString(),
-      sqlResult['wegbeschr_d'].toString(),
-      sqlResult['wegbeschr_cz'].toString(),
-      sqlResult['kletterei'].toString(),
-      sqlResult['wegname_d'].toString(),
-      sqlResult['wegname_cz'].toString(),
-      sqlResult['wegstatus'].toString(),
-      sqlResult['wegnr'].toString(),
-      sqlResult['wegname_d'].toString().length, // should be Subareacount
+      int.parse(sqlResult.values.elementAt(0).toString()),
+      int.parse(sqlResult.values.elementAt(1).toString()),
+      sqlResult.values.elementAt(2).toString(),
+      sqlResult.values.elementAt(3).toString(),
+      sqlResult.values.elementAt(4).toString(),
+      sqlResult.values.elementAt(5).toString(),
+      sqlResult.values.elementAt(6).toString(),
+      sqlResult.values.elementAt(7).toString(),
+      sqlResult.values.elementAt(8).toString(),
+      sqlResult.values.elementAt(9).toString(),
+      sqlResult.values.elementAt(10).toString(),
+      sqlResult.values.elementAt(11).toString(),
+      sqlResult.values.elementAt(12).toString(),
+      sqlResult.values.elementAt(13).toString(),
+      int.parse(sqlResult.values.elementAt(14).toString()),
     );
   }
 }
@@ -73,17 +69,28 @@ class Routes extends BaseItems with Sandstein {
 
   @override
   Future<List<Route>> getItems() async {
-    final sqlRoutes = await sqlHelper.queryRoutes(_parentRock.gipfelId);
-    return sqlRoutes
-        .map(
-          (sqlResultRow) => Route.fromSql(sqlResultRow),
-        )
-        .toList();
+    final sqlResults = sqlHelper.queryRoutes(_parentRock.gipfelId);
+    // maps sqlResults to Route and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Route.fromSql(sqlRow),
+          )
+          .toList(),
+    );
   }
 
   /// get Comment data from SQLite
   Future<List<Comment>> getComments(Route route) {
-    return sqlHelper.queryRouteComments(route.wegId);
+    final sqlResults = sqlHelper.queryRouteComments(route.wegId);
+    // maps sqlResults to Comment and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Comment.fromSql(sqlRow),
+          )
+          .toList(),
+    );
   }
 
   /// update data from Sandsteinklettern
@@ -98,12 +105,6 @@ class Routes extends BaseItems with Sandstein {
     // should have been deleted by relevant Parent
     // await deleteItems();
 
-    // add missing sektorid to table
-    await jsonData.then((jsonDataFinal) {
-      jsonDataFinal.forEach((dynamic jsonDataRow) {
-        jsonDataRow['sektorid'] = parent.id;
-      });
-    });
     return sqlHelper.insertJsonData(SqlHandler.routesTablename, jsonData);
   }
 }

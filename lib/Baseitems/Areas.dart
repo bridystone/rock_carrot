@@ -7,19 +7,32 @@ import 'package:yacguide_flutter/Database/sqlAreas.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Area extends BaseItem {
-  @override
-  int id;
-  @override
-  String name;
+  int gebietid;
+  String gebiet;
+  String land;
+  String sprache2;
+  String gdefaultanzeige;
+  String schwskala;
   int subareaCount;
-  Area(this.id, this.name, this.subareaCount) : super(id, name, subareaCount);
+  Area(
+    this.gebietid,
+    this.gebiet,
+    this.land,
+    this.sprache2,
+    this.gdefaultanzeige,
+    this.schwskala,
+    this.subareaCount,
+  ) : super(gebietid, gebiet, subareaCount);
 
-  // TODO: all fields & usage of integer
   factory Area.fromSql(Map<String, Object?> sqlResult) {
     return Area(
-      int.parse(sqlResult['gebiet_ID'].toString()),
-      sqlResult['gebiet'].toString(),
-      int.parse(sqlResult['count'].toString()), // should be subareacount
+      int.parse(sqlResult.values.elementAt(0).toString()),
+      sqlResult.values.elementAt(1).toString(),
+      sqlResult.values.elementAt(2).toString(),
+      sqlResult.values.elementAt(3).toString(),
+      sqlResult.values.elementAt(4).toString(),
+      sqlResult.values.elementAt(5).toString(),
+      int.parse(sqlResult.values.elementAt(6).toString()),
     );
   }
 }
@@ -29,12 +42,15 @@ class Areas extends BaseItems with Sandstein {
 
   @override
   Future<List<Area>> getItems() async {
-    final sqlAreas = await sqlHelper.queryAreas(parent.name);
-    return sqlAreas
-        .map(
-          (sqlResultRow) => Area.fromSql(sqlResultRow),
-        )
-        .toList();
+    final sqlResults = sqlHelper.queryAreas(parent.name);
+    // maps sqlResults to Area and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Area.fromSql(sqlRow),
+          )
+          .toList(),
+    );
   }
 
   FutureOr<int> deleteItems() {

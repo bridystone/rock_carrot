@@ -17,6 +17,7 @@ class Country extends BaseItem {
       : super(0, land, childCount);
 
   /// create new countryelement from sqlResult
+  // TODO: use sqlHandler Table information to get this in
   factory Country.fromSql(Map<String, Object?> sqlResult) {
     return Country(
       sqlResult.values.elementAt(0).toString(), //land
@@ -32,11 +33,15 @@ class Countries extends BaseItems with Sandstein {
 
   /// get Items from database and transform them into a list of items
   @override
-  Future<List<Country>> getItems() async {
-    final sqlCountries = await sqlHelper.queryCountries();
-    return sqlCountries
-        .map((sqlResultRow) => Country.fromSql(sqlResultRow))
-        .toList();
+  Future<List<Country>> getItems() {
+    final sqlResults = sqlHelper.queryCountries();
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Country.fromSql(sqlRow),
+          )
+          .toList(),
+    );
   }
 
   /// delete all data from Countries-Table
