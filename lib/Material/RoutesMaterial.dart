@@ -1,68 +1,78 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Route;
-import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
 import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Baseitems/Routes.dart';
-import 'package:yacguide_flutter/Material/BaseItemsMaterial.dart';
+import 'package:yacguide_flutter/Baseitems/Subareas.dart';
+import 'package:yacguide_flutter/Material/FuturesHelper.dart';
 
 class RoutesMaterial extends StatefulWidget {
-  final Rock parentItem;
+  final Rock parentRock;
+  final Subarea parentSubarea;
 
   // List of all routes - to be accessible for later
-  RoutesMaterial(this.parentItem);
+  RoutesMaterial(this.parentSubarea, this.parentRock);
 
   // transfer country to state object
   @override
   _RoutesMaterialState createState() {
-    return _RoutesMaterialState(parentItem);
+    return _RoutesMaterialState(parentSubarea, parentRock);
   }
 }
 
-class _RoutesMaterialState
-    extends BaseItemsMaterialStatefulState<RoutesMaterial> {
-  final Rock parentItem;
+class _RoutesMaterialState extends State<RoutesMaterial> with FuturesHelper {
   final Routes routes;
-  Comments comments;
 
-  _RoutesMaterialState(this.parentItem)
-      : routes = Routes(parentItem),
-        comments = Comments(parentItem),
-        super(parentItem);
+  _RoutesMaterialState(Subarea subarea, Rock rock)
+      : routes = Routes(subarea, rock);
 
+  /// build the Scaffold
   @override
-  FutureBuilder futureBuilderListItems(BaseItem parentItem) {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: generateAppbar(routes.parentRock.gipfelName, true, true),
+      body: futureBuilderListItems(),
+    );
+  }
+
+  /// generate appbar
+  AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
+    return AppBar(
+      title: Text(title),
+    );
+  }
+
+  FutureBuilder futureBuilderListItems() {
     return FutureBuilder<List<Route>>(
-      builder: baseitemsBuilder,
-      future: routes.getItems(),
+      builder: futureBuilderRoutes,
+      future: routes.getRoutes(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
       ],*/
     );
   }
 
-  @override
-  Widget baseitemsBuilder(BuildContext context, AsyncSnapshot snapshot) {
+  Widget futureBuilderRoutes(BuildContext context, AsyncSnapshot snapshot) {
     if (snapshot.hasError) {
       return futureBuilderErrorMessage(snapshot);
     }
 
     if (snapshot.connectionState == ConnectionState.done) {
-      return buildListRoutes(
-          snapshot.data); // use Routesbuilder instead of baseitembuilder
+      // push data into protected storage
+      routes.routes = snapshot.data;
+      return buildListRoutes();
     }
 
     return futureBuilderLoadingMessage(snapshot);
   }
 
-  Widget buildListRoutes(List<Route> items) {
+  Widget buildListRoutes() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: items.length,
+      itemCount: routes.routes.length,
       itemBuilder: (context, i) {
-        final route = items[i];
+        final route = routes.routes[i];
         return Column(children: [
           ExpansionTile(
             /*
@@ -133,7 +143,7 @@ class _RoutesMaterialState
                       ),
                       builder: (BuildContext context) {
                         return FutureBuilder<List<Comment>>(
-                          future: routes.getComments(route),
+                          //future: routes.getComments(route),
                           builder: routeInformationBuilder,
                         );
                       });
@@ -147,16 +157,6 @@ class _RoutesMaterialState
         ]);
       },
     );
-  }
-
-  @override
-  FutureOr<int> deleteItems() {
-    throw Exception('not handled from routesMaterial');
-  }
-
-  @override
-  FutureOr<void> fetchFromWeb() {
-    throw Exception('not handled from routesMaterial');
   }
 
   List<Route> getCommentsFromSnapshot(AsyncSnapshot snapshot) {

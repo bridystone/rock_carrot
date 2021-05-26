@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlAreas.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Area extends BaseItem {
+class Area {
   int gebietid;
   String gebiet;
   String land;
@@ -22,7 +20,7 @@ class Area extends BaseItem {
     this.gdefaultanzeige,
     this.schwskala,
     this.subareaCount,
-  ) : super(gebietid, gebiet, subareaCount);
+  );
 
   factory Area.fromSql(Map<String, Object?> sqlResult) {
     return Area(
@@ -37,12 +35,32 @@ class Area extends BaseItem {
   }
 }
 
-class Areas extends BaseItems with Sandstein {
-  Areas(Country parent) : super(BaseItem(0, parent.land, 0));
+class Areas with Sandstein {
+  SqlHandler sqlHelper = SqlHandler();
 
-  @override
-  Future<List<Area>> getItems() async {
-    final sqlResults = sqlHelper.queryAreas(parent.name);
+  /// store parent country
+  Country parentCountry;
+  Areas(this.parentCountry);
+
+  /// initialize list of areas empty
+  List<Area> _areas = [];
+
+  set areas(List<Area> newAreas) {
+    _areas = newAreas;
+    // TODO: perfomring reorder etc...
+    // or rather in getter?
+  }
+
+  /// retrieve current areas - if empty, get SQL data
+  List<Area> get areas {
+    if (_areas.isEmpty) {
+      getAreas().then((sqlAreas) => _areas = sqlAreas);
+    }
+    return _areas;
+  }
+
+  Future<List<Area>> getAreas() async {
+    final sqlResults = sqlHelper.queryAreas(parentCountry.land);
     // maps sqlResults to Area and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
@@ -53,8 +71,8 @@ class Areas extends BaseItems with Sandstein {
     );
   }
 
-  FutureOr<int> deleteItems() {
-    return sqlHelper.deleteAreas(parent.name);
+  FutureOr<int> deleteAreasFromDatabase() {
+    return sqlHelper.deleteAreas(parentCountry.land);
   }
 
   /// update data from Sandsteinklettern
@@ -64,9 +82,9 @@ class Areas extends BaseItems with Sandstein {
     var jsonData = fetchJsonFromWeb(
       Sandstein.areasWebTarget,
       Sandstein.areasWebQuery,
-      parent.name,
+      parentCountry.land,
     );
-    await deleteItems();
+    await deleteAreasFromDatabase();
     return sqlHelper.insertJsonData(SqlHandler.areasTablename, jsonData);
   }
 }

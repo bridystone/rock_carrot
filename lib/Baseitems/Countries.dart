@@ -32,19 +32,23 @@ class Countries with Sandstein {
   /// initialize list of countries empty
   List<Country> _countries = [];
 
-  set elements(List<Country> newCountries) {
+  set countries(List<Country> newCountries) {
     _countries = newCountries;
     // TODO: perfomring reorder etc...
     // or rather in getter?
   }
 
-  List<Country> get elements {
+  /// retrieve current countries - if empty, get SQL data
+  List<Country> get countries {
+    if (_countries.isEmpty) {
+      getCountries().then((sqlCountries) => _countries = sqlCountries);
+    }
     //_countries.sort();
     return _countries;
   }
 
   /// get Items from database and transform them into a list of items
-  Future<List<Country>> getItems() {
+  Future<List<Country>> getCountries() {
     final sqlResults = sqlHelper.queryCountries();
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
@@ -56,7 +60,7 @@ class Countries with Sandstein {
   }
 
   /// delete all data from Countries-Table
-  Future<int> deleteItems() {
+  Future<int> deleteCountriesFromDatabase() {
     return sqlHelper.deleteCountries();
   }
 
@@ -65,7 +69,7 @@ class Countries with Sandstein {
   /// fetch the data, then delete records, finally insert new data
   Future<int> updateData() async {
     var jsonData = fetchJsonFromWeb(Sandstein.countriesWebTarget);
-    await deleteItems();
+    await deleteCountriesFromDatabase();
     return sqlHelper.insertJsonData(SqlHandler.countriesTablename, jsonData);
   }
 }

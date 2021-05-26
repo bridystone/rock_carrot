@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
+import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRoutes.dart';
 import 'package:yacguide_flutter/Database/sqlComments.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Route extends BaseItem {
+class Route {
   int wegId;
   int gipfelId;
   String schwierigkeit;
@@ -40,7 +39,7 @@ class Route extends BaseItem {
     this.wegstatus,
     this.wegnr,
     this.routeCount,
-  ) : super(gipfelId, wegname, routeCount);
+  );
 
   factory Route.fromSql(Map<String, Object?> sqlResult) {
     return Route(
@@ -63,13 +62,32 @@ class Route extends BaseItem {
   }
 }
 
-class Routes extends BaseItems with Sandstein {
-  final Rock _parentRock;
-  Routes(this._parentRock) : super(_parentRock);
+class Routes with Sandstein {
+  SqlHandler sqlHelper = SqlHandler();
 
-  @override
-  Future<List<Route>> getItems() async {
-    final sqlResults = sqlHelper.queryRoutes(_parentRock.gipfelId);
+  final Rock parentRock;
+  final Subarea parentSubarea;
+  Routes(this.parentSubarea, this.parentRock);
+
+  /// initialize list of areas empty
+  List<Route> _routes = [];
+
+  set routes(List<Route> newRoutes) {
+    _routes = newRoutes;
+    // TODO: perfomring reorder etc...
+    // or rather in getter?
+  }
+
+  /// retrieve current areas - if empty, get SQL data
+  List<Route> get routes {
+    if (_routes.isEmpty) {
+      getRoutes().then((sqlRoutes) => _routes = sqlRoutes);
+    }
+    return _routes;
+  }
+
+  Future<List<Route>> getRoutes() async {
+    final sqlResults = sqlHelper.queryRoutes(parentRock.gipfelId);
     // maps sqlResults to Route and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
@@ -81,7 +99,7 @@ class Routes extends BaseItems with Sandstein {
   }
 
   /// get Comment data from SQLite
-  Future<List<Comment>> getComments(Route route) {
+  Future<List<Comment>> getRouteComments(Route route) {
     final sqlResults = sqlHelper.queryRouteComments(route.wegId);
     // maps sqlResults to Comment and return
     return sqlResults.then(
@@ -100,7 +118,7 @@ class Routes extends BaseItems with Sandstein {
     var jsonData = fetchJsonFromWeb(
       Sandstein.routesWebTarget,
       Sandstein.routesWebQuery,
-      parent.id.toString(),
+      parentSubarea.gebietid.toString(),
     );
     // should have been deleted by relevant Parent
     // await deleteItems();

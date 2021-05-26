@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlSubareas.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Subarea extends BaseItem {
+class Subarea {
   int sektorid;
   int gebietid;
   String sektornr;
@@ -20,7 +18,7 @@ class Subarea extends BaseItem {
     this.sektornameD,
     this.sektornameCZ,
     this.rockCount,
-  ) : super(sektorid, sektornameD, rockCount); //parent information
+  );
 
   factory Subarea.fromSql(Map<String, Object?> sqlResult) {
     return Subarea(
@@ -32,7 +30,7 @@ class Subarea extends BaseItem {
       int.parse(sqlResult.values.elementAt(5).toString()),
     );
   }
-
+/*
   /// this is used this delete/insert Comments
   /// since only gebiet is important and this is not a real parent
   factory Subarea.dummySubarea(int gebietid) {
@@ -45,14 +43,35 @@ class Subarea extends BaseItem {
       0,
     );
   }
+  */
 }
 
-class Subareas extends BaseItems with Sandstein {
-  Subareas(Area parent) : super(parent);
+class Subareas with Sandstein {
+  SqlHandler sqlHelper = SqlHandler();
 
-  @override
-  Future<List<Subarea>> getItems() async {
-    final sqlResults = sqlHelper.querySubareas(parent.id);
+  /// store parent area
+  Area parentArea;
+  Subareas(this.parentArea);
+
+  /// initialize list of areas empty
+  List<Subarea> _subareas = [];
+
+  set subareas(List<Subarea> newSubareas) {
+    _subareas = newSubareas;
+    // TODO: perfomring reorder etc...
+    // or rather in getter?
+  }
+
+  /// retrieve current areas - if empty, get SQL data
+  List<Subarea> get subareas {
+    if (_subareas.isEmpty) {
+      getSubareas().then((sqlSubareas) => _subareas = sqlSubareas);
+    }
+    return _subareas;
+  }
+
+  Future<List<Subarea>> getSubareas() async {
+    final sqlResults = sqlHelper.querySubareas(parentArea.gebietid);
     // maps sqlResults to Subareas and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
@@ -64,8 +83,8 @@ class Subareas extends BaseItems with Sandstein {
   }
 
   /// delete all subareas including their comemnts
-  FutureOr<int> deleteItems() {
-    return sqlHelper.deleteSubareasIncludingComments(parent.id);
+  FutureOr<int> deleteSubareasFromDatabase() {
+    return sqlHelper.deleteSubareasIncludingComments(parentArea.gebietid);
   }
 
   /// update data from Sandsteinklettern
@@ -75,9 +94,9 @@ class Subareas extends BaseItems with Sandstein {
     var jsonData = fetchJsonFromWeb(
       Sandstein.subareasWebTarget,
       Sandstein.subareasWebQuery,
-      parent.id.toString(),
+      parentArea.gebietid.toString(),
     );
-    await deleteItems();
+    await deleteSubareasFromDatabase();
     return sqlHelper.insertJsonData(SqlHandler.subareasTablename, jsonData);
   }
 }

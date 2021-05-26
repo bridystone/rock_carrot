@@ -1,11 +1,7 @@
-import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Comment extends BaseItem {
+class Comment {
   int kommentId;
   int userid;
   String datum;
@@ -37,7 +33,7 @@ class Comment extends BaseItem {
     this.schwer,
     this.geklettert,
     this.begehung,
-  ) : super(-1, userid.toString(), -1);
+  );
 
   factory Comment.fromSql(Map<String, Object?> sqlResult) {
     return Comment(
@@ -60,18 +56,16 @@ class Comment extends BaseItem {
   }
 }
 
-class Comments extends BaseItems with Sandstein {
-  Comments(BaseItem parent) : super(parent);
-
-  @override
-  Future<List<Comment>> getItems() {
-    throw Exception('not to be called - should be deleted from rocks');
-  }
+class Comments with Sandstein {
+  SqlHandler sqlHelper = SqlHandler();
 
   /// update data from Sandsteinklettern
   ///
   /// fetch the data, then delete records, finally insert new data
-  Future<int> updateData() async {
+  ///
+  // TODO: fix comments
+/*
+  Future<int> updateSubarea() async {
     // decision, if comments are called for Subareas (gebietid )
     // or Rocks (sektorid)
     final String queryKey;
@@ -92,4 +86,5 @@ class Comments extends BaseItems with Sandstein {
 
     return sqlHelper.insertJsonData(SqlHandler.commentsTablename, jsonData);
   }
+  */
 }

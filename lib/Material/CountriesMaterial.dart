@@ -25,13 +25,13 @@ class _CountryMaterialState extends State<CountryMaterial> with FuturesHelper {
   /// generate appbar
   AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
     return AppBar(
-      title: Text('Countries'),
+      title: Text(title),
       actions: [
         IconButton(
           icon: Icon(Icons.delete),
           onPressed: () async {
             // delete all items in the database and refresh
-            await countries.deleteItems();
+            await countries.deleteCountriesFromDatabase();
             setState(() {});
           },
         ),
@@ -52,7 +52,7 @@ class _CountryMaterialState extends State<CountryMaterial> with FuturesHelper {
   FutureBuilder futureBuilderListItems() {
     return FutureBuilder<List<Country>>(
       builder: futureBuilderCountries,
-      future: countries.getItems(),
+      future: countries.getCountries(),
 /*      initialData: <Map<String, Object?>>[
         {'gebiet_ID': '1'}
       ],*/
@@ -66,7 +66,7 @@ class _CountryMaterialState extends State<CountryMaterial> with FuturesHelper {
 
     if (snapshot.connectionState == ConnectionState.done) {
       // push data into protected storage
-      countries.elements = snapshot.data;
+      countries.countries = snapshot.data;
       return buildCountryList();
     }
 
@@ -77,9 +77,9 @@ class _CountryMaterialState extends State<CountryMaterial> with FuturesHelper {
   Widget buildCountryList() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: countries.elements.length,
+      itemCount: countries.countries.length,
       itemBuilder: (context, i) {
-        final country = countries.elements[i];
+        final country = countries.countries[i];
         return Column(children: [
           // only first time generate a devider
           (i == 0)

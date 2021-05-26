@@ -45,7 +45,7 @@ class _CountryTileState extends State<CountryTile> {
           color: Colors.red,
           icon: Icons.delete,
           onTap: () async {
-            await Areas(country).deleteItems();
+            await Areas(country).deleteAreasFromDatabase();
 
             setState(() {
               country.areaCount = 0;

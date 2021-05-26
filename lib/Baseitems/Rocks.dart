@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItem.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRocks.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Rock extends BaseItem {
+class Rock {
   int gipfelId;
   String gipfelNr;
   String gipfelName;
@@ -34,7 +32,7 @@ class Rock extends BaseItem {
     this.talhoehe,
     this.sektorid,
     this.routeCount,
-  ) : super(sektorid, gipfelName, routeCount);
+  );
 
   factory Rock.fromSql(Map<String, Object?> sqlResult) {
     return Rock(
@@ -53,21 +51,42 @@ class Rock extends BaseItem {
       int.parse(sqlResult.values.elementAt(12).toString()),
     );
   }
-
+/*
   /// this is used this delete/insert Routes/Comments
   /// since only sektorid is important and this is not a real parent
   factory Rock.dummyRock(int sektorId) {
     return Rock(0, '', '', BaseItems.dummyName, '', '', '', '', '', '', '',
         sektorId, 0);
   }
+  */
 }
 
-class Rocks extends BaseItems with Sandstein {
-  Rocks(Subarea parent) : super(parent);
+class Rocks with Sandstein {
+  SqlHandler sqlHelper = SqlHandler();
 
-  @override
-  Future<List<Rock>> getItems() async {
-    final sqlResults = sqlHelper.queryRocks(parent.id);
+  /// store parent area
+  Subarea parentSubArea;
+  Rocks(this.parentSubArea);
+
+  /// initialize list of areas empty
+  List<Rock> _rocks = [];
+
+  set rocks(List<Rock> newRocks) {
+    _rocks = newRocks;
+    // TODO: perfomring reorder etc...
+    // or rather in getter?
+  }
+
+  /// retrieve current areas - if empty, get SQL data
+  List<Rock> get rocks {
+    if (_rocks.isEmpty) {
+      getRocks().then((sqlRocks) => _rocks = sqlRocks);
+    }
+    return _rocks;
+  }
+
+  Future<List<Rock>> getRocks() async {
+    final sqlResults = sqlHelper.queryRocks(parentSubArea.sektorid);
     // maps sqlResults to Rock and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
@@ -78,9 +97,9 @@ class Rocks extends BaseItems with Sandstein {
     );
   }
 
-  Future<int> deleteItems() {
+  Future<int> deleteRocksFromDatabase() {
     // delete Routes as well with a dummy Rock Items
-    return sqlHelper.deleteRocksIncludingSubitems(parent.id);
+    return sqlHelper.deleteRocksIncludingSubitems(parentSubArea.sektorid);
   }
 
   /// update data from Sandsteinklettern
@@ -90,9 +109,9 @@ class Rocks extends BaseItems with Sandstein {
     var jsonData = fetchJsonFromWeb(
       Sandstein.rocksWebTarget,
       Sandstein.rocksWebQuery,
-      parent.id.toString(),
+      parentSubArea.sektorid.toString(),
     );
-    await deleteItems();
+    await deleteRocksFromDatabase();
     return sqlHelper.insertJsonData(SqlHandler.rocksTablename, jsonData);
   }
 }
