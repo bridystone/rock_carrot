@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
+import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
 class RocksMaterial extends StatefulWidget {
   final Subarea parentItem;
@@ -38,7 +39,8 @@ class _RocksMaterialState extends State<RocksMaterial> with FuturesHelper {
           icon: Icon(Icons.delete),
           onPressed: () async {
             // delete all items in the database and refresh
-            await rocks.deleteRocksFromDatabase();
+            await Sandstein()
+                .deleteRocksFromDatabase(rocks.parentSubArea.sektorid);
             setState(() {});
           },
         ),
@@ -46,7 +48,8 @@ class _RocksMaterialState extends State<RocksMaterial> with FuturesHelper {
           icon: Icon(Icons.update),
           onPressed: () async {
             // update items in the database from webseite and refresh list
-            await rocks.updateData();
+            await Sandstein()
+                .updateRocksIncludingSubitems(rocks.parentSubArea.sektorid);
 
             setState(() {});
           },
@@ -77,19 +80,6 @@ class _RocksMaterialState extends State<RocksMaterial> with FuturesHelper {
     }
 
     return futureBuilderLoadingMessage(snapshot);
-  }
-
-  FutureOr<int> deleteItems() {
-    return rocks.deleteRocksFromDatabase();
-  }
-
-  FutureOr<void> fetchFromWeb() async {
-    await rocks.updateData();
-    // TODO: update data
-    /*
-    await Routes(Rock.dummyRock(rocks.parent.id)).updateData();
-    await Comments(Rock.dummyRock(rocks.parent.id)).updateData();
-    */
   }
 
   Widget buildList() {

@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRocks.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Rock {
+class Rock with Comments {
   int gipfelId;
   String gipfelNr;
   String gipfelName;
@@ -61,7 +61,7 @@ class Rock {
   */
 }
 
-class Rocks with Sandstein {
+class Rocks {
   SqlHandler sqlHelper = SqlHandler();
 
   /// store parent area
@@ -95,23 +95,5 @@ class Rocks with Sandstein {
           )
           .toList(),
     );
-  }
-
-  Future<int> deleteRocksFromDatabase() {
-    // delete Routes as well with a dummy Rock Items
-    return sqlHelper.deleteRocksIncludingSubitems(parentSubArea.sektorid);
-  }
-
-  /// update data from Sandsteinklettern
-  ///
-  /// fetch the data, then delete records, finally insert new data
-  Future<int> updateData() async {
-    var jsonData = fetchJsonFromWeb(
-      Sandstein.rocksWebTarget,
-      Sandstein.rocksWebQuery,
-      parentSubArea.sektorid.toString(),
-    );
-    await deleteRocksFromDatabase();
-    return sqlHelper.insertJsonData(SqlHandler.rocksTablename, jsonData);
   }
 }

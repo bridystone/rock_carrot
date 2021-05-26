@@ -1,18 +1,42 @@
 import 'dart:async';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlCountries.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 /// the basic country item -> direct relation to land in database
+enum AreaCountStatus {
+  empty,
+  update_in_progress,
+}
+
 class Country {
   // fields from the database
   String land;
   String iso3166;
   String kfz;
-  int areaCount;
+  int _areaCount;
+
+  String get areaCount {
+    // state -1 == update in progress
+    if (_areaCount == -1) {
+      return 'updating';
+    }
+    if (_areaCount == 0) {
+      return 'N/A';
+    }
+    return _areaCount.toString();
+  }
+
+  void updateAreaCount(int newValue) {
+    _areaCount = newValue;
+  }
+
+  void setAreaCountStatus(AreaCountStatus status) {
+    if (status == AreaCountStatus.empty) _areaCount = 0;
+    if (status == AreaCountStatus.update_in_progress) _areaCount = -1;
+  }
 
   /// super = Parent = Baseitem (id, name, childCount) => UI=> "name (count)"
-  Country(this.land, this.iso3166, this.kfz, this.areaCount);
+  Country(this.land, this.iso3166, this.kfz, this._areaCount);
 
   /// create new countryelement from sqlResult
   // TODO: use sqlHandler Table information to get this in
@@ -26,25 +50,18 @@ class Country {
   }
 }
 
-class Countries with Sandstein {
+class Countries {
   SqlHandler sqlHelper = SqlHandler();
 
-  /// initialize list of countries empty
-  List<Country> _countries = [];
+  // current sorting
+  int currentSort(Country c1, Country c2) => sortByChildsDesc(c1, c2);
 
-  set countries(List<Country> newCountries) {
-    _countries = newCountries;
-    // TODO: perfomring reorder etc...
-    // or rather in getter?
+  int sortByName(Country country_a, Country country_b) {
+    return country_a.land.compareTo(country_b.land);
   }
 
-  /// retrieve current countries - if empty, get SQL data
-  List<Country> get countries {
-    if (_countries.isEmpty) {
-      getCountries().then((sqlCountries) => _countries = sqlCountries);
-    }
-    //_countries.sort();
-    return _countries;
+  int sortByChildsDesc(Country country_a, Country country_b) {
+    return country_b._areaCount.compareTo(country_a._areaCount);
   }
 
   /// get Items from database and transform them into a list of items
@@ -57,19 +74,5 @@ class Countries with Sandstein {
           )
           .toList(),
     );
-  }
-
-  /// delete all data from Countries-Table
-  Future<int> deleteCountriesFromDatabase() {
-    return sqlHelper.deleteCountries();
-  }
-
-  /// update data from Sandsteinklettern
-  ///
-  /// fetch the data, then delete records, finally insert new data
-  Future<int> updateData() async {
-    var jsonData = fetchJsonFromWeb(Sandstein.countriesWebTarget);
-    await deleteCountriesFromDatabase();
-    return sqlHelper.insertJsonData(SqlHandler.countriesTablename, jsonData);
   }
 }

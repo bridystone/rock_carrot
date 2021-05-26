@@ -1,5 +1,5 @@
 import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
+import 'package:yacguide_flutter/Database/sqlComments.dart';
 
 class Comment {
   int kommentId;
@@ -56,35 +56,43 @@ class Comment {
   }
 }
 
-class Comments with Sandstein {
-  SqlHandler sqlHelper = SqlHandler();
-
-  /// update data from Sandsteinklettern
-  ///
-  /// fetch the data, then delete records, finally insert new data
-  ///
-  // TODO: fix comments
-/*
-  Future<int> updateSubarea() async {
-    // decision, if comments are called for Subareas (gebietid )
-    // or Rocks (sektorid)
-    final String queryKey;
-    if (parent is Rock) {
-      queryKey = Sandstein.commentsWebQueryRocks;
-    } else {
-      queryKey = Sandstein.commentsWebQuerySubareas;
-    }
-    // fetch from db-sandsteinklettern
-    var jsonData = fetchJsonFromWeb(
-      Sandstein.commentsWebTarget,
-      queryKey,
-      parent.id.toString(),
+class Comments {
+  /// get all Subarea comments from database and transfer them to object list
+  Future<List<Comment>> getSubareaComments(int subareaId) async {
+    final sqlResults = SqlHandler().querySubareaComments(subareaId);
+    // maps sqlResults to Rock and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Comment.fromSql(sqlRow),
+          )
+          .toList(),
     );
-
-    // should have been deleted by relevant Parent
-    // await deleteItems();
-
-    return sqlHelper.insertJsonData(SqlHandler.commentsTablename, jsonData);
   }
-  */
+
+  /// get all Rock comments from database and transfer them to object list
+  Future<List<Comment>> getRockComments(int rockId) async {
+    final sqlResults = SqlHandler().queryRockComments(rockId);
+    // maps sqlResults to Rock and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Comment.fromSql(sqlRow),
+          )
+          .toList(),
+    );
+  }
+
+  /// get all Route comments from database and transfer them to object list
+  Future<List<Comment>> getRouteComments(int routeId) async {
+    final sqlResults = SqlHandler().queryRouteComments(routeId);
+    // maps sqlResults to Rock and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Comment.fromSql(sqlRow),
+          )
+          .toList(),
+    );
+  }
 }

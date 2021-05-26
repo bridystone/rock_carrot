@@ -4,10 +4,8 @@ import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRoutes.dart';
-import 'package:yacguide_flutter/Database/sqlComments.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
 
-class Route {
+class Route with Comments {
   int wegId;
   int gipfelId;
   String schwierigkeit;
@@ -62,7 +60,7 @@ class Route {
   }
 }
 
-class Routes with Sandstein {
+class Routes {
   SqlHandler sqlHelper = SqlHandler();
 
   final Rock parentRock;
@@ -96,33 +94,5 @@ class Routes with Sandstein {
           )
           .toList(),
     );
-  }
-
-  /// get Comment data from SQLite
-  Future<List<Comment>> getRouteComments(Route route) {
-    final sqlResults = sqlHelper.queryRouteComments(route.wegId);
-    // maps sqlResults to Comment and return
-    return sqlResults.then(
-      (sqlResultsFinal) => sqlResultsFinal
-          .map(
-            (sqlRow) => Comment.fromSql(sqlRow),
-          )
-          .toList(),
-    );
-  }
-
-  /// update data from Sandsteinklettern
-  ///
-  /// fetch the data, then delete records, finally insert new data
-  Future<int> updateData() async {
-    var jsonData = fetchJsonFromWeb(
-      Sandstein.routesWebTarget,
-      Sandstein.routesWebQuery,
-      parentSubarea.gebietid.toString(),
-    );
-    // should have been deleted by relevant Parent
-    // await deleteItems();
-
-    return sqlHelper.insertJsonData(SqlHandler.routesTablename, jsonData);
   }
 }

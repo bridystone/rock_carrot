@@ -4,6 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class Sandstein {
+  static final _singleton = Sandstein._();
+  Sandstein._();
+
+  factory Sandstein() {
+    return _singleton;
+  }
+
   /// static constanst for all webQueries
   // countries
   static const countriesWebTarget = 'land';

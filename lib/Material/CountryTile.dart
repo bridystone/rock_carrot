@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
+import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
 class CountryTile extends StatefulWidget {
   final Country _country;
@@ -19,10 +20,58 @@ class _CountryTileState extends State<CountryTile> {
 
   @override
   Widget build(BuildContext context) {
-    return _customCountryTileSlide(context, _country);
+    return _customCountryTileSlide(context);
   }
 
-  Widget _customCountryTileSlide(BuildContext context, Country country) {
+/*
+  Widget _customCountryTileDismissible(BuildContext context) {
+    return Dismissible(
+      key: Key(_country.land),
+      confirmDismiss: (DismissDirection dir) => Future.value(true),
+      onDismissed: (DismissDirection dir) async {
+        print('dismissed');
+        if (dir == DismissDirection.endToStart) {
+          setState(() {
+            _country.setAreaCountStatus(AreaCountStatus.update_in_progress);
+          });
+          final records = await Sandstein().updateAreas(_country.land);
+
+          setState(() {
+            _country.updateAreaCount(records);
+          });
+        } else {
+          await Sandstein().deleteAreasFromDatabase(_country.land);
+
+          setState(() {
+            _country.setAreaCountStatus(AreaCountStatus.empty);
+          });
+        }
+      },
+      background: buildSwipeActionLeft(),
+      secondaryBackground: buildSwipeActionRight(),
+      child: _customCountryTileTap(context),
+    );
+  }
+
+  Widget buildSwipeActionLeft() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      color: Colors.green,
+      child: Icon(Icons.update, color: Colors.white, size: 32),
+    );
+  }
+
+  Widget buildSwipeActionRight() {
+    return Container(
+      alignment: Alignment.centerRight,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      color: Colors.red,
+      child: Icon(Icons.delete_forever, color: Colors.white, size: 32),
+    );
+  }
+*/
+  Widget _customCountryTileSlide(BuildContext context) {
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       secondaryActions: [
@@ -31,10 +80,14 @@ class _CountryTileState extends State<CountryTile> {
           color: Colors.green,
           icon: Icons.update,
           onTap: () async {
-            final records = await Areas(country).updateData();
+            setState(() {
+              _country.setAreaCountStatus(AreaCountStatus.update_in_progress);
+            });
+
+            final records = await Sandstein().updateAreas(_country.land);
 
             setState(() {
-              country.areaCount = records;
+              _country.updateAreaCount(records);
             });
           },
         )
@@ -45,26 +98,26 @@ class _CountryTileState extends State<CountryTile> {
           color: Colors.red,
           icon: Icons.delete,
           onTap: () async {
-            await Areas(country).deleteAreasFromDatabase();
+            await Sandstein().deleteAreasFromDatabase(_country.land);
 
             setState(() {
-              country.areaCount = 0;
+              _country.setAreaCountStatus(AreaCountStatus.empty);
             });
           },
         )
       ],
-      child: _customCountryTileTap(context, country),
+      child: _customCountryTileTap(context),
     );
   }
 
   /// makeing the custom tile tapable
-  Widget _customCountryTileTap(BuildContext context, Country country) {
+  Widget _customCountryTileTap(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(
           context,
-          '/' + country.runtimeType.toString(),
-          arguments: country, // parent item
+          '/' + _country.runtimeType.toString(),
+          arguments: _country, // parent item
         ).then((value) {
           // refresh current page after back button is pushed to ensure new data is taken care of
           // TODO: NOTIFY parent, if data was updated
@@ -72,12 +125,12 @@ class _CountryTileState extends State<CountryTile> {
           //setState(() {});
         });
       },
-      child: _customCountryTileContent(context, country),
+      child: _customCountryTileContent(context),
     );
   }
 
   /// the actual Content of the Tile
-  Widget _customCountryTileContent(BuildContext context, Country country) {
+  Widget _customCountryTileContent(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
       child: Row(
@@ -87,11 +140,11 @@ class _CountryTileState extends State<CountryTile> {
         children: [
           Container(
             padding: EdgeInsets.only(top: 1.0, bottom: 1.0),
-            child: Text(country.land),
+            child: Text(_country.land),
           ),
           Container(
             alignment: Alignment.centerRight,
-            child: Text(country.areaCount.toString()),
+            child: Text(_country.areaCount.toString()),
           )
         ],
       ),

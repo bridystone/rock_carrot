@@ -143,7 +143,7 @@ class _RoutesMaterialState extends State<RoutesMaterial> with FuturesHelper {
                       ),
                       builder: (BuildContext context) {
                         return FutureBuilder<List<Comment>>(
-                          //future: routes.getComments(route),
+                          //future: routes.getRouteComments(route.wegId),
                           builder: routeInformationBuilder,
                         );
                       });

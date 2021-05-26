@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
+import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
 class AreasMaterial extends StatefulWidget {
   final Country parentItem;
@@ -39,7 +39,7 @@ class _AreasMaterialState extends State<AreasMaterial> with FuturesHelper {
           icon: Icon(Icons.delete),
           onPressed: () async {
             // delete all items in the database and refresh
-            await areas.deleteAreasFromDatabase();
+            await Sandstein().deleteAreasFromDatabase(areas.parentCountry.land);
             setState(() {});
           },
         ),
@@ -47,7 +47,7 @@ class _AreasMaterialState extends State<AreasMaterial> with FuturesHelper {
           icon: Icon(Icons.update),
           onPressed: () async {
             // update items in the database from webseite and refresh list
-            await areas.updateData();
+            await Sandstein().updateAreas(areas.parentCountry.land);
 
             setState(() {});
           },
@@ -75,14 +75,6 @@ class _AreasMaterialState extends State<AreasMaterial> with FuturesHelper {
     }
 
     return futureBuilderLoadingMessage(snapshot);
-  }
-
-  FutureOr<int> deleteItems() {
-    return areas.deleteAreasFromDatabase();
-  }
-
-  FutureOr<void> fetchFromWeb() {
-    return areas.updateData();
   }
 
   Widget buildList() {

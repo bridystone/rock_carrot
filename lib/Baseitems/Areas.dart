@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlAreas.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Area {
   int gebietid;
@@ -35,7 +34,7 @@ class Area {
   }
 }
 
-class Areas with Sandstein {
+class Areas {
   SqlHandler sqlHelper = SqlHandler();
 
   /// store parent country
@@ -69,22 +68,5 @@ class Areas with Sandstein {
           )
           .toList(),
     );
-  }
-
-  FutureOr<int> deleteAreasFromDatabase() {
-    return sqlHelper.deleteAreas(parentCountry.land);
-  }
-
-  /// update data from Sandsteinklettern
-  ///
-  /// fetch the data, then delete records, finally insert new data
-  Future<int> updateData() async {
-    var jsonData = fetchJsonFromWeb(
-      Sandstein.areasWebTarget,
-      Sandstein.areasWebQuery,
-      parentCountry.land,
-    );
-    await deleteAreasFromDatabase();
-    return sqlHelper.insertJsonData(SqlHandler.areasTablename, jsonData);
   }
 }

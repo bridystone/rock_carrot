@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlSubareas.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
 
 class Subarea {
   int sektorid;
@@ -46,7 +45,7 @@ class Subarea {
   */
 }
 
-class Subareas with Sandstein {
+class Subareas {
   SqlHandler sqlHelper = SqlHandler();
 
   /// store parent area
@@ -80,23 +79,5 @@ class Subareas with Sandstein {
           )
           .toList(),
     );
-  }
-
-  /// delete all subareas including their comemnts
-  FutureOr<int> deleteSubareasFromDatabase() {
-    return sqlHelper.deleteSubareasIncludingComments(parentArea.gebietid);
-  }
-
-  /// update data from Sandsteinklettern
-  ///
-  /// fetch the data, then delete records, finally insert new data
-  Future<int> updateData() async {
-    var jsonData = fetchJsonFromWeb(
-      Sandstein.subareasWebTarget,
-      Sandstein.subareasWebQuery,
-      parentArea.gebietid.toString(),
-    );
-    await deleteSubareasFromDatabase();
-    return sqlHelper.insertJsonData(SqlHandler.subareasTablename, jsonData);
   }
 }

@@ -2,45 +2,36 @@ import 'dart:async';
 import 'package:yacguide_flutter/Database/sql.dart';
 
 extension SqlHandlerComments on SqlHandler {
+  /// fetch Route Comments from Database
   Future<List<Map<String, Object?>>> queryRouteComments(
     int wegid,
   ) {
     return database.then((db) => db.query(
           SqlHandler.commentsTablename,
-          columns: SqlHandler
-              .databaseTableColumns[SqlHandler.commentsTablename]!.keys
-              .toList(),
           where: 'wegid = ?',
           whereArgs: [wegid],
         ));
   }
 
-  Future<List<Map<String, Object?>>> queryComment(
-    int sektorid,
-    int gipfelid,
-    int wegid,
+  /// fetch Rock Comments from Database
+  Future<List<Map<String, Object?>>> queryRockComments(
+    int rockId,
   ) {
     return database.then((db) => db.query(
           SqlHandler.commentsTablename,
-          columns: [
-            'komment_ID',
-            'userid',
-            'datum',
-            'adatum',
-            'wegid',
-            'sektorid',
-            'gebietid',
-            'qual',
-            'sicher',
-            'nass',
-            'kommentar',
-            'gipfelid',
-            'schwer',
-            'geklettert',
-            'begehung'
-          ],
-          where: 'sektorid = ? OR gipfelid = ? OR wegid = ?',
-          whereArgs: [sektorid, gipfelid, wegid],
+          where: 'gipfelid = ?',
+          whereArgs: [rockId],
+        ));
+  }
+
+  /// fetch Subarea Comments from Database
+  Future<List<Map<String, Object?>>> querySubareaComments(
+    int subareaId,
+  ) {
+    return database.then((db) => db.query(
+          SqlHandler.commentsTablename,
+          where: 'sektorid = ?',
+          whereArgs: [subareaId],
         ));
   }
 }

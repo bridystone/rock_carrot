@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Web/Sandstein.dart';
+import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
 class SubAreasMaterial extends StatefulWidget {
   final Area parentItem;
@@ -39,7 +40,8 @@ class _SubAreasMaterialState extends State<SubAreasMaterial>
           icon: Icon(Icons.delete),
           onPressed: () async {
             // delete all items in the database and refresh
-            await subareas.deleteSubareasFromDatabase();
+            await Sandstein()
+                .deleteSubareasFromDatabase(subareas.parentArea.gebietid);
             setState(() {});
           },
         ),
@@ -47,7 +49,8 @@ class _SubAreasMaterialState extends State<SubAreasMaterial>
           icon: Icon(Icons.update),
           onPressed: () async {
             // update items in the database from webseite and refresh list
-            await subareas.updateData();
+            await Sandstein()
+                .updateSubareasInclComments(subareas.parentArea.gebietid);
 
             setState(() {});
           },
@@ -75,23 +78,6 @@ class _SubAreasMaterialState extends State<SubAreasMaterial>
     }
 
     return futureBuilderLoadingMessage(snapshot);
-  }
-
-  /// delete subareas & its comments
-  FutureOr<int> deleteItems() {
-    return subareas.deleteSubareasFromDatabase();
-  }
-
-  /// receive subareas & comments from db sandsteinklettern
-  ///
-  /// tables will be cleared & rewritten
-
-  FutureOr<void> fetchFromWeb() async {
-    await subareas.updateData();
-    // TODO: update Comments!!
-    /*
-    await Comments(Subarea.dummySubarea(subareas.parent.id)).updateData();
-    */
   }
 
   Widget buildList() {
