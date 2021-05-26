@@ -1,45 +1,29 @@
 import 'dart:async';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlCountries.dart';
 
-/// the basic country item -> direct relation to land in database
-enum AreaCountStatus {
-  empty,
-  update_in_progress,
-}
-
-class Country {
+class Country extends BaseItem {
   // fields from the database
-  String land;
-  String iso3166;
-  String kfz;
-  int _areaCount;
+  String _land;
+  // ignore: unused_field
+  String _iso3166;
+  // ignore: unused_field
+  String _kfz;
 
-  String get areaCount {
-    // state -1 == update in progress
-    if (_areaCount == -1) {
-      return 'updating';
-    }
-    if (_areaCount == 0) {
-      return 'N/A';
-    }
-    return _areaCount.toString();
+  /// Default Constructor
+  Country(this._land, this._iso3166, this._kfz, int childCountInt)
+      : super(childCountInt: childCountInt);
+
+  // Standard Value
+  @override
+  String get name {
+    return _land;
   }
-
-  void updateAreaCount(int newValue) {
-    _areaCount = newValue;
-  }
-
-  void setAreaCountStatus(AreaCountStatus status) {
-    if (status == AreaCountStatus.empty) _areaCount = 0;
-    if (status == AreaCountStatus.update_in_progress) _areaCount = -1;
-  }
-
-  /// super = Parent = Baseitem (id, name, childCount) => UI=> "name (count)"
-  Country(this.land, this.iso3166, this.kfz, this._areaCount);
 
   /// create new countryelement from sqlResult
   // TODO: use sqlHandler Table information to get this in
+  // use number of rows + INT VS TEXT?
   factory Country.fromSql(Map<String, Object?> sqlResult) {
     return Country(
       sqlResult.values.elementAt(0).toString(), //land
@@ -51,22 +35,20 @@ class Country {
 }
 
 class Countries {
-  SqlHandler sqlHelper = SqlHandler();
-
-  // current sorting
-  int currentSort(Country c1, Country c2) => sortByChildsDesc(c1, c2);
-
+  /// sorting method Name ASC
   int sortByName(Country country_a, Country country_b) {
-    return country_a.land.compareTo(country_b.land);
+    return country_a.name.compareTo(country_b.name);
   }
 
+  /// sorting method Count DESC
   int sortByChildsDesc(Country country_a, Country country_b) {
-    return country_b._areaCount.compareTo(country_a._areaCount);
+    // explicitely use private integer!
+    return country_b.childCountInt.compareTo(country_a.childCountInt);
   }
 
   /// get Items from database and transform them into a list of items
   Future<List<Country>> getCountries() {
-    final sqlResults = sqlHelper.queryCountries();
+    final sqlResults = SqlHandler().queryCountries();
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
           .map(

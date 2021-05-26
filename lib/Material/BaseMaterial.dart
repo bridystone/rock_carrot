@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
     extends State<T> {
+  // abstract function to get futures to concrete data
   Widget buildItemList(AsyncSnapshot snapshot);
 
   /// futureBuilder for receiving SQL Data
@@ -17,6 +18,7 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
     return futureBuilderLoadingMessage(snapshot);
   }
 
+  /// Loading message for Futures
   Widget futureBuilderLoadingMessage(AsyncSnapshot snapshot) {
     final message = 'Loading data... ${snapshot.connectionState.toString()}';
     return Column(
@@ -34,6 +36,7 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
     );
   }
 
+  /// Error Message for futures
   Widget futureBuilderErrorMessage(AsyncSnapshot snapshot) {
     print('ERROR' + snapshot.error.toString());
     return Column(children: [

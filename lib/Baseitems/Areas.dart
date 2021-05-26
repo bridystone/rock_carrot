@@ -1,26 +1,63 @@
 import 'dart:async';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlAreas.dart';
 
 class Area {
-  int gebietid;
-  String gebiet;
-  String land;
-  String sprache2;
-  String gdefaultanzeige;
-  String schwskala;
-  int subareaCount;
+  int _gebietid;
+  String _gebiet;
+  // ignore: unused_field
+  String _land;
+  // ignore: unused_field
+  String _sprache2;
+  // ignore: unused_field
+  String _gdefaultanzeige;
+  // ignore: unused_field
+  String _schwskala;
+  int _childCount;
   Area(
-    this.gebietid,
-    this.gebiet,
-    this.land,
-    this.sprache2,
-    this.gdefaultanzeige,
-    this.schwskala,
-    this.subareaCount,
+    this._gebietid,
+    this._gebiet,
+    this._land,
+    this._sprache2,
+    this._gdefaultanzeige,
+    this._schwskala,
+    this._childCount,
   );
 
+  // Standard Value
+  String get name {
+    return _gebiet;
+  }
+
+  int get areaId {
+    return _gebietid;
+  }
+
+  // TODO: MOVE TO BASECLASS?
+  // Child element Getter + Update functions
+  String get childCount {
+    // state -1 == update in progress
+    if (_childCount == -1) {
+      return 'updating';
+    }
+    if (_childCount == 0) {
+      return 'N/A';
+    }
+    return _childCount.toString();
+  }
+
+  void updateChildCount(int newValue) {
+    _childCount = newValue;
+  }
+
+  void setChildCountStatus(ChildCountStatus status) {
+    if (status == ChildCountStatus.empty) _childCount = 0;
+    if (status == ChildCountStatus.update_in_progress) _childCount = -1;
+  }
+
+  // SQL data to Object
   factory Area.fromSql(Map<String, Object?> sqlResult) {
     return Area(
       int.parse(sqlResult.values.elementAt(0).toString()),
@@ -35,31 +72,23 @@ class Area {
 }
 
 class Areas {
-  SqlHandler sqlHelper = SqlHandler();
-
   /// store parent country
   Country parentCountry;
   Areas(this.parentCountry);
 
-  /// initialize list of areas empty
-  List<Area> _areas = [];
-
-  set areas(List<Area> newAreas) {
-    _areas = newAreas;
-    // TODO: perfomring reorder etc...
-    // or rather in getter?
+  /// sorting method Name ASC
+  int sortByName(Area area_a, Area area_b) {
+    return area_a.name.compareTo(area_b.name);
   }
 
-  /// retrieve current areas - if empty, get SQL data
-  List<Area> get areas {
-    if (_areas.isEmpty) {
-      getAreas().then((sqlAreas) => _areas = sqlAreas);
-    }
-    return _areas;
+  /// sorting method Count DESC
+  int sortByChildsDesc(Area area_a, Area area_b) {
+    // explicitely use private integer!
+    return area_b._childCount.compareTo(area_a._childCount);
   }
 
   Future<List<Area>> getAreas() async {
-    final sqlResults = sqlHelper.queryAreas(parentCountry.land);
+    final sqlResults = SqlHandler().queryAreas(parentCountry.name);
     // maps sqlResults to Area and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 import 'package:yacguide_flutter/Web/SandsteinSql.dart';
@@ -81,13 +82,13 @@ class _CountryTileState extends State<CountryTile> {
           icon: Icons.update,
           onTap: () async {
             setState(() {
-              _country.setAreaCountStatus(AreaCountStatus.update_in_progress);
+              _country.setChildCountStatus(ChildCountStatus.update_in_progress);
             });
 
-            final records = await Sandstein().updateAreas(_country.land);
+            final records = await Sandstein().updateAreas(_country.name);
 
             setState(() {
-              _country.updateAreaCount(records);
+              _country.updateChildCount(records);
             });
           },
         )
@@ -98,10 +99,10 @@ class _CountryTileState extends State<CountryTile> {
           color: Colors.red,
           icon: Icons.delete,
           onTap: () async {
-            await Sandstein().deleteAreasFromDatabase(_country.land);
+            await Sandstein().deleteAreasFromDatabase(_country.name);
 
             setState(() {
-              _country.setAreaCountStatus(AreaCountStatus.empty);
+              _country.setChildCountStatus(ChildCountStatus.empty);
             });
           },
         )
@@ -140,11 +141,11 @@ class _CountryTileState extends State<CountryTile> {
         children: [
           Container(
             padding: EdgeInsets.only(top: 1.0, bottom: 1.0),
-            child: Text(_country.land),
+            child: Text(_country.name),
           ),
           Container(
             alignment: Alignment.centerRight,
-            child: Text(_country.areaCount.toString()),
+            child: Text(_country.childCount),
           )
         ],
       ),

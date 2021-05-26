@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_search_bar/flutter_search_bar.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Material/BaseMaterial.dart';
 import 'package:yacguide_flutter/Material/CountryTile.dart';
@@ -14,26 +15,56 @@ class CountryMaterial extends StatefulWidget {
 
 class _CountryMaterialState
     extends BaseItemsMaterialStatefulState<CountryMaterial> {
-  Countries countries = Countries();
+  final Countries _countries = Countries();
   List<Country> _countries_list = [];
+
+  late SearchBar _searchBar;
+  String _searchBarValue = '';
+
+  _CountryMaterialState() {
+    _searchBar = SearchBar(
+      inBar: false,
+      hintText: 'enter Text',
+      setState: setState,
+      buildDefaultAppBar: (BuildContext context) => generateAppbar('Countries'),
+      onChanged: (String value) => setState(() {
+        _searchBarValue = value;
+      }),
+      onCleared: () => setState(() {
+        _searchBarValue = '';
+      }),
+      onClosed: () => setState(() {
+        _searchBarValue = '';
+      }),
+      closeOnSubmit: true,
+    );
+  }
 
   bool sortAlpha = true;
   List<Country> get countries_list {
     if (sortAlpha) {
-      _countries_list.sort(countries.sortByName);
+      _countries_list.sort(_countries.sortByName);
     } else {
-      _countries_list.sort(countries.sortByChildsDesc);
+      _countries_list.sort(_countries.sortByChildsDesc);
     }
-    return _countries_list;
+    // checking the search
+    if (_searchBarValue.isEmpty) {
+      return _countries_list;
+    } else {
+      return _countries_list
+          .where((element) => element.name
+              .toLowerCase()
+              .contains(_searchBarValue.toLowerCase()))
+          .toList();
+    }
   }
-
-  _CountryMaterialState();
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: generateAppbar(context, 'Countries', true, true),
+        appBar: _searchBar.build(context),
+        // generateAppbar('Countries'),
         body: RefreshIndicator(
           onRefresh: () async {
             await Sandstein().updateCountries();
@@ -42,19 +73,18 @@ class _CountryMaterialState
           },
           child: FutureBuilder<List<Country>>(
             builder: futureBuildItemList,
-            future: countries.getCountries(),
+            future: _countries.getCountries(),
           ),
         ));
   }
 
   /// generate appbar
-  AppBar generateAppbar(BuildContext context, String title, bool buttonDelete,
-      bool buttonUpdate) {
+  AppBar generateAppbar(String title) {
     return AppBar(
       title: Text(title),
       actions: [
         IconButton(
-          icon: Icon(Icons.delete),
+          icon: Icon(Icons.delete_forever),
           onPressed: () async {
             // delete all items in the database and refresh
             await Sandstein().deleteCountriesFromDatabase();
@@ -67,7 +97,8 @@ class _CountryMaterialState
             sortAlpha = !sortAlpha;
             setState(() {});
           },
-        )
+        ),
+        _searchBar.getSearchAction(context),
         /*
         IconButton(
           icon: Icon(Icons.update),

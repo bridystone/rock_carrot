@@ -70,7 +70,7 @@ class Subareas {
   }
 
   Future<List<Subarea>> getSubareas() async {
-    final sqlResults = sqlHelper.querySubareas(parentArea.gebietid);
+    final sqlResults = sqlHelper.querySubareas(parentArea.areaId);
     // maps sqlResults to Subareas and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal

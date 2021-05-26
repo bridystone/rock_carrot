@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
-import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Material/AreaTile.dart';
+import 'package:yacguide_flutter/Material/BaseMaterial.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
@@ -16,22 +17,43 @@ class AreasMaterial extends StatefulWidget {
   }
 }
 
-class _AreasMaterialState extends State<AreasMaterial> with FuturesHelper {
-  Areas areas;
+class _AreasMaterialState
+    extends BaseItemsMaterialStatefulState<AreasMaterial> {
+  final Areas _areas;
+  List<Area> _areas_list = [];
 
-  _AreasMaterialState(Country country) : areas = Areas(country);
+  _AreasMaterialState(Country country) : _areas = Areas(country);
+
+  bool sortAlpha = true;
+  List<Area> get areas_list {
+    if (sortAlpha) {
+      _areas_list.sort(_areas.sortByName);
+    } else {
+      _areas_list.sort(_areas.sortByChildsDesc);
+    }
+    return _areas_list;
+  }
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: generateAppbar(areas.parentCountry.land, true, true),
-      body: futureBuilderListItems(),
-    );
+        appBar: generateAppbar(_areas.parentCountry.name),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await Sandstein().updateAreas(_areas.parentCountry.name);
+            setState(() {});
+            return Future<void>.value();
+          },
+          child: FutureBuilder<List<Area>>(
+            builder: futureBuildItemList,
+            future: _areas.getAreas(),
+          ),
+        ));
   }
 
   /// generate appbar
-  AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
+  AppBar generateAppbar(String title) {
     return AppBar(
       title: Text(title),
       actions: [
@@ -39,67 +61,53 @@ class _AreasMaterialState extends State<AreasMaterial> with FuturesHelper {
           icon: Icon(Icons.delete),
           onPressed: () async {
             // delete all items in the database and refresh
-            await Sandstein().deleteAreasFromDatabase(areas.parentCountry.land);
+            await Sandstein()
+                .deleteAreasFromDatabase(_areas.parentCountry.name);
             setState(() {});
           },
         ),
         IconButton(
-          icon: Icon(Icons.update),
-          onPressed: () async {
-            // update items in the database from webseite and refresh list
-            await Sandstein().updateAreas(areas.parentCountry.land);
-
+          icon: Icon(Icons.sort_by_alpha),
+          onPressed: () {
+            sortAlpha = !sortAlpha;
             setState(() {});
           },
-        ),
+        )
       ],
     );
   }
 
-  FutureBuilder futureBuilderListItems() {
-    return FutureBuilder<List<Area>>(
-      builder: futureBuilderAreas,
-      future: areas.getAreas(),
-    );
-  }
+  @override
+  Widget buildItemList(AsyncSnapshot snapshot) {
+    // store snapshot data in local list
+    _areas_list = snapshot.data;
 
-  Widget futureBuilderAreas(BuildContext context, AsyncSnapshot snapshot) {
-    if (snapshot.hasError) {
-      return futureBuilderErrorMessage(snapshot);
+    // if list is empty - show message what to do...
+    if (_areas_list.isEmpty) {
+      return ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, i) {
+          return Center(child: Text('Scroll down to update'));
+        },
+      );
     }
 
-    if (snapshot.connectionState == ConnectionState.done) {
-      // push data into protected storage
-      areas.areas = snapshot.data;
-      return buildList();
-    }
-
-    return futureBuilderLoadingMessage(snapshot);
-  }
-
-  Widget buildList() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: areas.areas.length,
+      itemCount: areas_list.length,
       itemBuilder: (context, i) {
+        final area = areas_list[i];
         return Column(children: [
-          ListTile(
-            title: Text(areas.areas[i].gebiet),
-            trailing: Text('(' + areas.areas[i].subareaCount.toString() + ')'),
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/' + areas.areas[i].runtimeType.toString(),
-                arguments: areas.areas[i], // parent item
-              ).then((value) {
-                // refresh current page after back button is pushed to ensure new data is taken care of
-                setState(() {});
-              });
-            },
-          ),
+          // only first time generate a devider
+          (i == 0)
+              ? Divider(
+                  thickness: 1,
+                )
+              : Container(),
+          AreaTile(area),
           Divider(
-            thickness: 4,
-          )
+            thickness: 1,
+          ),
         ]);
       },
     );

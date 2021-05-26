@@ -26,7 +26,7 @@ class _SubAreasMaterialState extends State<SubAreasMaterial>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: generateAppbar(subareas.parentArea.gebiet, true, true),
+      appBar: generateAppbar(subareas.parentArea.name, true, true),
       body: futureBuilderListItems(),
     );
   }
@@ -41,7 +41,7 @@ class _SubAreasMaterialState extends State<SubAreasMaterial>
           onPressed: () async {
             // delete all items in the database and refresh
             await Sandstein()
-                .deleteSubareasFromDatabase(subareas.parentArea.gebietid);
+                .deleteSubareasFromDatabase(subareas.parentArea.areaId);
             setState(() {});
           },
         ),
@@ -50,7 +50,7 @@ class _SubAreasMaterialState extends State<SubAreasMaterial>
           onPressed: () async {
             // update items in the database from webseite and refresh list
             await Sandstein()
-                .updateSubareasInclComments(subareas.parentArea.gebietid);
+                .updateSubareasInclComments(subareas.parentArea.areaId);
 
             setState(() {});
           },
