@@ -6,5 +6,3 @@ This is not intended to replace YacGuide, but to have the offline functionality 
 
 This started as my first Mobile App. So it is rather basic and might miss architecture building blocks - but so far it works.
 
-known limitations: 
-- the database access causes some issues (locking), resulting in slow updates

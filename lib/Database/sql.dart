@@ -175,17 +175,18 @@ class SqlHandler {
     var rowCount = 0;
     await jsonData.then((finalJsonData) async {
       final db = await SqlHandler().database;
-//      await db.transaction<void>((txn) {
+      // starting a batch job
+      var batch = db.batch();
       finalJsonData.forEach((dynamic jsonRow) {
         // insert data into database
-        db.insert(
+        batch.insert(
           tablename,
           jsonRow,
         );
         rowCount++;
       });
-      //      return Future.value(rowCount);
-      //    });
+      // committing the batch
+      await batch.commit(noResult: true);
     });
     return rowCount;
   }
