@@ -1,5 +1,5 @@
-import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Database/sqlComments.dart';
+import 'package:rock_carrot/Database/sql.dart';
+import 'package:rock_carrot/Database/sqlComments.dart';
 
 class Comment {
   // ignore: unused_field

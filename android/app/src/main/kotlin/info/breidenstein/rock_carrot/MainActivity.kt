@@ -1,4 +1,4 @@
-package com.example.yacguide_flutter
+package info.breidenstein.rock_carrot
 
 import io.flutter.embedding.android.FlutterActivity
 

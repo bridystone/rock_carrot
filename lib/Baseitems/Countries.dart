@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Database/sqlCountries.dart';
+import 'package:rock_carrot/Baseitems/BaseItems.dart';
+import 'package:rock_carrot/Database/sql.dart';
+import 'package:rock_carrot/Database/sqlCountries.dart';
 
 class Country extends BaseItem {
   // fields from the database

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(yacguide_flutter LANGUAGES CXX)
+project(rock_carrot LANGUAGES CXX)
 
-set(BINARY_NAME "yacguide_flutter")
+set(BINARY_NAME "rock_carrot")
 
 cmake_policy(SET CMP0063 NEW)
 

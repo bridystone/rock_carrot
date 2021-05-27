@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
-class YacGuideFlutterCupertino extends StatelessWidget {
+class RockCarrotCupertino extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // create Material
     return CupertinoApp(
-      title: 'YacGuideFlutter',
+      title: 'Rock Carrot',
       home: CupertinoPageScaffold(
         child: Text(''),
       ),

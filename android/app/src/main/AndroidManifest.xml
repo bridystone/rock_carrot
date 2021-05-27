@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.yacguide_flutter">
+    package="info.breidenstein.rock_carrot">
    <application
-        android:label="yacguide_flutter"
+        android:label="Rock Carrot"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity

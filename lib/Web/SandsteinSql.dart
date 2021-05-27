@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:pedantic/pedantic.dart';
-import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Database/sqlCountries.dart';
-import 'package:yacguide_flutter/Database/sqlAreas.dart';
-import 'package:yacguide_flutter/Database/sqlSubareas.dart';
-import 'package:yacguide_flutter/Database/sqlRocks.dart';
-import 'package:yacguide_flutter/Web/Sandstein.dart';
+import 'package:rock_carrot/Database/sql.dart';
+import 'package:rock_carrot/Database/sqlCountries.dart';
+import 'package:rock_carrot/Database/sqlAreas.dart';
+import 'package:rock_carrot/Database/sqlSubareas.dart';
+import 'package:rock_carrot/Database/sqlRocks.dart';
+import 'package:rock_carrot/Web/Sandstein.dart';
 
 extension SandsteinSql on Sandstein {
   /// delete all data from Countries-Table

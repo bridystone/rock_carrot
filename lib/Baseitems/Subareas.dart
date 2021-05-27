@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/Areas.dart';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Database/sqlSubareas.dart';
+import 'package:rock_carrot/Baseitems/Areas.dart';
+import 'package:rock_carrot/Baseitems/BaseItems.dart';
+import 'package:rock_carrot/Database/sql.dart';
+import 'package:rock_carrot/Database/sqlSubareas.dart';
 
 class Subarea extends BaseItem {
   int _sektorid;

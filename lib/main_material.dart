@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:yacguide_flutter/Baseitems/Areas.dart';
-import 'package:yacguide_flutter/Baseitems/Countries.dart';
-import 'package:yacguide_flutter/Baseitems/Rocks.dart';
-import 'package:yacguide_flutter/Baseitems/Subareas.dart';
-import 'package:yacguide_flutter/Material/AreasMaterial.dart';
-import 'package:yacguide_flutter/Material/SubareasMaterial.dart';
-import 'package:yacguide_flutter/Material/CountriesMaterial.dart';
-import 'package:yacguide_flutter/Material/RocksMaterial.dart';
-import 'package:yacguide_flutter/Material/RoutesMaterial.dart';
+import 'package:rock_carrot/Baseitems/Areas.dart';
+import 'package:rock_carrot/Baseitems/Countries.dart';
+import 'package:rock_carrot/Baseitems/Rocks.dart';
+import 'package:rock_carrot/Baseitems/Subareas.dart';
+import 'package:rock_carrot/Material/AreasMaterial.dart';
+import 'package:rock_carrot/Material/SubareasMaterial.dart';
+import 'package:rock_carrot/Material/CountriesMaterial.dart';
+import 'package:rock_carrot/Material/RocksMaterial.dart';
+import 'package:rock_carrot/Material/RoutesMaterial.dart';
 
-class YacGuideFlutterMaterial extends StatelessWidget {
+class RockCarrotMaterial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // create Material
     return MaterialApp(
-      title: 'YacGuideFlutter',
+      title: 'Rock Carrot',
       home: CountryMaterial(),
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {

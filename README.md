@@ -1,16 +1,10 @@
-# yacguide_flutter
+# Rock Carrot
 
-A new Flutter project.
+This is a Flutter App inspired by the great [YacGuide App](https://github.com/YacGroup/yacguide) for Android.
 
-## Getting Started
+This is not intended to replace YacGuide, but to have the offline functionality of [DB Sandsteinklettern](http://db-sandsteinklettern.gipfelbuch.de/) for iOS.
 
-This project is a starting point for a Flutter application.
+This started as my first Mobile App. So it is rather basic and might miss architecture building blocks - but so far it works.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+known limitations: 
+- the database access causes some issues (locking), resulting in slow updates

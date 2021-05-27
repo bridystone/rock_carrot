@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Baseitems/Subareas.dart';
-import 'package:yacguide_flutter/Database/sql.dart';
-import 'package:yacguide_flutter/Database/sqlRocks.dart';
+import 'package:rock_carrot/Baseitems/BaseItems.dart';
+import 'package:rock_carrot/Baseitems/Subareas.dart';
+import 'package:rock_carrot/Database/sql.dart';
+import 'package:rock_carrot/Database/sqlRocks.dart';
 
 class Rock extends BaseItem {
   int _gipfelId;

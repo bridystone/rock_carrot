@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Database/sql.dart';
+import 'package:rock_carrot/Database/sql.dart';
 
 extension SqlHandlerCountries on SqlHandler {
   /// deletes all countries from the database
