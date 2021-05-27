@@ -4,7 +4,7 @@ import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlAreas.dart';
 
-class Area {
+class Area extends BaseItem {
   int _gebietid;
   String _gebiet;
   // ignore: unused_field
@@ -15,7 +15,6 @@ class Area {
   String _gdefaultanzeige;
   // ignore: unused_field
   String _schwskala;
-  int _childCount;
   Area(
     this._gebietid,
     this._gebiet,
@@ -23,38 +22,17 @@ class Area {
     this._sprache2,
     this._gdefaultanzeige,
     this._schwskala,
-    this._childCount,
-  );
+    int childCountInt,
+  ) : super(childCountInt: childCountInt);
 
   // Standard Value
+  @override
   String get name {
     return _gebiet;
   }
 
   int get areaId {
     return _gebietid;
-  }
-
-  // TODO: MOVE TO BASECLASS?
-  // Child element Getter + Update functions
-  String get childCount {
-    // state -1 == update in progress
-    if (_childCount == -1) {
-      return 'updating';
-    }
-    if (_childCount == 0) {
-      return 'N/A';
-    }
-    return _childCount.toString();
-  }
-
-  void updateChildCount(int newValue) {
-    _childCount = newValue;
-  }
-
-  void setChildCountStatus(ChildCountStatus status) {
-    if (status == ChildCountStatus.empty) _childCount = 0;
-    if (status == ChildCountStatus.update_in_progress) _childCount = -1;
   }
 
   // SQL data to Object
@@ -75,17 +53,6 @@ class Areas {
   /// store parent country
   Country parentCountry;
   Areas(this.parentCountry);
-
-  /// sorting method Name ASC
-  int sortByName(Area area_a, Area area_b) {
-    return area_a.name.compareTo(area_b.name);
-  }
-
-  /// sorting method Count DESC
-  int sortByChildsDesc(Area area_a, Area area_b) {
-    // explicitely use private integer!
-    return area_b._childCount.compareTo(area_a._childCount);
-  }
 
   Future<List<Area>> getAreas() async {
     final sqlResults = SqlHandler().queryAreas(parentCountry.name);

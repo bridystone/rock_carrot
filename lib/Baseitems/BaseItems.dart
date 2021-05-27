@@ -40,3 +40,16 @@ class BaseItem {
     if (status == ChildCountStatus.update_in_progress) childCountInt = -1;
   }
 }
+
+class BaseItems {
+  /// sorting method Name ASC
+  int sortByName(BaseItem item_a, BaseItem item_b) {
+    return item_a.name!.compareTo(item_b.name!);
+  }
+
+  /// sorting method Count DESC
+  int sortByChildsDesc(BaseItem item_a, BaseItem item_b) {
+    // explicitely use private integer!
+    return item_b.childCountInt.compareTo(item_a.childCountInt);
+  }
+}

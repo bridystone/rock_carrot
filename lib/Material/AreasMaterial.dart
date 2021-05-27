@@ -7,38 +7,30 @@ import 'package:yacguide_flutter/Web/Sandstein.dart';
 import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
 class AreasMaterial extends StatefulWidget {
-  final Country parentItem;
-  AreasMaterial(this.parentItem);
+  final Country _parentItem;
+  AreasMaterial(this._parentItem);
 
   // transfer country to state object
   @override
   _AreasMaterialState createState() {
-    return _AreasMaterialState(parentItem);
+    return _AreasMaterialState(_parentItem);
   }
 }
 
 class _AreasMaterialState
     extends BaseItemsMaterialStatefulState<AreasMaterial> {
+  /// All basic functionality is in this object (incl. parentItem)
   final Areas _areas;
-  List<Area> _areas_list = [];
 
   _AreasMaterialState(Country country) : _areas = Areas(country);
-
-  bool sortAlpha = true;
-  List<Area> get areas_list {
-    if (sortAlpha) {
-      _areas_list.sort(_areas.sortByName);
-    } else {
-      _areas_list.sort(_areas.sortByChildsDesc);
-    }
-    return _areas_list;
-  }
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
+    searchBar = initializeSearchBar(_areas.parentCountry.name);
     return Scaffold(
-        appBar: generateAppbar(_areas.parentCountry.name),
+        appBar: searchBar.build(context),
+        // enable Refresh data with pulldown
         body: RefreshIndicator(
           onRefresh: () async {
             await Sandstein().updateAreas(_areas.parentCountry.name);
@@ -52,38 +44,13 @@ class _AreasMaterialState
         ));
   }
 
-  /// generate appbar
-  AppBar generateAppbar(String title) {
-    return AppBar(
-      title: Text(title),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () async {
-            // delete all items in the database and refresh
-            await Sandstein()
-                .deleteAreasFromDatabase(_areas.parentCountry.name);
-            setState(() {});
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.sort_by_alpha),
-          onPressed: () {
-            sortAlpha = !sortAlpha;
-            setState(() {});
-          },
-        )
-      ],
-    );
-  }
-
   @override
   Widget buildItemList(AsyncSnapshot snapshot) {
     // store snapshot data in local list
-    _areas_list = snapshot.data;
+    baseitem_list = snapshot.data;
 
     // if list is empty - show message what to do...
-    if (_areas_list.isEmpty) {
+    if (baseitem_list.isEmpty) {
       return ListView.builder(
         itemCount: 1,
         itemBuilder: (context, i) {
@@ -94,9 +61,9 @@ class _AreasMaterialState
 
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: areas_list.length,
+      itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
-        final area = areas_list[i];
+        final area = baseitem_list[i] as Area;
         return Column(children: [
           // only first time generate a devider
           (i == 0)

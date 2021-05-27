@@ -12,8 +12,12 @@ class Country extends BaseItem {
   String _kfz;
 
   /// Default Constructor
-  Country(this._land, this._iso3166, this._kfz, int childCountInt)
-      : super(childCountInt: childCountInt);
+  Country(
+    this._land,
+    this._iso3166,
+    this._kfz,
+    int childCountInt,
+  ) : super(childCountInt: childCountInt);
 
   // Standard Value
   @override
@@ -35,17 +39,6 @@ class Country extends BaseItem {
 }
 
 class Countries {
-  /// sorting method Name ASC
-  int sortByName(Country country_a, Country country_b) {
-    return country_a.name.compareTo(country_b.name);
-  }
-
-  /// sorting method Count DESC
-  int sortByChildsDesc(Country country_a, Country country_b) {
-    // explicitely use private integer!
-    return country_b.childCountInt.compareTo(country_a.childCountInt);
-  }
-
   /// get Items from database and transform them into a list of items
   Future<List<Country>> getCountries() {
     final sqlResults = SqlHandler().queryCountries();
