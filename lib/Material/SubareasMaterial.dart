@@ -1,109 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
-import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Material/BaseItemTile.dart';
+import 'package:yacguide_flutter/Material/BaseMaterial.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
 class SubAreasMaterial extends StatefulWidget {
-  final Area parentItem;
-  SubAreasMaterial(this.parentItem);
+  final Area _parentItem;
+  SubAreasMaterial(this._parentItem);
 
   // transfer country to state object
   @override
   _SubAreasMaterialState createState() {
-    return _SubAreasMaterialState(parentItem);
+    return _SubAreasMaterialState(_parentItem);
   }
 }
 
-class _SubAreasMaterialState extends State<SubAreasMaterial>
-    with FuturesHelper {
-  Subareas subareas;
+class _SubAreasMaterialState
+    extends BaseItemsMaterialStatefulState<SubAreasMaterial> {
+  /// All basic functionality is in this object (incl. parentItem)
+  final Subareas _subareas;
 
-  _SubAreasMaterialState(Area area) : subareas = Subareas(area);
+  _SubAreasMaterialState(Area area) : _subareas = Subareas(area) {
+    searchBar = initializeSearchBar(_subareas.parentArea.name);
+  }
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: generateAppbar(subareas.parentArea.name, true, true),
-      body: futureBuilderListItems(),
-    );
-  }
-
-  /// generate appbar
-  AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
-    return AppBar(
-      title: Text(title),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () async {
-            // delete all items in the database and refresh
+        appBar: searchBar.build(context),
+        // enable Refresh data with pulldown
+        body: RefreshIndicator(
+          onRefresh: () async {
             await Sandstein()
-                .deleteSubareasFromDatabase(subareas.parentArea.areaId);
+                .updateSubareasInclComments(_subareas.parentArea.areaId);
             setState(() {});
+            return Future<void>.value();
           },
-        ),
-        IconButton(
-          icon: Icon(Icons.update),
-          onPressed: () async {
-            // update items in the database from webseite and refresh list
-            await Sandstein()
-                .updateSubareasInclComments(subareas.parentArea.areaId);
-
-            setState(() {});
-          },
-        ),
-      ],
-    );
+          child: FutureBuilder<List<Subarea>>(
+            builder: futureBuildItemList,
+            future: _subareas.getSubareas(),
+          ),
+        ));
   }
 
-  FutureBuilder futureBuilderListItems() {
-    return FutureBuilder<List<Subarea>>(
-      builder: futureBuilderSubareas,
-      future: subareas.getSubareas(),
-    );
-  }
+  @override
+  Widget buildItemList(AsyncSnapshot snapshot) {
+    // store snapshot data in local list
+    baseitem_list = snapshot.data;
 
-  Widget futureBuilderSubareas(BuildContext context, AsyncSnapshot snapshot) {
-    if (snapshot.hasError) {
-      return futureBuilderErrorMessage(snapshot);
+    // if list is empty - show message what to do...
+    if (baseitem_list.isEmpty) {
+      return ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, i) {
+          return Center(child: Text('Scroll down to update'));
+        },
+      );
     }
 
-    if (snapshot.connectionState == ConnectionState.done) {
-      // push data into protected storage
-      subareas.subareas = snapshot.data;
-      return buildList();
-    }
-
-    return futureBuilderLoadingMessage(snapshot);
-  }
-
-  Widget buildList() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: subareas.subareas.length,
+      itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
+        final subarea = baseitem_list[i] as Subarea;
         return Column(children: [
-          ListTile(
-            title: Text(subareas.subareas[i].sektornameD),
-            trailing:
-                Text('(' + subareas.subareas[i].rockCount.toString() + ')'),
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/' + subareas.subareas[i].runtimeType.toString(),
-                arguments: subareas.subareas[i], // parent item
-              ).then((value) {
-                // refresh current page after back button is pushed to ensure new data is taken care of
-                setState(() {});
-              });
-            },
+          // only first time generate a devider
+          (i == 0)
+              ? Divider(
+                  thickness: 1,
+                )
+              : Container(),
+          BaseItemTile(
+            subarea,
+            updateFunction: Sandstein().updateRocksIncludingSubitems,
+            deleteFunction: Sandstein().deleteRocksFromDatabase,
+            functionParameter: subarea.subareaId,
           ),
           Divider(
-            thickness: 4,
-          )
+            thickness: 1,
+          ),
         ]);
       },
     );

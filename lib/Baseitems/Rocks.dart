@@ -1,38 +1,60 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/Comments.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRocks.dart';
 
-class Rock with Comments {
-  int gipfelId;
-  String gipfelNr;
-  String gipfelName;
-  String gipfelNameCZ;
-  String gipfelStatus;
-  String gipfelTyp;
-  String vgrd;
-  String ngrd;
-  String posfehler;
-  String schartenhoehe;
-  String talhoehe;
-  int sektorid;
-  int routeCount;
+class Rock extends BaseItem {
+  int _gipfelId;
+  // ignore: unused_field
+  String _gipfelNr;
+  String _gipfelName;
+  String _gipfelNameCZ;
+  // ignore: unused_field
+  String _gipfelStatus;
+  // ignore: unused_field
+  String _gipfelTyp;
+  // ignore: unused_field
+  String _vgrd;
+  // ignore: unused_field
+  String _ngrd;
+  // ignore: unused_field
+  String _posfehler;
+  // ignore: unused_field
+  String _schartenhoehe;
+  // ignore: unused_field
+  String _talhoehe;
+  // ignore: unused_field
+  int _sektorid;
   Rock(
-    this.gipfelId,
-    this.gipfelNr,
-    this.gipfelName,
-    this.gipfelNameCZ,
-    this.gipfelStatus,
-    this.gipfelTyp,
-    this.vgrd,
-    this.ngrd,
-    this.posfehler,
-    this.schartenhoehe,
-    this.talhoehe,
-    this.sektorid,
-    this.routeCount,
-  );
+    this._gipfelId,
+    this._gipfelNr,
+    this._gipfelName,
+    this._gipfelNameCZ,
+    this._gipfelStatus,
+    this._gipfelTyp,
+    this._vgrd,
+    this._ngrd,
+    this._posfehler,
+    this._schartenhoehe,
+    this._talhoehe,
+    this._sektorid,
+    int childCountInt,
+    int commentCountInt,
+  ) : super(
+          nr: double.parse(_gipfelNr),
+          childCountInt: childCountInt,
+          commentCountInt: commentCountInt,
+        );
+
+  @override
+  String get name {
+    return (_gipfelName.isEmpty) ? _gipfelNameCZ : _gipfelName;
+  }
+
+  int get rockId {
+    return _gipfelId;
+  }
 
   factory Rock.fromSql(Map<String, Object?> sqlResult) {
     return Rock(
@@ -49,44 +71,18 @@ class Rock with Comments {
       sqlResult.values.elementAt(10).toString(),
       int.parse(sqlResult.values.elementAt(11).toString()),
       int.parse(sqlResult.values.elementAt(12).toString()),
+      0, //TODO: implement Comment Count
     );
   }
-/*
-  /// this is used this delete/insert Routes/Comments
-  /// since only sektorid is important and this is not a real parent
-  factory Rock.dummyRock(int sektorId) {
-    return Rock(0, '', '', BaseItems.dummyName, '', '', '', '', '', '', '',
-        sektorId, 0);
-  }
-  */
 }
 
 class Rocks {
-  SqlHandler sqlHelper = SqlHandler();
-
   /// store parent area
   Subarea parentSubArea;
   Rocks(this.parentSubArea);
 
-  /// initialize list of areas empty
-  List<Rock> _rocks = [];
-
-  set rocks(List<Rock> newRocks) {
-    _rocks = newRocks;
-    // TODO: perfomring reorder etc...
-    // or rather in getter?
-  }
-
-  /// retrieve current areas - if empty, get SQL data
-  List<Rock> get rocks {
-    if (_rocks.isEmpty) {
-      getRocks().then((sqlRocks) => _rocks = sqlRocks);
-    }
-    return _rocks;
-  }
-
   Future<List<Rock>> getRocks() async {
-    final sqlResults = sqlHelper.queryRocks(parentSubArea.sektorid);
+    final sqlResults = SqlHandler().queryRocks(parentSubArea.subareaId);
     // maps sqlResults to Rock and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal

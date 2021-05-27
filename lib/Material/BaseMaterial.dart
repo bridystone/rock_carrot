@@ -112,9 +112,8 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
       return _baseitem_list;
     } else {
       return _baseitem_list
-          .where((element) => element.name!
-              .toLowerCase()
-              .contains(searchBarValue.toLowerCase()))
+          .where((element) =>
+              element.name.toLowerCase().contains(searchBarValue.toLowerCase()))
           .toList();
     }
   }

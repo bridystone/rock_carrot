@@ -1,160 +1,60 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Route;
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Baseitems/Routes.dart';
-import 'package:yacguide_flutter/Baseitems/Subareas.dart';
-import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Material/BaseMaterial.dart';
+import 'package:yacguide_flutter/Material/RouteTile.dart';
 
 class RoutesMaterial extends StatefulWidget {
-  final Rock parentRock;
-  final Subarea parentSubarea;
+  final Rock parentItem;
 
   // List of all routes - to be accessible for later
-  RoutesMaterial(this.parentSubarea, this.parentRock);
+  RoutesMaterial(this.parentItem);
 
   // transfer country to state object
   @override
   _RoutesMaterialState createState() {
-    return _RoutesMaterialState(parentSubarea, parentRock);
+    return _RoutesMaterialState(parentItem);
   }
 }
 
-class _RoutesMaterialState extends State<RoutesMaterial> with FuturesHelper {
-  final Routes routes;
+class _RoutesMaterialState
+    extends BaseItemsMaterialStatefulState<RoutesMaterial> with BaseItems {
+  final Routes _routes;
 
-  _RoutesMaterialState(Subarea subarea, Rock rock)
-      : routes = Routes(subarea, rock);
+  _RoutesMaterialState(Rock rock) : _routes = Routes(rock) {
+    searchBar = initializeSearchBar(_routes.parentRock.name);
+    // default sorting ist by number
+    sortAlpha = false;
+  }
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: generateAppbar(routes.parentRock.gipfelName, true, true),
-      body: futureBuilderListItems(),
+      appBar: searchBar.build(context),
+      // enable Refresh data with pulldown
+      body: FutureBuilder<List<Route>>(
+        builder: futureBuildItemList,
+        future: _routes.getRoutes(),
+      ),
     );
   }
 
-  /// generate appbar
-  AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
-    return AppBar(
-      title: Text(title),
-    );
-  }
+  @override
+  Widget buildItemList(AsyncSnapshot snapshot) {
+    // store snapshot data in local list
+    baseitem_list = snapshot.data;
 
-  FutureBuilder futureBuilderListItems() {
-    return FutureBuilder<List<Route>>(
-      builder: futureBuilderRoutes,
-      future: routes.getRoutes(),
-/*      initialData: <Map<String, Object?>>[
-        {'gebiet_ID': '1'}
-      ],*/
-    );
-  }
-
-  Widget futureBuilderRoutes(BuildContext context, AsyncSnapshot snapshot) {
-    if (snapshot.hasError) {
-      return futureBuilderErrorMessage(snapshot);
-    }
-
-    if (snapshot.connectionState == ConnectionState.done) {
-      // push data into protected storage
-      routes.routes = snapshot.data;
-      return buildListRoutes();
-    }
-
-    return futureBuilderLoadingMessage(snapshot);
-  }
-
-  Widget buildListRoutes() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: routes.routes.length,
+      itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
-        final route = routes.routes[i];
-        return Column(children: [
-          ExpansionTile(
-            /*
-            leading: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ,
-              ],
-            ),*/
-            title: Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 5.0),
-                  child: Text(route.wegnr),
-                ),
-                Text(route.wegname == '' ? route.wegnameCZ : route.wegname),
-              ],
-            ),
-
-            subtitle: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(route.schwierigkeit),
-                Text(route.kletterei == '' ? '' : '[${route.kletterei}]'),
-              ],
-            ),
-            key: Key(i.toString()),
-            //trailing: Text('(' + items[i].childCount.toString() + ')'),
-            children: [
-              ListTile(
-                trailing: Column(
-                  children: [
-                    Transform.rotate(
-                      angle: 90 * 3.1416 / 180,
-                      child: Text('Ringe:${route.ringzahl}'),
-                    )
-                  ],
-                ),
-                title: Text(
-                  (route.wegbeschr == '') ? route.wegbeschrCZ : route.wegbeschr,
-                ),
-                subtitle: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 5.0),
-                      child: Text(
-                        route.erstbegdatum.substring(0, 4),
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(route.erstbegvorstieg),
-                        Text(route.erstbegnachstieg),
-                      ],
-                    )
-                  ],
-                ),
-                onTap: () {
-                  // TODO: WHY <void> ???
-                  showModalBottomSheet<void>(
-                      context: context,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(20),
-                        ),
-                      ),
-                      builder: (BuildContext context) {
-                        return FutureBuilder<List<Comment>>(
-                          //future: routes.getRouteComments(route.wegId),
-                          builder: routeInformationBuilder,
-                        );
-                      });
-                },
-              )
-            ],
-          ),
-          Divider(
-            thickness: 4,
-          )
-        ]);
+        final route = baseitem_list[i] as Route;
+        return RouteTile(route);
       },
     );
   }

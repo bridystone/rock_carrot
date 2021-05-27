@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
-import 'package:yacguide_flutter/Material/FuturesHelper.dart';
+import 'package:yacguide_flutter/Material/BaseItemTile.dart';
+import 'package:yacguide_flutter/Material/BaseMaterial.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 import 'package:yacguide_flutter/Web/SandsteinSql.dart';
 
@@ -16,96 +17,69 @@ class RocksMaterial extends StatefulWidget {
   }
 }
 
-class _RocksMaterialState extends State<RocksMaterial> with FuturesHelper {
-  Rocks rocks;
+class _RocksMaterialState
+    extends BaseItemsMaterialStatefulState<RocksMaterial> {
+  final Rocks _rocks;
 
-  _RocksMaterialState(Subarea subarea) : rocks = Rocks(subarea);
+  _RocksMaterialState(Subarea subarea) : _rocks = Rocks(subarea) {
+    searchBar = initializeSearchBar(_rocks.parentSubArea.name);
+    // default sorting ist by number
+    sortAlpha = false;
+  }
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: generateAppbar(rocks.parentSubArea.sektornameD, true, true),
-      body: futureBuilderListItems(),
-    );
-  }
-
-  /// generate appbar
-  AppBar generateAppbar(String title, bool buttonDelete, bool buttonUpdate) {
-    return AppBar(
-      title: Text(title),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () async {
-            // delete all items in the database and refresh
+        appBar: searchBar.build(context),
+        // enable Refresh data with pulldown
+        body: RefreshIndicator(
+          onRefresh: () async {
             await Sandstein()
-                .deleteRocksFromDatabase(rocks.parentSubArea.sektorid);
+                .updateRocksIncludingSubitems(_rocks.parentSubArea.subareaId);
             setState(() {});
+            return Future<void>.value();
           },
-        ),
-        IconButton(
-          icon: Icon(Icons.update),
-          onPressed: () async {
-            // update items in the database from webseite and refresh list
-            await Sandstein()
-                .updateRocksIncludingSubitems(rocks.parentSubArea.sektorid);
-
-            setState(() {});
-          },
-        ),
-      ],
-    );
+          child: FutureBuilder<List<Rock>>(
+            builder: futureBuildItemList,
+            future: _rocks.getRocks(),
+          ),
+        ));
   }
 
-  FutureBuilder futureBuilderListItems() {
-    return FutureBuilder<List<Rock>>(
-      builder: futureBuilderRocks,
-      future: rocks.getRocks(),
-/*      initialData: <Map<String, Object?>>[
-        {'gebiet_ID': '1'}
-      ],*/
-    );
-  }
+  @override
+  Widget buildItemList(AsyncSnapshot snapshot) {
+    // store snapshot data in local list
+    baseitem_list = snapshot.data;
 
-  Widget futureBuilderRocks(BuildContext context, AsyncSnapshot snapshot) {
-    if (snapshot.hasError) {
-      return futureBuilderErrorMessage(snapshot);
+    // if list is empty - show message what to do...
+    if (baseitem_list.isEmpty) {
+      return ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, i) {
+          return Center(child: Text('Scroll down to update'));
+        },
+      );
     }
 
-    if (snapshot.connectionState == ConnectionState.done) {
-      // push data into protected storage
-      rocks.rocks = snapshot.data;
-      return buildList();
-    }
-
-    return futureBuilderLoadingMessage(snapshot);
-  }
-
-  Widget buildList() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: rocks.rocks.length,
+      itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
+        final rock = baseitem_list[i] as Rock;
         return Column(children: [
-          ListTile(
-            title: Text(rocks.rocks[i].gipfelName),
-            trailing: Text('(' + rocks.rocks[i].routeCount.toString() + ')'),
-            onTap: () {
-              Navigator.pushNamed(
-                  context, '/' + rocks.rocks[i].runtimeType.toString(),
-                  arguments: [
-                    rocks.parentSubArea,
-                    rocks.rocks[i], // parent item
-                  ]).then((value) {
-                // refresh current page after back button is pushed to ensure new data is taken care of
-                setState(() {});
-              });
-            },
+          // only first time generate a devider
+          (i == 0)
+              ? Divider(
+                  thickness: 1,
+                )
+              : Container(),
+          BaseItemTile(
+            rock,
           ),
           Divider(
-            thickness: 4,
-          )
+            thickness: 1,
+          ),
         ]);
       },
     );

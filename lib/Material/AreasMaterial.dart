@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
-import 'package:yacguide_flutter/Material/AreaTile.dart';
+import 'package:yacguide_flutter/Material/BaseItemTile.dart';
 import 'package:yacguide_flutter/Material/BaseMaterial.dart';
 import 'package:yacguide_flutter/Web/Sandstein.dart';
 import 'package:yacguide_flutter/Web/SandsteinSql.dart';
@@ -22,12 +22,13 @@ class _AreasMaterialState
   /// All basic functionality is in this object (incl. parentItem)
   final Areas _areas;
 
-  _AreasMaterialState(Country country) : _areas = Areas(country);
+  _AreasMaterialState(Country country) : _areas = Areas(country) {
+    searchBar = initializeSearchBar(_areas.parentCountry.name);
+  }
 
   /// build the Scaffold
   @override
   Widget build(BuildContext context) {
-    searchBar = initializeSearchBar(_areas.parentCountry.name);
     return Scaffold(
         appBar: searchBar.build(context),
         // enable Refresh data with pulldown
@@ -71,7 +72,12 @@ class _AreasMaterialState
                   thickness: 1,
                 )
               : Container(),
-          AreaTile(area),
+          BaseItemTile(
+            area,
+            updateFunction: Sandstein().updateSubareasInclComments,
+            deleteFunction: Sandstein().deleteSubareasFromDatabase,
+            functionParameter: area.areaId,
+          ),
           Divider(
             thickness: 1,
           ),

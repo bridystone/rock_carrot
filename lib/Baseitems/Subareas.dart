@@ -1,23 +1,39 @@
 import 'dart:async';
 import 'package:yacguide_flutter/Baseitems/Areas.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlSubareas.dart';
 
-class Subarea {
-  int sektorid;
-  int gebietid;
-  String sektornr;
-  String sektornameD;
-  String sektornameCZ;
-  int rockCount;
+class Subarea extends BaseItem {
+  int _sektorid;
+  // ignore: unused_field
+  int _gebietid;
+  // ignore: unused_field
+  String _sektornr;
+  String _sektornameD;
+  String _sektornameCZ;
+
   Subarea(
-    this.sektorid,
-    this.gebietid,
-    this.sektornr,
-    this.sektornameD,
-    this.sektornameCZ,
-    this.rockCount,
-  );
+    this._sektorid,
+    this._gebietid,
+    this._sektornr,
+    this._sektornameD,
+    this._sektornameCZ,
+    int childCountInt,
+    int commentCountInt,
+  ) : super(
+          childCountInt: childCountInt,
+          commentCountInt: commentCountInt,
+        );
+
+  @override
+  String get name {
+    return (_sektornameD.isEmpty) ? _sektornameCZ : _sektornameD;
+  }
+
+  int get subareaId {
+    return _sektorid;
+  }
 
   factory Subarea.fromSql(Map<String, Object?> sqlResult) {
     return Subarea(
@@ -27,50 +43,19 @@ class Subarea {
       sqlResult.values.elementAt(3).toString(),
       sqlResult.values.elementAt(4).toString(),
       int.parse(sqlResult.values.elementAt(5).toString()),
+      0, //TODO: implement Comment Count
     );
   }
-/*
-  /// this is used this delete/insert Comments
-  /// since only gebiet is important and this is not a real parent
-  factory Subarea.dummySubarea(int gebietid) {
-    return Subarea(
-      gebietid,
-      0,
-      '',
-      BaseItems.dummyName,
-      '',
-      0,
-    );
-  }
-  */
 }
 
 class Subareas {
-  SqlHandler sqlHelper = SqlHandler();
-
   /// store parent area
   Area parentArea;
   Subareas(this.parentArea);
 
-  /// initialize list of areas empty
-  List<Subarea> _subareas = [];
-
-  set subareas(List<Subarea> newSubareas) {
-    _subareas = newSubareas;
-    // TODO: perfomring reorder etc...
-    // or rather in getter?
-  }
-
-  /// retrieve current areas - if empty, get SQL data
-  List<Subarea> get subareas {
-    if (_subareas.isEmpty) {
-      getSubareas().then((sqlSubareas) => _subareas = sqlSubareas);
-    }
-    return _subareas;
-  }
-
+  // TODO: something for BaseItem? with <T>?
   Future<List<Subarea>> getSubareas() async {
-    final sqlResults = sqlHelper.querySubareas(parentArea.areaId);
+    final sqlResults = SqlHandler().querySubareas(parentArea.areaId);
     // maps sqlResults to Subareas and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal

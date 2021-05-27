@@ -1,43 +1,87 @@
 import 'dart:async';
-import 'package:yacguide_flutter/Baseitems/Comments.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
-import 'package:yacguide_flutter/Baseitems/Subareas.dart';
 import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlRoutes.dart';
 
-class Route with Comments {
-  int wegId;
-  int gipfelId;
-  String schwierigkeit;
-  String erstbegvorstieg;
-  String erstbegnachstieg;
-  String erstbegdatum;
-  String ringzahl;
-  String wegbeschr;
-  String wegbeschrCZ;
-  String kletterei;
-  String wegname;
-  String wegnameCZ;
-  String wegstatus;
-  String wegnr;
-  int routeCount;
+class Route extends BaseItem {
+  int _wegId;
+  // ignore: unused_field
+  int _gipfelId;
+  String _schwierigkeit;
+  String _erstbegvorstieg;
+  String _erstbegnachstieg;
+  String _erstbegdatum;
+  String _ringzahl;
+  String _wegbeschr;
+  String _wegbeschrCZ;
+  String _kletterei;
+  String _wegname;
+  String _wegnameCZ;
+  // ignore: unused_field
+  String _wegstatus;
+  // ignore: unused_field
+  String _wegnr;
   Route(
-    this.wegId,
-    this.gipfelId,
-    this.schwierigkeit,
-    this.erstbegvorstieg,
-    this.erstbegnachstieg,
-    this.erstbegdatum,
-    this.ringzahl,
-    this.wegbeschr,
-    this.wegbeschrCZ,
-    this.kletterei,
-    this.wegname,
-    this.wegnameCZ,
-    this.wegstatus,
-    this.wegnr,
-    this.routeCount,
-  );
+    this._wegId,
+    this._gipfelId,
+    this._schwierigkeit,
+    this._erstbegvorstieg,
+    this._erstbegnachstieg,
+    this._erstbegdatum,
+    this._ringzahl,
+    this._wegbeschr,
+    this._wegbeschrCZ,
+    this._kletterei,
+    this._wegname,
+    this._wegnameCZ,
+    this._wegstatus,
+    this._wegnr,
+    int childCountInt,
+    int commentCountInt,
+  ) : super(
+          nr: double.parse(_wegnr),
+          childCountInt: childCountInt,
+          commentCountInt: commentCountInt,
+        );
+
+  @override
+  String get name {
+    return (_wegname.isEmpty) ? _wegnameCZ : _wegname;
+  }
+
+  /// climbing grade
+  String get grade {
+    return _schwierigkeit;
+  }
+
+  String get climbingStyle {
+    return _kletterei.isEmpty ? '' : '[$_kletterei]';
+  }
+
+  String get rings {
+    return 'Ringe: $_ringzahl';
+  }
+
+  String get description {
+    return (_wegbeschr == '') ? _wegbeschrCZ : _wegbeschr;
+  }
+
+  String get firstAscentDate {
+    return _erstbegdatum.substring(0, 4);
+  }
+
+  String get firstAscentLead {
+    return _erstbegvorstieg;
+  }
+
+  String get firstAscentPartners {
+    return _erstbegnachstieg;
+  }
+
+  int get routeId {
+    return _wegId;
+  }
 
   factory Route.fromSql(Map<String, Object?> sqlResult) {
     return Route(
@@ -56,36 +100,17 @@ class Route with Comments {
       sqlResult.values.elementAt(12).toString(),
       sqlResult.values.elementAt(13).toString(),
       int.parse(sqlResult.values.elementAt(14).toString()),
+      0, //TODO: implement Comment Count
     );
   }
 }
 
 class Routes {
-  SqlHandler sqlHelper = SqlHandler();
-
   final Rock parentRock;
-  final Subarea parentSubarea;
-  Routes(this.parentSubarea, this.parentRock);
-
-  /// initialize list of areas empty
-  List<Route> _routes = [];
-
-  set routes(List<Route> newRoutes) {
-    _routes = newRoutes;
-    // TODO: perfomring reorder etc...
-    // or rather in getter?
-  }
-
-  /// retrieve current areas - if empty, get SQL data
-  List<Route> get routes {
-    if (_routes.isEmpty) {
-      getRoutes().then((sqlRoutes) => _routes = sqlRoutes);
-    }
-    return _routes;
-  }
+  Routes(this.parentRock);
 
   Future<List<Route>> getRoutes() async {
-    final sqlResults = sqlHelper.queryRoutes(parentRock.gipfelId);
+    final sqlResults = SqlHandler().queryRoutes(parentRock.rockId);
     // maps sqlResults to Route and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal

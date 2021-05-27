@@ -34,11 +34,9 @@ class YacGuideFlutterMaterial extends StatelessWidget {
             return MaterialPageRoute<RocksMaterial>(
                 builder: (context) => RocksMaterial(subarea));
           case '/Rock':
-            final args = settings.arguments as List<Object>;
-            final subarea = args[0] as Subarea;
-            final rock = args[1] as Rock;
+            final rock = settings.arguments as Rock;
             return MaterialPageRoute<RoutesMaterial>(
-                builder: (context) => RoutesMaterial(subarea, rock));
+                builder: (context) => RoutesMaterial(rock));
           default:
         }
       },
