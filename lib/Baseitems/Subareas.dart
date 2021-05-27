@@ -42,8 +42,8 @@ class Subarea extends BaseItem {
       sqlResult.values.elementAt(2).toString(),
       sqlResult.values.elementAt(3).toString(),
       sqlResult.values.elementAt(4).toString(),
-      int.parse(sqlResult.values.elementAt(5).toString()),
-      0, //TODO: implement Comment Count
+      int.parse(sqlResult.values.elementAt(5).toString()), // child count
+      int.parse(sqlResult.values.elementAt(6).toString()), // comment count
     );
   }
 }

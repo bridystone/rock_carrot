@@ -34,4 +34,15 @@ extension SqlHandlerComments on SqlHandler {
           whereArgs: [subareaId],
         ));
   }
+
+  /// fetch Subarea Comments from Database
+  Future<List<Map<String, Object?>>> queryAreaComments(
+    int areaId,
+  ) {
+    return database.then((db) => db.query(
+          SqlHandler.commentsTablename,
+          where: 'gebietid = ?',
+          whereArgs: [areaId],
+        ));
+  }
 }

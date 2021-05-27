@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Route;
 import 'package:yacguide_flutter/Baseitems/Routes.dart';
+import 'package:yacguide_flutter/Material/CommentsSheet.dart';
 
 class RouteTile extends StatefulWidget {
   final Route _route;
@@ -16,6 +17,7 @@ class _RouteTileState extends State<RouteTile> {
   Widget build(BuildContext context) {
     return Column(children: [
       ExpansionTile(
+        tilePadding: EdgeInsets.only(left: 5),
         /*
             leading: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -26,18 +28,38 @@ class _RouteTileState extends State<RouteTile> {
         title: Row(
           children: [
             Padding(
-              padding: EdgeInsets.only(right: 5.0),
-              child: Text(_route.nr.toString()),
+              padding: EdgeInsets.only(right: 7.0),
+              child: Text(
+                _route.nr.toString(),
+                style: TextStyle(fontSize: 13),
+              ),
             ),
-            Text(_route.name),
+            Text(
+              _route.name,
+              style: TextStyle(fontSize: 14),
+            ),
+            (_route.commentCountInt! > 0)
+                ? Padding(
+                    padding: EdgeInsets.only(left: 1),
+                    child: Icon(
+                      Icons.comment,
+                      size: 15,
+                    ))
+                : Container(),
           ],
         ),
 
         subtitle: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(_route.grade),
-            Text(_route.climbingStyle),
+            Text(
+              _route.grade,
+              style: TextStyle(fontSize: 13),
+            ),
+            Text(
+              _route.climbingStyle,
+              style: TextStyle(fontSize: 13),
+            ),
           ],
         ),
         key: Key(_route.name),
@@ -47,12 +69,18 @@ class _RouteTileState extends State<RouteTile> {
             trailing: Column(
               children: [
                 Transform.rotate(
-                  angle: 90 * 3.1416 / 180,
-                  child: Text(_route.rings),
+                  angle: 00 * 3.1416 / 180,
+                  child: Text(
+                    _route.rings,
+                    style: TextStyle(fontSize: 10),
+                  ),
                 )
               ],
             ),
-            title: Text(_route.description),
+            title: Text(
+              _route.description,
+              style: TextStyle(fontSize: 12),
+            ),
             subtitle: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -60,38 +88,33 @@ class _RouteTileState extends State<RouteTile> {
                   padding: EdgeInsets.only(right: 5.0),
                   child: Text(
                     _route.firstAscentDate,
+                    style: TextStyle(fontSize: 12),
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_route.firstAscentLead),
-                    Text(_route.firstAscentPartners),
+                    Text(
+                      _route.firstAscentLead,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    Text(
+                      _route.firstAscentPartners,
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ],
                 )
               ],
-            ), /*
+            ),
             onTap: () {
-              // TODO: WHY <void> ???
-              showModalBottomSheet<void>(
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
-                    ),
-                  ),
-                  builder: (BuildContext context) {
-                    return FutureBuilder<List<Comment>>(
-                      //future: routes.getRouteComments(route.wegId),
-                      builder: routeInformationBuilder,
-                    );
-                  });
-            },*/
+              CommentsSheet().showCommentsSheet(context, _route);
+            },
           )
         ],
       ),
       Divider(
-        thickness: 4,
+        height: 1,
+        thickness: 1,
       )
     ]);
   }

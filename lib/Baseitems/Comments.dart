@@ -2,38 +2,81 @@ import 'package:yacguide_flutter/Database/sql.dart';
 import 'package:yacguide_flutter/Database/sqlComments.dart';
 
 class Comment {
-  int kommentId;
-  int userid;
-  String datum;
-  String adatum;
-  int wegid;
-  int sektorid;
-  int gebietid;
-  String qual;
-  String sicher;
-  String nass;
-  String kommentar;
-  int gipfelid;
-  String schwer;
-  String geklettert;
-  String begehung;
+  // ignore: unused_field
+  int _kommentId;
+  int _userid;
+  String _datum;
+  // ignore: unused_field
+  String _adatum;
+  // ignore: unused_field
+  int _wegid;
+  // ignore: unused_field
+  int _sektorid;
+  // ignore: unused_field
+  int _gebietid;
+  String _qual;
+  String _sicher;
+  String _nass;
+  String _kommentar;
+  // ignore: unused_field
+  int _gipfelid;
+  String _schwer;
+  String _geklettert;
+  String _begehung;
+
   Comment(
-    this.kommentId,
-    this.userid,
-    this.datum,
-    this.adatum,
-    this.wegid,
-    this.sektorid,
-    this.gebietid,
-    this.qual,
-    this.sicher,
-    this.nass,
-    this.kommentar,
-    this.gipfelid,
-    this.schwer,
-    this.geklettert,
-    this.begehung,
+    this._kommentId,
+    this._userid,
+    this._datum,
+    this._adatum,
+    this._wegid,
+    this._sektorid,
+    this._gebietid,
+    this._qual,
+    this._sicher,
+    this._nass,
+    this._kommentar,
+    this._gipfelid,
+    this._schwer,
+    this._geklettert,
+    this._begehung,
   );
+
+  String get date {
+    return _datum.substring(0, 10);
+  }
+
+  String get userId {
+    return _userid.toString();
+  }
+
+  String get comment {
+    return _kommentar;
+  }
+
+  String get quality {
+    return _qual;
+  }
+
+  String get safety {
+    return _sicher;
+  }
+
+  String get wetness {
+    return _nass;
+  }
+
+  String get difficulty {
+    return _schwer;
+  }
+
+  String get climbed {
+    return _geklettert;
+  }
+
+  String get climb {
+    return _begehung;
+  }
 
   factory Comment.fromSql(Map<String, Object?> sqlResult) {
     return Comment(
@@ -57,6 +100,19 @@ class Comment {
 }
 
 class Comments {
+  /// get all Area comments from database and transfer them to object list
+  Future<List<Comment>> getAreaComments(int areaId) async {
+    final sqlResults = SqlHandler().queryAreaComments(areaId);
+    // maps sqlResults to Rock and return
+    return sqlResults.then(
+      (sqlResultsFinal) => sqlResultsFinal
+          .map(
+            (sqlRow) => Comment.fromSql(sqlRow),
+          )
+          .toList(),
+    );
+  }
+
   /// get all Subarea comments from database and transfer them to object list
   Future<List<Comment>> getSubareaComments(int subareaId) async {
     final sqlResults = SqlHandler().querySubareaComments(subareaId);

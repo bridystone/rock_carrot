@@ -70,8 +70,8 @@ class Rock extends BaseItem {
       sqlResult.values.elementAt(9).toString(),
       sqlResult.values.elementAt(10).toString(),
       int.parse(sqlResult.values.elementAt(11).toString()),
-      int.parse(sqlResult.values.elementAt(12).toString()),
-      0, //TODO: implement Comment Count
+      int.parse(sqlResult.values.elementAt(12).toString()), // routes count
+      int.parse(sqlResult.values.elementAt(13).toString()), // comment count
     );
   }
 }

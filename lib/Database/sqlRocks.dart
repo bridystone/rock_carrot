@@ -59,13 +59,17 @@ extension SqlHandlerRocks on SqlHandler {
     int sektorid,
   ) {
     return database.then((db) => db.rawQuery(
-          'SELECT gipfel.*, COUNT(wege.gipfelid) as count'
+          'SELECT'
+          ' gipfel.*,'
+          ' COUNT(DISTINCT wege.weg_id) as wege_count,'
+          ' COUNT(DISTINCT komment.komment_id) as komment_count'
           ' FROM gipfel'
-          '   LEFT OUTER JOIN wege'
+          '   LEFT OUTER JOIN wege' // counting wege
           '   ON gipfel.gipfel_ID = wege.gipfelid'
+          ' LEFT JOIN komment' // counting comments
+          ' ON gipfel.gipfel_id = komment.gipfelid'
           ' WHERE gipfel.sektorid = ?'
-          ' GROUP BY gipfel.gipfel_id'
-          ' ORDER BY gipfelnr',
+          ' GROUP BY gipfel.gipfel_id',
           [sektorid],
         ));
   }

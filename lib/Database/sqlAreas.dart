@@ -14,11 +14,16 @@ extension SqlHandlerAreas on SqlHandler {
 
   Future<List<Map<String, Object?>>> queryAreas(String land) {
     return database.then((db) => db.rawQuery(
-          'SELECT gebiet.*, COUNT(teilgebiet.gebietid) as count'
+          'SELECT'
+          ' gebiet.*,'
+          ' COUNT(DISTINCT teilgebiet.sektor_id) as subarea_count,'
+          ' COUNT(DISTINCT komment.komment_id) as komment_count'
           ' FROM gebiet'
-          ' LEFT OUTER JOIN teilgebiet'
+          ' LEFT OUTER JOIN teilgebiet' // counting subareas
           ' ON gebiet.gebiet_ID = teilgebiet.gebietid'
-          ' WHERE land = ?'
+          ' LEFT JOIN komment' // counting comments
+          ' ON gebiet.gebiet_ID = komment.gebietid'
+          ' WHERE gebiet.land = ?'
           ' GROUP BY gebiet.gebiet_ID',
           [land],
         ));

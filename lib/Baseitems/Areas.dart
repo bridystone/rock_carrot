@@ -23,7 +23,11 @@ class Area extends BaseItem {
     this._gdefaultanzeige,
     this._schwskala,
     int childCountInt,
-  ) : super(childCountInt: childCountInt);
+    int commentCountInt,
+  ) : super(
+          childCountInt: childCountInt,
+          commentCountInt: commentCountInt,
+        );
 
   // Standard Value
   @override
@@ -45,6 +49,7 @@ class Area extends BaseItem {
       sqlResult.values.elementAt(4).toString(),
       sqlResult.values.elementAt(5).toString(),
       int.parse(sqlResult.values.elementAt(6).toString()),
+      int.parse(sqlResult.values.elementAt(7).toString()),
     );
   }
 }

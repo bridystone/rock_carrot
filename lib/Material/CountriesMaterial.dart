@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
 import 'package:yacguide_flutter/Baseitems/Countries.dart';
 import 'package:yacguide_flutter/Material/BaseItemTile.dart';
 import 'package:yacguide_flutter/Material/BaseMaterial.dart';
@@ -18,7 +19,7 @@ class _CountryMaterialState
   final Countries _countries = Countries();
 
   _CountryMaterialState() {
-    searchBar = initializeSearchBar('Countries');
+    searchBar = initializeSearchBar(BaseItem(name: 'Countries'));
   }
 
   /// build the Scaffold
@@ -65,6 +66,7 @@ class _CountryMaterialState
           // only first time generate a devider
           (i == 0)
               ? Divider(
+                  height: 1,
                   thickness: 1,
                 )
               : Container(),
@@ -75,6 +77,7 @@ class _CountryMaterialState
             functionParameter: country.name,
           ),
           Divider(
+            height: 1,
             thickness: 1,
           ),
         ]);

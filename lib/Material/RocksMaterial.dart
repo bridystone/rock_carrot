@@ -22,7 +22,7 @@ class _RocksMaterialState
   final Rocks _rocks;
 
   _RocksMaterialState(Subarea subarea) : _rocks = Rocks(subarea) {
-    searchBar = initializeSearchBar(_rocks.parentSubArea.name);
+    searchBar = initializeSearchBar(_rocks.parentSubArea);
     // default sorting ist by number
     sortAlpha = false;
   }
@@ -71,6 +71,7 @@ class _RocksMaterialState
           // only first time generate a devider
           (i == 0)
               ? Divider(
+                  height: 1,
                   thickness: 1,
                 )
               : Container(),
@@ -78,6 +79,7 @@ class _RocksMaterialState
             rock,
           ),
           Divider(
+            height: 1,
             thickness: 1,
           ),
         ]);

@@ -1,8 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart' hide Route;
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
-import 'package:yacguide_flutter/Baseitems/Comments.dart';
 import 'package:yacguide_flutter/Baseitems/Rocks.dart';
 import 'package:yacguide_flutter/Baseitems/Routes.dart';
 import 'package:yacguide_flutter/Material/BaseMaterial.dart';
@@ -26,7 +23,7 @@ class _RoutesMaterialState
   final Routes _routes;
 
   _RoutesMaterialState(Rock rock) : _routes = Routes(rock) {
-    searchBar = initializeSearchBar(_routes.parentRock.name);
+    searchBar = initializeSearchBar(_routes.parentRock);
     // default sorting ist by number
     sortAlpha = false;
   }
@@ -57,86 +54,5 @@ class _RoutesMaterialState
         return RouteTile(route);
       },
     );
-  }
-
-  List<Route> getCommentsFromSnapshot(AsyncSnapshot snapshot) {
-    List<Map<String, Object?>> sqlRoutes = snapshot.data;
-    return sqlRoutes.map((item) => Route.fromSql(item)).toList();
-  }
-
-  Widget routeInformationBuilder(BuildContext context, AsyncSnapshot snapshot) {
-    if (snapshot.hasError) {
-      return futureBuilderErrorMessage(snapshot);
-    }
-
-    if (snapshot.connectionState == ConnectionState.done) {
-      List<Comment> comments = snapshot.data;
-      return buildModalComments(comments);
-    }
-
-    return futureBuilderLoadingMessage(snapshot);
-  }
-
-  /// actual design of the Modal dialog
-  ///
-  /// if no data is available - it shows: no data
-  /// otherwise multiple comments are shown
-  Widget buildModalComments(List<Comment> comments) {
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: comments.isEmpty
-            // no comments available
-            ? Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Center(
-                  child: Text('no comments available'),
-                ))
-            // enumerate all comments
-            : SingleChildScrollView(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  // iterating through all available comments
-                  children: comments.map((comment) {
-                    return Column(children: [
-                      // status row top
-                      Row(children: [
-                        Text(
-                          comment.datum.substring(0, 10) +
-                              ' UID:' +
-                              comment.userid.toString(),
-                          style: TextStyle(
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ]),
-                      // actual comment
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          comment.kommentar,
-                          style: TextStyle(fontStyle: FontStyle.italic),
-                        ),
-                      ),
-                      // statusrow bottom
-                      Column(children: [
-                        Row(children: [
-                          Text('qual:' + comment.qual),
-                          Icon(Icons.thumb_up),
-                          Text(' | sicher:' + comment.sicher),
-                          Text(' | nass:' + comment.nass),
-                        ]),
-                        Row(
-                          children: [
-                            Text('schwer:' + comment.schwer),
-                            Text(' | geklettert:' + comment.geklettert),
-                            Text(' | begehung:' + comment.begehung),
-                          ],
-                        )
-                      ]),
-                    ]);
-                  }).toList(),
-                ),
-              ));
   }
 }

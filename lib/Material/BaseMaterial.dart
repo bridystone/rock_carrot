@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
+import 'package:yacguide_flutter/Baseitems/Areas.dart';
 import 'package:yacguide_flutter/Baseitems/BaseItems.dart';
+import 'package:yacguide_flutter/Baseitems/Rocks.dart';
+import 'package:yacguide_flutter/Baseitems/Subareas.dart';
+import 'package:yacguide_flutter/Material/CommentsSheet.dart';
+import 'package:yacguide_flutter/Material/FutureBuilderHelper.dart';
 
 abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
-    extends State<T> {
+    extends State<T> with FutureBuilderHelper {
   /// Searchbar functionality
   ///
   /// generate Searchbar in AppBar
@@ -13,14 +18,14 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
   String searchBarValue = '';
 
   /// initialize Searchbar
-  SearchBar initializeSearchBar(String appBarTitle) {
+  SearchBar initializeSearchBar(BaseItem baseitem) {
     return SearchBar(
       inBar: false,
       hintText: 'enter Text',
       // TODO: understand this? why setState?
       setState: setState,
       // add default appBar without Search
-      buildDefaultAppBar: (BuildContext context) => generateAppbar(appBarTitle),
+      buildDefaultAppBar: (BuildContext context) => generateAppbar(baseitem),
       // handle callbacks
       onChanged: (String value) => setState(() {
         searchBarValue = value;
@@ -36,21 +41,39 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
   }
 
   /// Appbar generation
-  AppBar generateAppbar(String title) {
-    return AppBar(
-      title: Text(title),
-      actions: [
-        // sort by name ASC or childcount DESC
-        IconButton(
-          icon: Icon(Icons.sort_by_alpha),
+  AppBar generateAppbar(BaseItem baseitem) {
+    // prepare icon Buttons
+    List<Widget>? iconButtons = [];
+    // check, if comment item will be generated
+    if (baseitem is Area || baseitem is Subarea || baseitem is Rock) {
+      if (baseitem.commentCountInt! > 0) {
+        iconButtons.add(IconButton(
+          icon: Icon(
+            Icons.comment,
+          ),
           onPressed: () {
-            sortAlpha = !sortAlpha;
-            setState(() {});
+            CommentsSheet().showCommentsSheet(context, baseitem);
           },
-        ),
-        // add Searchbar Action
-        searchBar.getSearchAction(context),
-        /*
+        ));
+      } else {
+        // add icon without functionality, if there is no comment data
+        iconButtons.add(Icon(
+          Icons.comment,
+          color: Colors.grey,
+        ));
+      }
+    }
+    // add other icons
+    iconButtons.add(IconButton(
+      icon: Icon(Icons.sort_by_alpha),
+      onPressed: () {
+        sortAlpha = !sortAlpha;
+        setState(() {});
+      },
+    ));
+    // add Searchbar Action
+    iconButtons.add(searchBar.getSearchAction(context));
+    /*
         IconButton(
           icon: Icon(Icons.update),
           onPressed: () async {
@@ -67,7 +90,9 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
             setState(() {});
           },
         ),*/
-      ],
+    return AppBar(
+      title: Text(baseitem.name),
+      actions: iconButtons,
     );
   }
   /*
@@ -132,39 +157,5 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
     }
 
     return futureBuilderLoadingMessage(snapshot);
-  }
-
-  /// Loading message for Futures
-  Widget futureBuilderLoadingMessage(AsyncSnapshot snapshot) {
-    final message = 'Loading data... ${snapshot.connectionState.toString()}';
-    return Column(
-      children: [
-        SizedBox(
-          width: 50,
-          height: 50,
-          child: CircularProgressIndicator(),
-        ),
-        Padding(
-          padding: EdgeInsets.all(50),
-          child: Text(message),
-        )
-      ],
-    );
-  }
-
-  /// Error Message for futures
-  Widget futureBuilderErrorMessage(AsyncSnapshot snapshot) {
-    print('ERROR' + snapshot.error.toString());
-    return Column(children: [
-      Icon(
-        Icons.error_outline,
-        color: Colors.yellow,
-        size: 50,
-      ),
-      Padding(
-        padding: EdgeInsets.all(60),
-        child: Text(snapshot.error.toString()),
-      ),
-    ]);
   }
 }

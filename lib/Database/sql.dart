@@ -119,8 +119,8 @@ class SqlHandler {
   // TODO: resetDatabase currently not used/usable
   Future<Database> _openConnection({bool resetDatabase = false}) async {
     // TODO: Change back to databasesPath, to ensure correct working
-    // final databasesPath =
-    //     '/sdcard/Android/data/com.example.yacguide_flutter/'; //ONLY FOR TESTING ON Emulator
+    //final databasesPath =
+    //    '/sdcard/Android/data/com.example.yacguide_flutter/'; //ONLY FOR TESTING ON Emulator
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, globalDbName);
     // Make sure the directory exists

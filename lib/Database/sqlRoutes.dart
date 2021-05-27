@@ -6,7 +6,9 @@ extension SqlHandlerRoutes on SqlHandler {
     int gipfelid,
   ) {
     return database.then((db) => db.rawQuery(
-          'SELECT wege.*, COUNT(komment.wegid) as count'
+          'SELECT'
+          ' wege.*,'
+          ' COUNT(DISTINCT komment.komment_id) as komment_count'
           ' FROM wege'
           ' LEFT OUTER JOIN komment'
           ' ON wege.weg_id = komment.wegid'

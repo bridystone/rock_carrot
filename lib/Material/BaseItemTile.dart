@@ -122,7 +122,7 @@ class _BaseItemTileState extends State<BaseItemTile> {
     }
 
     return Container(
-      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+      padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         //crossAxisAlignment: CrossAxisAlignment.stretch,

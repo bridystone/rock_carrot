@@ -23,7 +23,9 @@ class _SubAreasMaterialState
   final Subareas _subareas;
 
   _SubAreasMaterialState(Area area) : _subareas = Subareas(area) {
-    searchBar = initializeSearchBar(_subareas.parentArea.name);
+    searchBar = initializeSearchBar(_subareas.parentArea);
+    // default sorting ist by child count
+    sortAlpha = false;
   }
 
   /// build the Scaffold
@@ -70,6 +72,7 @@ class _SubAreasMaterialState
           // only first time generate a devider
           (i == 0)
               ? Divider(
+                  height: 1,
                   thickness: 1,
                 )
               : Container(),
@@ -80,6 +83,7 @@ class _SubAreasMaterialState
             functionParameter: subarea.subareaId,
           ),
           Divider(
+            height: 1,
             thickness: 1,
           ),
         ]);

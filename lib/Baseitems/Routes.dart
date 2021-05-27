@@ -37,11 +37,9 @@ class Route extends BaseItem {
     this._wegnameCZ,
     this._wegstatus,
     this._wegnr,
-    int childCountInt,
     int commentCountInt,
   ) : super(
           nr: double.parse(_wegnr),
-          childCountInt: childCountInt,
           commentCountInt: commentCountInt,
         );
 
@@ -99,8 +97,7 @@ class Route extends BaseItem {
       sqlResult.values.elementAt(11).toString(),
       sqlResult.values.elementAt(12).toString(),
       sqlResult.values.elementAt(13).toString(),
-      int.parse(sqlResult.values.elementAt(14).toString()),
-      0, //TODO: implement Comment Count
+      int.parse(sqlResult.values.elementAt(14).toString()), //comment count
     );
   }
 }

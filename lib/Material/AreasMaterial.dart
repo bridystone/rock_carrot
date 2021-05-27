@@ -23,7 +23,9 @@ class _AreasMaterialState
   final Areas _areas;
 
   _AreasMaterialState(Country country) : _areas = Areas(country) {
-    searchBar = initializeSearchBar(_areas.parentCountry.name);
+    searchBar = initializeSearchBar(_areas.parentCountry);
+    // default sorting ist by child count
+    sortAlpha = false;
   }
 
   /// build the Scaffold
@@ -69,6 +71,7 @@ class _AreasMaterialState
           // only first time generate a devider
           (i == 0)
               ? Divider(
+                  height: 1,
                   thickness: 1,
                 )
               : Container(),
@@ -79,6 +82,7 @@ class _AreasMaterialState
             functionParameter: area.areaId,
           ),
           Divider(
+            height: 1,
             thickness: 1,
           ),
         ]);
