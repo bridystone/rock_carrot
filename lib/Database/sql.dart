@@ -97,7 +97,7 @@ class SqlHandler {
       'sicher': 'TEXT',
       'nass': 'TEXT',
       'kommentar': 'TEXT',
-      'gipfelid': 'TEXT',
+      'gipfelid': 'INT',
       'schwer': 'TEXT',
       'geklettert': 'TEXT',
       'begehung': 'TEXT',
@@ -153,6 +153,29 @@ class SqlHandler {
       createString = createString.substring(0, createString.length - 1) + ')';
       db.execute(createString);
     });
+    // create indexes for PRIMARY KEYS & FOREIGN LOOKUPS
+    //TODO: is indexes for PRIMARY KEYS necessary?
+    db.execute('CREATE INDEX pk_land ON land (land)');
+
+    db.execute('CREATE INDEX pk_gebiet_ID ON gebiet (gebiet_ID)');
+    db.execute('CREATE INDEX fk_gebiet_land ON gebiet (land)');
+
+    db.execute('CREATE INDEX pk_sektor_ID ON teilgebiet (sektor_ID)');
+    db.execute('CREATE INDEX fk_sektor_gebietid ON teilgebiet (gebietid)');
+
+    db.execute('CREATE INDEX pk_gipfel_ID ON gipfel (gipfel_ID)');
+    db.execute('CREATE INDEX fk_gipfel_sektorid ON gipfel (sektorid)');
+
+    db.execute('CREATE INDEX pk_weg_ID ON wege (weg_ID)');
+    db.execute('CREATE INDEX fk_weg_gipfelid ON wege (gipfelid)');
+
+    db.execute('CREATE INDEX pk_komment_ID ON komment (komment_ID)');
+    // create indexes for comment lookup
+    db.execute('CREATE INDEX komment_gebietd ON komment (gebietid)');
+    db.execute('CREATE INDEX komment_sektorid ON komment (sektorid)');
+    db.execute('CREATE INDEX komment_gipfelid ON komment (gipfelid)');
+    db.execute('CREATE INDEX komment_wegid ON komment (wegid)');
+
     /*
     await db.execute(
         'CREATE TABLE land (land TEXT PRIMARY KEY, ISO3166 TEXT, KFZ TEXT)');
