@@ -74,6 +74,23 @@ extension SandsteinSql on Sandstein {
         .insertJsonData(SqlHandler.subareasTablename, jsonDataSubareas);
   }
 
+  /// update data from Sandsteinklettern
+  ///
+  /// This is a combination of Subareas fetch
+  /// with All Rock Data (incl. subitems)
+  Future<int> updateSubareasInclAllSubitems(int areaId) async {
+    // update subareas
+    final result = await updateSubareasInclComments(areaId);
+    // get results from database and iterate through all items
+    final sqlResults = await SqlHandler().querySubareas(areaId);
+    sqlResults.forEach((sqlRow) {
+      updateRocksIncludingSubitems(
+          int.parse(sqlRow.values.elementAt(0).toString()));
+    });
+    // return result from subareas fetch
+    return result;
+  }
+
   // TODO: get rid of
   Future<int> deleteRocksFromDatabase(int subareaId) {
     // delete Routes as well with a dummy Rock Items

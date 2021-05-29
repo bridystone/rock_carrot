@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:rock_carrot/Baseitems/Areas.dart';
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
 
 class BaseItemTile extends StatefulWidget {
@@ -7,15 +8,24 @@ class BaseItemTile extends StatefulWidget {
 
   /// function that updates data from the web
   final Function? _updateFunction;
+  final Function? _updateAllFunction;
   final Function? _deleteFunction;
   final dynamic _functionParameter;
 
+  /// Constructor
+  ///
+  /// [updateFunction] Function to update data
+  /// [updateAllFunction] Only relevant for update Area!!
+  /// [functionParameter] id Parameter, to be used in the function
+  /// [deleteFunction] -> might be replace by favorites in future
   BaseItemTile(
     this._baseitem, {
     Function? updateFunction,
+    Function? updateAllFunction,
     Function? deleteFunction,
     dynamic functionParameter, // might be String or int
   })  : _updateFunction = updateFunction,
+        _updateAllFunction = updateAllFunction,
         _deleteFunction = deleteFunction,
         _functionParameter = functionParameter;
 
@@ -23,6 +33,7 @@ class BaseItemTile extends StatefulWidget {
   _BaseItemTileState createState() => _BaseItemTileState(
         _baseitem,
         _updateFunction,
+        _updateAllFunction,
         _deleteFunction,
         _functionParameter,
       );
@@ -31,11 +42,17 @@ class BaseItemTile extends StatefulWidget {
 class _BaseItemTileState extends State<BaseItemTile> {
   final BaseItem _baseitem;
   final Function? _updateFunction;
+  final Function? _updateAllFunction;
   final Function? _deleteFunction;
   final dynamic _functionParameter; //might be String or int
 
-  _BaseItemTileState(this._baseitem, this._updateFunction, this._deleteFunction,
-      this._functionParameter);
+  _BaseItemTileState(
+    this._baseitem,
+    this._updateFunction,
+    this._updateAllFunction,
+    this._deleteFunction,
+    this._functionParameter,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +75,27 @@ class _BaseItemTileState extends State<BaseItemTile> {
 
           final records = await _updateFunction!(_functionParameter) as int;
 
+          setState(() {
+            _baseitem.updateChildCount(records);
+          });
+        },
+      ));
+    }
+    // Add UpdateAll possibility (ony if baseitem is Area)
+    if (_updateAllFunction != null && _baseitem is Area) {
+      secondarySlideActions.add(IconSlideAction(
+        caption: 'Update All',
+        color: Colors.greenAccent,
+        icon: Icons.system_update_rounded,
+        onTap: () async {
+          // clear number for update
+          setState(() {
+            _baseitem.setChildCountStatus(ChildCountStatus.update_in_progress);
+          });
+
+          final records = await _updateAllFunction!(_functionParameter) as int;
+
+          // set Results
           setState(() {
             _baseitem.updateChildCount(records);
           });

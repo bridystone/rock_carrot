@@ -78,6 +78,7 @@ class _AreasMaterialState
           BaseItemTile(
             area,
             updateFunction: Sandstein().updateSubareasInclComments,
+            updateAllFunction: Sandstein().updateSubareasInclAllSubitems,
             deleteFunction: Sandstein().deleteSubareasFromDatabase,
             functionParameter: area.areaId,
           ),
