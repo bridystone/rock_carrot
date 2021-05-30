@@ -41,7 +41,7 @@ extension SqlHandlerComments on SqlHandler {
   ) {
     return database.then((db) => db.query(
           SqlHandler.commentsTablename,
-          where: 'gebietid = ?',
+          where: 'gebietid = ? AND wegid = 0 AND gipfelid = 0 AND sektorid = 0',
           whereArgs: [areaId],
         ));
   }
