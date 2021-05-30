@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:rock_carrot/Baseitems/Areas.dart';
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
 import 'package:rock_carrot/Baseitems/Rocks.dart';
@@ -62,6 +65,31 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
           color: Colors.grey,
         ));
       }
+    }
+    // add Maps icon, if it is a Rock
+    if (baseitem is Rock) {
+      iconButtons.add(IconButton(
+        icon: Icon(
+          Icons.map,
+        ),
+        onPressed: () async {
+          // check if OSMAnd is available - otherwise start google maps or apple Maps
+          var preferredMap = MapType.osmand;
+          if (!(await MapLauncher.isMapAvailable(MapType.osmand) ?? false)) {
+            if (Platform.isIOS) {
+              preferredMap = MapType.apple;
+            } else {
+              preferredMap = MapType.google;
+            }
+          }
+
+          await MapLauncher.showMarker(
+            mapType: preferredMap,
+            coords: Coords(baseitem.latitude, baseitem.longitude),
+            title: baseitem.name,
+          );
+        },
+      ));
     }
     // add other icons
     iconButtons.add(IconButton(

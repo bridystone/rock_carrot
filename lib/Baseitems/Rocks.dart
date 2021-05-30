@@ -56,6 +56,16 @@ class Rock extends BaseItem {
     return _gipfelId;
   }
 
+  /// returns longitude value or 0
+  double get longitude {
+    return double.tryParse(_vgrd) ?? 0;
+  }
+
+  /// returns latitude value or 0
+  double get latitude {
+    return double.tryParse(_ngrd) ?? 0;
+  }
+
   factory Rock.fromSql(Map<String, Object?> sqlResult) {
     return Rock(
       int.parse(sqlResult.values.elementAt(0).toString()),

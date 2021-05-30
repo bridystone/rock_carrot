@@ -33,6 +33,7 @@ dependencies:
   flutter_slidable: ^0.6.0
   # TODO: CHECK FOR STABLE VERSION!
   flutter_search_bar: ^3.0.0-dev.1
+  map_launcher: ^2.0.0
 
 dev_dependencies:
   flutter_test:
