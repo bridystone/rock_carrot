@@ -34,6 +34,7 @@ dependencies:
   # TODO: CHECK FOR STABLE VERSION!
   flutter_search_bar: ^3.0.0-dev.1
   map_launcher: ^2.0.0
+  flutter_launcher_icons: ^0.9.0
 
 dev_dependencies:
   flutter_test:
@@ -81,3 +82,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+# generate App Icons
+# run: 'flutter pub run flutter_launcher_icons:main'
+flutter_icons:
+  android: true
+  ios: true
+  image_path_ios: assets/app_icons/ios_icon.png
+  image_path_android: assets/app_icons/android_icon.png
+  remove_alpha_ios: true
