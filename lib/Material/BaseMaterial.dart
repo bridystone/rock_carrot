@@ -9,6 +9,8 @@ import 'package:rock_carrot/Baseitems/Rocks.dart';
 import 'package:rock_carrot/Baseitems/Subareas.dart';
 import 'package:rock_carrot/Material/CommentsSheet.dart';
 import 'package:rock_carrot/Material/FutureBuilderHelper.dart';
+import 'package:rock_carrot/Web/Teufelsturm.dart';
+import 'package:rock_carrot/Web/TeufelsturmSql.dart';
 
 abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
     extends State<T> with FutureBuilderHelper {
@@ -67,6 +69,7 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
       }
     }
     // add Maps icon, if it is a Rock
+    // TODO: only show, if there are coordinates available
     if (baseitem is Rock) {
       iconButtons.add(IconButton(
         icon: Icon(

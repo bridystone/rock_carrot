@@ -28,6 +28,11 @@ class SqlHandler {
   static const routesTablename = 'wege';
   static const commentsTablename = 'komment';
 
+  ///teufelsturm tables
+  static const ttRocksTablename = 'tt_rocks';
+  static const ttRoutesTablename = 'tt_routes';
+  static const ttCommentsTablename = 'tt_comments';
+
   /// table configuration in database
   static const databaseTableColumns = {
     countriesTablename: {
@@ -102,6 +107,34 @@ class SqlHandler {
       'geklettert': 'TEXT',
       'begehung': 'TEXT',
     },
+    ttRocksTablename: {
+      'id': 'INT PRIMARY KEY', // internal TT number
+      'nr': 'TEXT', // number in area
+      'name': 'TEXT',
+      'areaid': 'INT',
+      'areaName': 'TEXT',
+    },
+    ttRoutesTablename: {
+      'id': 'INT PRIMARY KEY', // internal TT number
+      'name': 'TEXT',
+      'average_quality': 'TEXT',
+      'difficulty': 'TEXT',
+      // internal TT number (might be missing depending on scraping method)
+      'rockid': 'INT',
+      'rockName': 'TEXT',
+      // internal TT number (might be missing depending on scraping methof)
+      'areaid': 'INT',
+      'areaName': 'TEXT',
+    },
+    ttCommentsTablename: {
+      'ID': 'INTEGER PRIMARY KEY AUTOINCREMENT',
+      'routeid': 'INT',
+      'areaid': 'INT',
+      'user': 'TEXT',
+      'date': 'TEXT',
+      'comment': 'TEXT',
+      'quality': 'TEXT',
+    }
   };
 
   /// database connection
@@ -119,9 +152,9 @@ class SqlHandler {
   // TODO: resetDatabase currently not used/usable
   Future<Database> _openConnection({bool resetDatabase = false}) async {
     // TODO: Change back to databasesPath, to ensure correct working
-    //final databasesPath =
-    //    '/sdcard/Android/data/info.breidenstein.rock_carrot/'; //ONLY FOR TESTING ON Emulator
-    final databasesPath = await getDatabasesPath();
+    final databasesPath =
+        '/sdcard/Android/data/info.breidenstein.rock_carrot/'; //ONLY FOR TESTING ON Emulator
+    //final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, globalDbName);
     // Make sure the directory exists
     try {
@@ -176,20 +209,31 @@ class SqlHandler {
     db.execute('CREATE INDEX komment_gipfelid ON komment (gipfelid)');
     db.execute('CREATE INDEX komment_wegid ON komment (wegid)');
 
-    /*
-    await db.execute(
-        'CREATE TABLE land (land TEXT PRIMARY KEY, ISO3166 TEXT, KFZ TEXT)');
-    await db.execute(/*json-query-key:land*/
-        'CREATE TABLE gebiet (gebiet_ID INT PRIMARY KEY, gebiet TEXT, land TEXT, sprache2 TEXT, gdefaultanzeige TEXT, schwskala TEXT)');
-    await db.execute(/*json-query-key:gebietid*/
-        'CREATE TABLE teilgebiet (sektor_ID INT PRIMARY KEY, gebietid INT, sektornr INT, sektorname_d TEXT, sektorname_cz TEXT)');
-    await db.execute(/*json-query-key:sektorid*/
-        'CREATE TABLE gipfel (gipfel_ID INT PRIMARY KEY, gipfelnr TEXT, gipfelname_d TEXT, gipfelname_cz TEXT, status TEXT, typ TEXT, vgrd TEXT, ngrd TEXT, posfehler TEXT, schartenhoehe TEXT, talhoehe TEXT, sektorid INT)');
-    await db.execute(/*json-query-key:sektorid*/
-        'CREATE TABLE wege (weg_ID INT PRIMARY KEY, gipfelid INT, schwierigkeit TEXT, erstbegvorstieg TEXT, erstbegnachstieg TEXT, erstbegdatum TEXT, ringzahl TEXT, wegbeschr_d TEXT, wegbeschr_cz TEXT, kletterei TEXT, wegname_d TEXT, wegname_cz TEXT, wegstatus TEXT, wegnr INT, sektorid INT)');
-    await db.execute(/*json-query-key:sektorid*/
-        'CREATE TABLE komment (komment_ID INT PRIMARY KEY, userid INT, datum TEXT, adatum TEXT, wegid INT, sektorid INT, gebietid INT, qual TEXT, sicher TEXT, nass TEXT, kommentar TEXT, gipfelid INT, schwer TEXT, geklettert TEXT, begehung TEXT)');
-        */
+    // TT indexes
+    // create indexes for comment lookup
+    db.execute('CREATE INDEX tt_comments_areaid ON tt_comments (areaid)');
+    db.execute('CREATE INDEX tt_comments_route ON tt_comments (routeid)');
+
+    // mapping table for Teufelsturm
+    db.execute(
+      'CREATE TABLE IF NOT EXISTS mapping_area ('
+      ' "tt_areaid" INT PRIMARY KEY,'
+      ' "sandstein_areaid" INT'
+      ' );'
+      ' INSERT INTO mapping_area VALUES(10, 123)' //	Affensteine '
+      ' INSERT INTO mapping_area VALUES(2, 124);' //	Bielatal '
+      ' INSERT INTO mapping_area VALUES(11, 125);' //	Erzgebirgsgrenzgebiet '
+      ' INSERT INTO mapping_area VALUES(9, 126);' //	Großer Zschand '
+      ' INSERT INTO mapping_area VALUES(13, 127);' //	Hinterhermsdorf '
+      ' INSERT INTO mapping_area VALUES(7, 128);' //	Brand '
+      ' INSERT INTO mapping_area VALUES(8, 129);' //	Kleiner Zschand '
+      ' INSERT INTO mapping_area VALUES(5, 130);' //	Rathen '
+      ' INSERT INTO mapping_area VALUES(4, 131);' //	Schmilka '
+      ' INSERT INTO mapping_area VALUES(3, 132);' //	Schrammsteine '
+      ' INSERT INTO mapping_area VALUES(1, 133);' //	Gebiet der Steine'
+      ' INSERT INTO mapping_area VALUES(6, 134);' //	Wehlen'
+      ' INSERT INTO mapping_area VALUES(12, 135);', //	Wildensteiner Gebiet'
+    );
   }
 
   /// insert all items from retreived json data into datbase
@@ -212,6 +256,37 @@ class SqlHandler {
       await batch.commit(noResult: true);
     });
     return rowCount;
+  }
+
+  // INSERT INTO DIFFERENT FUNCTION (for SMALL PORTIONS)
+  Future<Batch> prepareInsertJsonData() async {
+    final db = await SqlHandler().database;
+    // starting a batch job
+    return db.batch();
+  }
+
+  Future<int> enqueueInsertJsonData(
+    Batch batch,
+    String tablename,
+    Future<List<dynamic>> jsonData,
+  ) async {
+    var rowCount = 0;
+    await jsonData.then((finalJsonData) async {
+      // starting a batch job
+      finalJsonData.forEach((dynamic jsonRow) {
+        // insert data into database
+        batch.insert(
+          tablename,
+          jsonRow,
+        );
+        rowCount++;
+      });
+    });
+    return rowCount;
+  }
+
+  Future<List<Object?>> commitInsertJsonData(Batch batch) async {
+    return batch.commit();
   }
 
   /// Inserts a Country row into the database

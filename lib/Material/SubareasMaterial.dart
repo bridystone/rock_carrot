@@ -5,6 +5,8 @@ import 'package:rock_carrot/Material/BaseItemTile.dart';
 import 'package:rock_carrot/Material/BaseMaterial.dart';
 import 'package:rock_carrot/Web/Sandstein.dart';
 import 'package:rock_carrot/Web/SandsteinSql.dart';
+import 'package:rock_carrot/Web/Teufelsturm.dart';
+import 'package:rock_carrot/Web/TeufelsturmSql.dart';
 
 class SubAreasMaterial extends StatefulWidget {
   final Area _parentItem;
@@ -79,6 +81,7 @@ class _SubAreasMaterialState
           BaseItemTile(
             subarea,
             updateFunction: Sandstein().updateRocksIncludingSubitems,
+            updateAllFunction: Teufelsturm().updateTTComments,
             deleteFunction: Sandstein().deleteRocksFromDatabase,
             functionParameter: subarea.subareaId,
           ),

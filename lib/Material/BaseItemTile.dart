@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:rock_carrot/Baseitems/Areas.dart';
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
+import 'package:rock_carrot/Baseitems/Subareas.dart';
+import 'package:rock_carrot/Web/Teufelsturm.dart';
 
 class BaseItemTile extends StatefulWidget {
   final BaseItem _baseitem;
@@ -15,7 +17,8 @@ class BaseItemTile extends StatefulWidget {
   /// Constructor
   ///
   /// [updateFunction] Function to update data
-  /// [updateAllFunction] Only relevant for update Area!!
+  /// [updateAllFunction] Only relevant for update Area!! and SubArea
+  /// for Subarea its the link to update TT comments
   /// [functionParameter] id Parameter, to be used in the function
   /// [deleteFunction] -> might be replace by favorites in future
   BaseItemTile(
@@ -95,6 +98,29 @@ class _BaseItemTileState extends State<BaseItemTile> {
 
           final records = await _updateAllFunction!(_functionParameter) as int;
 
+          // set Results
+          setState(() {
+            _baseitem.updateChildCount(records);
+          });
+        },
+      ));
+    }
+    // Add UpdateTT Comments possibility (ony if baseitem is Subarea & in Sächsische Schweiz)
+    if (_updateAllFunction != null &&
+        _baseitem is Subarea &&
+        sandsteinNameTeufelsturmAreaIdMap.keys.contains(_baseitem.name)) {
+      secondarySlideActions.add(IconSlideAction(
+        caption: 'Scrape TT',
+        color: Colors.greenAccent,
+        icon: Icons.cloud_download,
+        onTap: () async {
+          setState(() {
+            _baseitem.setChildCountStatus(ChildCountStatus.update_in_progress);
+          });
+          // TODO: show Modal Dialog
+          // clear number for update
+          final records = await _updateAllFunction!(
+              sandsteinNameTeufelsturmAreaIdMap[_baseitem.name]) as int;
           // set Results
           setState(() {
             _baseitem.updateChildCount(records);

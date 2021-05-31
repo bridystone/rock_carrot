@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:html_unescape/html_unescape.dart';
+import 'package:rock_carrot/Web/WebHelper.dart';
 
-class Sandstein {
+class Sandstein with WebHelper {
   static final _singleton = Sandstein._();
   Sandstein._();
 
@@ -64,7 +65,7 @@ class Sandstein {
     // making the request
     final response = await http.get(uri);
     // check if response is valid and refresh items in database
-    if (_isResponseValid(response)) {
+    if (isResponseValid(response)) {
       // insert data to DB
       return json.decode(_cleanString(response.body));
     } else {
@@ -77,8 +78,12 @@ class Sandstein {
     var unesc = HtmlUnescape();
     //unescape HTML-Encoding like &#268
     var string_unesc = unesc.convert(_string);
-    //replace ambigous Czech encoding to correct UTF8 
-    return string_unesc.replaceAll(r"\u008a", "\u0160").replaceAll(r"\u008e", "\u017d").replaceAll(r"\u009a", "\u0161").replaceAll(r"\u009e", "\u017e");
+    //replace ambigous Czech encoding to correct UTF8
+    return string_unesc
+        .replaceAll(r"\u008a", "\u0160")
+        .replaceAll(r"\u008e", "\u017d")
+        .replaceAll(r"\u009a", "\u0161")
+        .replaceAll(r"\u009e", "\u017e");
   }
 
   /// handle bad answers from http response
