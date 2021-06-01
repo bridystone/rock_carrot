@@ -78,7 +78,7 @@ class Sandstein {
     //unescape HTML-Encoding like &#268
     var string_unesc = unesc.convert(_string);
     //replace ambigous Czech encoding to correct UTF8 
-    return string_unesc.replaceAll(r"\u008a", "\u0160").replaceAll(r"\u008e", "\u017d").replaceAll(r"\u009a", "\u0161").replaceAll(r"\u009e", "\u017e");
+    return string_unesc.replaceAll(r'\u008a', '\u0160').replaceAll(r'\u008e', '\u017d').replaceAll(r'\u009a', '\u0161').replaceAll(r'\u009e', '\u017e');
   }
 
   /// handle bad answers from http response
