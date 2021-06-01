@@ -60,19 +60,21 @@ class _RouteTileState extends State<RouteTile> {
                     style: TextStyle(fontSize: 12),
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _route.firstAscentLead,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    Text(
-                      _route.firstAscentPartners,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ],
-                )
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _route.firstAscentLead,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      Text(
+                        _route.firstAscentPartners,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  )
+                ),
               ],
             ),
             onTap: () {
