@@ -90,7 +90,7 @@ class TeufelsturmScraper {
         // generate List for export
         allRoutes.add({
           'id': routeId,
-          'name': routeName,
+          'name': routeName.trim(),
           'average_quality': routeQuality,
           'difficulty': routeDifficulty,
           'rockid': rockId,
@@ -109,6 +109,7 @@ class TeufelsturmScraper {
   Future<List<dynamic>> parseComments(
     String responseComments, {
     int routeId = -1,
+    int rockId = -1,
     int areaId = -1,
   }) async {
     var allComments = <dynamic>[];
@@ -140,6 +141,7 @@ class TeufelsturmScraper {
         // generate List for export
         allComments.add({
           'routeid': routeId,
+          'rockid': rockId,
           'areaid': areaId,
           'user': commentUser,
           'date': commentDate,
@@ -157,6 +159,7 @@ class TeufelsturmScraper {
   Future<List<dynamic>> parseCommentsRegEx(
     String responseComments, {
     int routeId = -1,
+    int rockId = -1,
     int areaId = -1,
   }) async {
     var allComments = <dynamic>[];
@@ -187,6 +190,7 @@ class TeufelsturmScraper {
       if (elements.isNotEmpty) {
         allComments.add({
           'routeid': routeId,
+          'rockId': rockId,
           'areaid': areaId,
           'user': elements.first.namedGroup('user') ?? '',
           'date': elements.first.namedGroup('date') ??

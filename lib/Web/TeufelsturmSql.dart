@@ -45,7 +45,7 @@ extension TeufelsturmSql on Teufelsturm {
       }
       final jsonRoutes = parseRoutes(
         routeResponse ?? '',
-        rockId: rockId ?? 0,
+        rockId: rockId ?? -1,
         areaId: areaId,
       );
       final routesCount = SqlHandler().enqueueInsertJsonData(
@@ -64,6 +64,7 @@ extension TeufelsturmSql on Teufelsturm {
     final sqlRoutes = await SqlHandler().queryRouteIdsByArea(areaId);
     for (var sqlRouteId in sqlRoutes.toList()) {
       final routeId = int.tryParse(sqlRouteId.values.elementAt(0).toString());
+      final rockId = int.tryParse(sqlRouteId.values.elementAt(1).toString());
 
       //perform number of retries
       String? commentsResponse;
@@ -78,7 +79,8 @@ extension TeufelsturmSql on Teufelsturm {
 //      final commentsResponse = await fetchCommentsByRoute(routeId ?? 0);
       final jsonComments = parseCommentsRegEx(
         commentsResponse ?? '',
-        routeId: routeId ?? 0,
+        routeId: routeId ?? -1,
+        rockId: rockId ?? -1,
         areaId: areaId,
       );
       final commentsCount = SqlHandler().enqueueInsertJsonData(
@@ -88,6 +90,9 @@ extension TeufelsturmSql on Teufelsturm {
       );
     }
     await SqlHandler().commitInsertJsonData(batchComments);
+
+    // now perform the cache of mapping tables
+    await SqlHandler().cacheTTMapping();
     count = await SqlHandler().queryCommentsCountByArea(areaId);
     return rockCount;
   }

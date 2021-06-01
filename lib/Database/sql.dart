@@ -33,6 +33,11 @@ class SqlHandler {
   static const ttRoutesTablename = 'tt_routes';
   static const ttCommentsTablename = 'tt_comments';
 
+  /// teufelsturm to sandstein mapping tables
+  static const ttMappingAreasTablename = 'tt_mapping_areas';
+  static const ttMappingRocksTablename = 'tt_mapping_rocks';
+  static const ttMappingRoutesTablename = 'tt_mapping_routes';
+
   /// table configuration in database
   static const databaseTableColumns = {
     countriesTablename: {
@@ -107,6 +112,8 @@ class SqlHandler {
       'geklettert': 'TEXT',
       'begehung': 'TEXT',
     },
+
+    /// Teufelsturm data tables
     ttRocksTablename: {
       'id': 'INT PRIMARY KEY', // internal TT number
       'nr': 'TEXT', // number in area
@@ -129,12 +136,28 @@ class SqlHandler {
     ttCommentsTablename: {
       'ID': 'INTEGER PRIMARY KEY AUTOINCREMENT',
       'routeid': 'INT',
+      // internal TT number (might be missing depending on scraping method)
+      'rockid': 'INT',
       'areaid': 'INT',
       'user': 'TEXT',
       'date': 'TEXT',
       'comment': 'TEXT',
       'quality': 'TEXT',
-    }
+    },
+
+    /// teufelsturm mapping tables
+    ttMappingAreasTablename: {
+      'tt_areaid': 'INT PRIMARY KEY',
+      'sandstein_areaid': 'INT',
+    },
+    ttMappingRocksTablename: {
+      'tt_rockid': 'INT PRIMARY KEY',
+      'sandstein_rockid': 'INT',
+    },
+    ttMappingRoutesTablename: {
+      'tt_routeid': 'INT PRIMARY KEY',
+      'sandstein_routeid': 'INT',
+    },
   };
 
   /// database connection
@@ -152,10 +175,11 @@ class SqlHandler {
   // TODO: resetDatabase currently not used/usable
   Future<Database> _openConnection({bool resetDatabase = false}) async {
     // TODO: Change back to databasesPath, to ensure correct working
-    final databasesPath =
-        '/sdcard/Android/data/info.breidenstein.rock_carrot/'; //ONLY FOR TESTING ON Emulator
-    //final databasesPath = await getDatabasesPath();
+    //final databasesPath =
+    //    '/sdcard/Android/data/info.breidenstein.rock_carrot/'; //ONLY FOR TESTING ON Emulator
+    final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, globalDbName);
+    print(path);
     // Make sure the directory exists
     try {
       await Directory(databasesPath).create(recursive: true);
@@ -214,26 +238,181 @@ class SqlHandler {
     db.execute('CREATE INDEX tt_comments_areaid ON tt_comments (areaid)');
     db.execute('CREATE INDEX tt_comments_route ON tt_comments (routeid)');
 
-    // mapping table for Teufelsturm
+    /// TT mapping table indexes
     db.execute(
-      'CREATE TABLE IF NOT EXISTS mapping_area ('
-      ' "tt_areaid" INT PRIMARY KEY,'
-      ' "sandstein_areaid" INT'
-      ' );'
-      ' INSERT INTO mapping_area VALUES(10, 123)' //	Affensteine '
-      ' INSERT INTO mapping_area VALUES(2, 124);' //	Bielatal '
-      ' INSERT INTO mapping_area VALUES(11, 125);' //	Erzgebirgsgrenzgebiet '
-      ' INSERT INTO mapping_area VALUES(9, 126);' //	Großer Zschand '
-      ' INSERT INTO mapping_area VALUES(13, 127);' //	Hinterhermsdorf '
-      ' INSERT INTO mapping_area VALUES(7, 128);' //	Brand '
-      ' INSERT INTO mapping_area VALUES(8, 129);' //	Kleiner Zschand '
-      ' INSERT INTO mapping_area VALUES(5, 130);' //	Rathen '
-      ' INSERT INTO mapping_area VALUES(4, 131);' //	Schmilka '
-      ' INSERT INTO mapping_area VALUES(3, 132);' //	Schrammsteine '
-      ' INSERT INTO mapping_area VALUES(1, 133);' //	Gebiet der Steine'
-      ' INSERT INTO mapping_area VALUES(6, 134);' //	Wehlen'
-      ' INSERT INTO mapping_area VALUES(12, 135);', //	Wildensteiner Gebiet'
+      'CREATE INDEX idx_tt_mapping_areas_sandstein ON tt_mapping_areas (sandstein_areaid)',
     );
+    db.execute(
+      'CREATE INDEX idx_tt_mapping_rocks_sandstein ON tt_mapping_rocks (sandstein_rockid)',
+    );
+    db.execute(
+      'CREATE INDEX idx_tt_mapping_routes_sandstein ON tt_mapping_routes (sandstein_routeid)',
+    );
+
+    /// mapping views for Teufelsturm
+    // mapping between TT and sandsteinklettern
+    db.execute(
+      '''
+      CREATE VIEW tt_mapping_areas_view AS
+        SELECT 10 as tt_areaid, 123 as sandstein_areaid --	Affensteine
+        UNION
+        SELECT 2, 124 --	Bielatal
+        UNION
+        SELECT 11, 125 --	Erzgebirgsgrenzgebiet
+        UNION
+        SELECT 9, 126 --	Großer Zschand
+        UNION
+        SELECT 13, 127 --	Hinterhermsdorf
+        UNION
+        SELECT 7, 128 --	Brand
+        UNION
+        SELECT 8, 129 --	Kleiner Zschand
+        UNION
+        SELECT 5, 130 --	Rathen
+        UNION
+        SELECT 4, 131 --	Schmilka
+        UNION
+        SELECT 3, 132 --	Schrammsteine
+        UNION
+        SELECT 1, 133 --	Gebiet der Steine
+        UNION
+        SELECT 6, 134 --	Wehlen
+        UNION
+        SELECT 12, 135 --	Wildensteiner Gebiet
+      ''',
+    );
+
+    db.execute('''
+        CREATE VIEW tt_mapping_rocks_view AS 
+        /*
+        only 3 Rocks are missing in DB Sandsteinklettern
+        */
+        SELECT tt_rocks.id as tt_rockid, gipfel.gipfel_id as sandstein_rockid
+        FROM tt_rocks
+          INNER JOIN tt_mapping_areas -- or tt_mapping_areas_view
+          ON tt_areaid = tt_rocks.areaid
+          INNER JOIN gipfel
+          ON sandstein_areaid = sektorid
+        AND
+        (
+        name = gipfelname_d collate nocase
+        OR 
+        name = REPLACE(gipfelname_d,'ss','ß') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d,'ß','sz') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, ' (Dreifreundeturm)','') collate nocase --Pascher
+        OR 
+        name = REPLACE(gipfelname_d, ' (Einsamer Turm)','') collate nocase --Gemeinschaftsturm
+        OR 
+        name = REPLACE(gipfelname_d, ' (Osterspitze)','') collate nocase --Keule
+        OR 
+        name = REPLACE(gipfelname_d, ' (Ameisenturm)','') collate nocase --Rabensteinturm
+        OR 
+        name = REPLACE(gipfelname_d, ' (Späte Zinne)','') collate nocase --Rätselturm
+        OR 
+        name = REPLACE(gipfelname_d, ' (Hänsel)','') collate nocase --Rätselturm
+        OR 
+        name = REPLACE(gipfelname_d, ' (Brandriff)','') collate nocase --Lößnitzturm
+        OR 
+        name = REPLACE(gipfelname_d, ' (Stumpfes Horn)','') collate nocase --Meilerstein
+        OR 
+        name = REPLACE(gipfelname_d, ' (Rotweinspitze)','') collate nocase --Tarzan
+        OR 
+        name = REPLACE(gipfelname_d, ' (Buchfinkenturm)','') collate nocase --Pfaffenkopf
+        OR 
+        name = REPLACE(gipfelname_d, ' (Pilzturm)','') collate nocase --Pilzwand
+        OR 
+        name = REPLACE(gipfelname_d, ' (Rauensteinscheibe)','') collate nocase --Panoramascheibe
+        OR 
+        name = REPLACE(gipfelname_d, ' (Kapellenwand)','') collate nocase --Dornröschen
+        OR 
+        name = REPLACE(gipfelname_d, 'Waldschrat','Waldschratt') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Großer Felsenbrückenturm','Felsenbrückenturm') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Liebespaar, Südturm','Südturm Liebespaar') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Liebespaar, Nordturm','Nordturm Liebespaar') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Gralsburg, Nordostzinne','NO-Zinne Gralsburg') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Gralsburg, Südwestzinne','SW-Zinne Gralsburg') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Friedensturm (Pilzturm)','Pilzturm') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, '1. Zerborstener Turm','Erster Zerborstener Turm') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, '2. Zerborstener Turm','Zweiter Zerborstener Turm') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Festung Königstein','Königstein') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Lilienstein - Westecke','Lilienstein-Westecke') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Pfaffenkopf (Buchfinkenturm)','Buchfinkenturm') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Zwergfels','Zwerg') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Fünf Gipfel, Südturm','Südturm Fünf Gipfel') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Fünf Gipfel, Nordwestturm','Nordwestturm Fünf Gipfel') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Fünf Gipfel, Nordostturm','Nordostturm Fünf Gipfel') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Siamesische Zwillinge, Doof','Doof Siamesische Zwillinge') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Siamesische Zwillinge, Dick','Dick Siamesische Zwillinge') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Lokomotive-Esse','Lokomotive - Esse') collate nocase
+        OR 
+        name = REPLACE(gipfelname_d, 'Burgenerturm','Burgener Turm') collate nocase
+        )    
+    ''');
+    db.execute('''
+        CREATE VIEW tt_mapping_routes_view AS
+        /*
+        lots of routes are still missing
+        */
+        SELECT id as tt_routeid, weg_id as sandstein_routeid
+        FROM "tt_routes"
+          INNER JOIN tt_mapping_rocks -- or tt_mapping_rocks_view
+          ON tt_rockid = rockid
+          INNER JOIN wege
+          ON sandstein_rockid = gipfelid
+          AND 
+          (
+          name = wegname_d collate nocase
+          OR
+          REPLACE(name, 'AW', 'Alter Weg') = REPLACE(wegname_d, '*', '')
+          OR 
+          REPLACE(name, 'ß', 'ss') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'NW-', 'Nordwest') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'N-', 'Nord') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'NO-', 'Nordost') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'O-', 'Ost') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'SO-', 'Südost') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'S-', 'Süd') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'SW-', 'Südwest') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'W-', 'West') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'Var.', 'Variante') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'EV', 'Variante') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          REPLACE(name, 'EV', 'Einstiegsvariante') = REPLACE(wegname_d, '*', '') collate nocase
+          OR 
+          name = TRIM(REPLACE(wegname_d,'*','')) collate nocase
+          )
+        GROUP BY id -- because der is duplicates in db-sandsteinklettern
+      ''');
   }
 
   /// insert all items from retreived json data into datbase

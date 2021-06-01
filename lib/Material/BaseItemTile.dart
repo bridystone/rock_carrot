@@ -96,7 +96,12 @@ class _BaseItemTileState extends State<BaseItemTile> {
             _baseitem.setChildCountStatus(ChildCountStatus.update_in_progress);
           });
 
-          final records = await _updateAllFunction!(_functionParameter) as int;
+          // first perform update of area
+          // otherwise the caching of data will result in 0 values
+          // TODO: doesn't seem to work - caching fails if no update was done before
+          final records = await _updateFunction!(_functionParameter) as int;
+          // perform actual Scraping
+          await _updateAllFunction!(_functionParameter) as int;
 
           // set Results
           setState(() {
