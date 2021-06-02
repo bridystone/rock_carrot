@@ -126,7 +126,8 @@ class TeufelsturmScraper {
     allCommentRows?.forEach((commentRow) {
       // retrieve elements with data
       // th is without font
-      final commentElements = commentRow.querySelectorAll('td>font');
+      // use font[size="2"] to exclude "zuletzt bearbeitet"
+      final commentElements = commentRow.querySelectorAll('td>font[size="2"]');
       // first row is header
       if (commentElements.isNotEmpty) {
         final commentUser = commentElements.elementAt(0).text;
@@ -135,7 +136,7 @@ class TeufelsturmScraper {
         final regex = RegExp(r'(\d+\.\d+\.\d+)\s*(\d+\:\d+)');
         final match = regex.firstMatch(commentDate!);
         commentDate = match!.group(1)! + ' ' + match.group(2)!;
-        final comment = commentElements.elementAt(1).text;
+        final comment = commentElements.elementAt(1).text.trim();
         final commentQual = commentElements.elementAt(2).text;
 
         // generate List for export

@@ -77,7 +77,7 @@ extension TeufelsturmSql on Teufelsturm {
         }
       }
 //      final commentsResponse = await fetchCommentsByRoute(routeId ?? 0);
-      final jsonComments = parseCommentsRegEx(
+      final jsonComments = parseComments(
         commentsResponse ?? '',
         routeId: routeId ?? -1,
         rockId: rockId ?? -1,

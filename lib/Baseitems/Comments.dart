@@ -4,7 +4,7 @@ import 'package:rock_carrot/Database/sqlComments.dart';
 class Comment {
   // ignore: unused_field
   int _kommentId;
-  int _userid;
+  String _userid;
   String _datum;
   // ignore: unused_field
   String _adatum;
@@ -81,7 +81,7 @@ class Comment {
   factory Comment.fromSql(Map<String, Object?> sqlResult) {
     return Comment(
       int.parse(sqlResult.values.elementAt(0).toString()),
-      int.parse(sqlResult.values.elementAt(1).toString()),
+      sqlResult.values.elementAt(1).toString(),
       sqlResult.values.elementAt(2).toString(),
       sqlResult.values.elementAt(3).toString(),
       int.parse(sqlResult.values.elementAt(4).toString()),
@@ -141,7 +141,7 @@ class Comments {
 
   /// get all Route comments from database and transfer them to object list
   Future<List<Comment>> getRouteComments(int routeId) async {
-    final sqlResults = SqlHandler().queryRouteComments(routeId);
+    final sqlResults = SqlHandler().queryRouteCommentsInclTT(routeId);
     // maps sqlResults to Rock and return
     return sqlResults.then(
       (sqlResultsFinal) => sqlResultsFinal
