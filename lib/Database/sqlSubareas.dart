@@ -39,11 +39,16 @@ extension SqlHandlerSubareas on SqlHandler {
           ' teilgebiet.*,'
           ' COUNT(DISTINCT gipfel.gipfel_id) as gipfel_count,'
           ' COUNT(DISTINCT komment.komment_id) as komment_count'
+//          ' ,COUNT(DISTINCT tt_comments.ID) as tt_comment_count'
           ' FROM teilgebiet'
           ' LEFT JOIN gipfel' // counting rocks
           ' ON teilgebiet.sektor_ID = gipfel.sektorid'
           ' LEFT JOIN komment' // counting comments
           ' ON teilgebiet.sektor_ID = komment.sektorid'
+          //        ' LEFT JOIN mapping_area'
+          //        ' ON teilgebiet.sektor_ID = mapping_area.sandstein_areaid'
+          //        ' LEFT JOIN tt_comments'
+          //        ' ON mapping_area.tt_areaid = tt_comments.areaid'
           ' WHERE teilgebiet.gebietid = ?'
           ' GROUP BY teilgebiet.sektor_ID',
           [gebietid],

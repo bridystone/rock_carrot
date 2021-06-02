@@ -67,6 +67,7 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
       }
     }
     // add Maps icon, if it is a Rock
+    // TODO: only show, if there are coordinates available
     if (baseitem is Rock) {
       iconButtons.add(IconButton(
         icon: Icon(
