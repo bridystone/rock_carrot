@@ -26,17 +26,24 @@ class _RouteTileState extends State<RouteTile> {
               ],
             ),*/
         title: ListTile( //Title of ExpansionTile is a ListTile
-          title: Row(
-            children: [
-              Text(_route.nr.toString()+ ' ' + _route.name),
-              (_route.commentCountInt! > 0) ? // if comment in database, show comment icon
-                Icon(
-                  Icons.comment,
-                  size: 15,
-                  ) :
-                Container (),
-            ],            
+          title: Text.rich( // use rich text to combine Text and Icon and NOT overflow on long route names
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: _route.nr.toString()+ ' ' + _route.name,
+                ),
+                WidgetSpan(
+                  child: (_route.commentCountInt! > 0) ? 
+                    Icon(
+                      Icons.comment,
+                      size: 15,
+                    )
+                    : Container(),
+                ),
+              ],
+            ),
           ),
+
           subtitle: _route.nameCZ != '2nd Language Name' ? Text(_route.nameCZ) : null, //show czech name if available
           trailing: Text(_route.grade), //show grade
         ),  
@@ -47,35 +54,20 @@ class _RouteTileState extends State<RouteTile> {
               style: TextStyle(fontSize: 10),
             ),
             title: Text(
+              _route.climbingStyle != '' ?
+              _route.climbingStyle +'\n'+ _route.description:
               _route.description,
               style: TextStyle(fontSize: 12),
             ),
-            subtitle: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 5.0),
-                  child: Text(
-                    _route.firstAscentDate,
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _route.firstAscentLead,
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      Text(
-                        _route.firstAscentPartners,
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  )
-                ),
-              ],
+            subtitle: Text( // concat string for first ascent
+              _route.firstAscentLead + 
+              (_route.firstAscentLead != '' ? ', ' : '') +
+
+              _route.firstAscentPartners + 
+              (_route.firstAscentPartners != '' ? ', ' : '') +
+              
+              _route.firstAscentDate,
+              style: TextStyle(fontSize: 12),
             ),
             onTap: () {
               CommentsSheet().showCommentsSheet(context, _route);

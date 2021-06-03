@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
 import 'package:rock_carrot/Baseitems/Rocks.dart';
 import 'package:rock_carrot/Database/sql.dart';
@@ -71,7 +72,16 @@ class Route extends BaseItem {
   }
 
   String get firstAscentDate {
-    return _erstbegdatum.substring(0, 4);
+    if (_erstbegdatum != '0000-00-00'){
+      DateTime date = DateFormat('yyyy-MM-dd').parse(_erstbegdatum); //parse date 
+      return DateFormat('d.M.yy').format(date); // use same format as in the climbing guide
+    } 
+    else if (_erstbegnachstieg.contains(r'vor ')) { //year of ascent in _erstbegnachstieg
+      return _erstbegnachstieg.substring(_erstbegnachstieg.indexOf(r'vor ')); 
+    }
+    else {
+      return '';
+    }
   }
 
   String get firstAscentLead {
@@ -79,7 +89,11 @@ class Route extends BaseItem {
   }
 
   String get firstAscentPartners {
-    return _erstbegnachstieg;
+    if (_erstbegnachstieg.contains(r'vor ')){ // ascent without known date, but before a certain year ...
+      return _erstbegnachstieg.indexOf(r'vor') == 0 ? '' : _erstbegnachstieg.substring(0,_erstbegnachstieg.indexOf(r', ')); 
+    } else{
+      return _erstbegnachstieg;
+    }
   }
 
   int get routeId {
