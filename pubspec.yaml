@@ -38,6 +38,7 @@ dependencies:
   html_unescape: ^2.0.0
   html: ^0.15.0
   intl: ^0.17.0
+  path_provider: ^2.0.2
 
 dev_dependencies:
   flutter_test:

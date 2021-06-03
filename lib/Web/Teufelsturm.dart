@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:rock_carrot/Web/TeufelsturmScraper.dart';
 import 'package:rock_carrot/Web/WebHelper.dart';
+import 'package:rock_carrot/dev/cache.dart';
 
 /// mapping of teufelsturm Area names to id
 const Map<String, int> sandsteinNameTeufelsturmAreaIdMap = {
@@ -20,7 +21,7 @@ const Map<String, int> sandsteinNameTeufelsturmAreaIdMap = {
 };
 
 /// receive data from Teufelsturm via Web scraping
-class Teufelsturm with WebHelper, TeufelsturmScraper {
+class Teufelsturm with WebHelper, TeufelsturmScraper, CacheData {
   static final _singleton = Teufelsturm._();
   Teufelsturm._();
 
