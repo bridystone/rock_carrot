@@ -78,12 +78,15 @@ class Sandstein with WebHelper {
     var unesc = HtmlUnescape();
     //unescape HTML-Encoding like &#268
     var string_unesc = unesc.convert(_string);
-    //replace ambigous Czech encoding to correct UTF8 
+    //replace ambigous Czech encoding to correct UTF8 + quotation marks
     return string_unesc
-        .replaceAll(r'\u008a', '\u0160')
-        .replaceAll(r'\u008e', '\u017d')
-        .replaceAll(r'\u009a', '\u0161')
-        .replaceAll(r'\u009e', '\u017e');
+        .replaceAll(r'\u008a', '\u0160')  // Š upper case
+        .replaceAll(r'\u008e', '\u017d')  // Ž upper case
+        .replaceAll(r'\u009a', '\u0161')  // š lower case
+        .replaceAll(r'\u009e', '\u017e')  // ž lower case
+        .replaceAll(r'\u0084', '\u201e')  // „ low double comma quotation mark
+        .replaceAll(r'\u0093', '\u201c')  // “ double turned comma quotation mark
+        .replaceAll(RegExp(r'[\\]+\"'), r'\"'); // fix escaped quotes
   }
 
   /// handle bad answers from http response
