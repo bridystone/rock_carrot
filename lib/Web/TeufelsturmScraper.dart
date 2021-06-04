@@ -103,6 +103,68 @@ class TeufelsturmScraper {
     return allRoutes;
   }
 
+  /// parse routes using DOM
+  ///
+  /// return in json format
+  Future<List<dynamic>> parseRoutesRegEx(
+    String responseRoutes, {
+    int rockId = -1,
+    int areaId = -1,
+  }) async {
+    var allRoutes = <dynamic>[];
+
+    // match table with routes
+    final regexTable = RegExp(
+      r'<table border="0" width="100%" cellpadding="1" cellspacing="0" bgcolor="#1A3C64">'
+      r'.*?<tr>.*?<td>.*?<div.*?'
+      r'<table'
+      r'(.*?)</table>',
+      multiLine: true,
+      dotAll: true,
+    );
+
+    final matchTable = regexTable.firstMatch(responseRoutes);
+
+    // match all rows the contain the routes
+    final tableRoutes = matchTable?.group(1);
+    final tableRoutesRows = RegExp(
+      '<tr>(.*?)</tr>',
+      multiLine: true,
+      dotAll: true,
+    ).allMatches(tableRoutes ?? '');
+
+    // iterate through all rows
+    tableRoutesRows.forEach((routeRow) {
+      // parse the routes
+      final routeElements = RegExp(
+        r'<td.*?<font.*?>(?<id>.*?)</font>.*?'
+        r'<td.*?<font.*?>\s*?(?<rockName>.*?)\s*?</font>.*?'
+        r'<td.*?<font.*?<a href=.*?(?<routeId>\d+).*?>\s*?(?<routeName>.*?)\s*?</a>.*?'
+        r'<td.*?<font.*?<img.*?/(?<quality>.*?)\.gif.*?</font>.*?'
+        r'<td.*?<font.*?>(?<difficulty>.*?)</font>.*?'
+        r'<td.*?<font.*?>(?<areaName>.*?)</font>.*?'
+        r'<td.*?<font.*?>(?<status>.*?)</font>.*?',
+        dotAll: true,
+        multiLine: true,
+      ).allMatches(routeRow.group(1).toString());
+      // first line (Header) will not match
+      if (routeElements.isNotEmpty) {
+        // generate List for export
+        allRoutes.add({
+          'id': routeElements.first.namedGroup('routeId') ?? '',
+          'name': routeElements.first.namedGroup('routeName') ?? '',
+          'average_quality': routeElements.first.namedGroup('quality') ?? '',
+          'difficulty': routeElements.first.namedGroup('difficulty') ?? '',
+          'rockid': rockId,
+          'rockName': routeElements.first.namedGroup('rockName') ?? '',
+          'areaid': areaId,
+          'areaName': routeElements.first.namedGroup('areaName') ?? '',
+        });
+      }
+    });
+    return allRoutes;
+  }
+
   /// parse comments using DOM
   ///
   /// return in json format
@@ -164,6 +226,8 @@ class TeufelsturmScraper {
     int areaId = -1,
   }) async {
     var allComments = <dynamic>[];
+
+    // match table with comments
     final regexTable = RegExp(
       r'<table border="0" width="100%" cellpadding="1" cellspacing="0" bgcolor="#1A3C64">'
       r'.*?<tr>.*?<td>.*?'
@@ -173,22 +237,30 @@ class TeufelsturmScraper {
       dotAll: true,
     );
     final matchTable = regexTable.firstMatch(responseComments);
+
+    // match all rows the contain the comments
     final tableComments = matchTable?.group(1);
     final tableCommentsRows = RegExp(
       '<tr>(.*?)</tr>',
       multiLine: true,
       dotAll: true,
     ).allMatches(tableComments ?? '');
+
+    // iterate through all rows
     tableCommentsRows.forEach((commentRow) {
+      // parse the comments
       final elements = RegExp(
         r'<td.*?<font.*?><b>(?<user>.*?)</font>.*?'
         r'(?<date>\d+\.\d+\.\d+).*?(?<time>\d+\:\d+).*?'
-        r'<font.*?>(?<comment>.*?)</font>.*?'
-        r'<font.*?>(?<quality>.*?)</font>.*?',
+        r'<td.*?<font.*?>(?<comment>.*?)</font>.*?'
+        r'<td.*?<font.*?>(?<quality>.*?)</font>.*?',
         dotAll: true,
         multiLine: true,
       ).allMatches(commentRow.group(1).toString());
+
+      // first line (Header) will not match
       if (elements.isNotEmpty) {
+        // add data to jsons map
         allComments.add({
           'routeid': routeId,
           'rockId': rockId,

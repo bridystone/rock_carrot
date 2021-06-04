@@ -68,7 +68,7 @@ extension TeufelsturmSql on Teufelsturm {
       }
       perf.stop('fetch');
       perf.start('parse');
-      final jsonRoutes = parseRoutes(
+      final jsonRoutes = parseRoutesRegEx(
         routeResponse ?? '',
         rockId: rockId ?? -1,
         areaId: areaId,
@@ -119,7 +119,7 @@ extension TeufelsturmSql on Teufelsturm {
       perf.stop('fetch');
 //      final commentsResponse = await fetchCommentsByRoute(routeId ?? 0);
       perf.start('parse');
-      final jsonComments = parseComments(
+      final jsonComments = parseCommentsRegEx(
         commentsResponse ?? '',
         routeId: routeId ?? -1,
         rockId: rockId ?? -1,
