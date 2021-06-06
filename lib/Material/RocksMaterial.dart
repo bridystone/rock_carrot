@@ -3,6 +3,7 @@ import 'package:rock_carrot/Baseitems/Subareas.dart';
 import 'package:rock_carrot/Baseitems/Rocks.dart';
 import 'package:rock_carrot/Material/BaseItemTile.dart';
 import 'package:rock_carrot/Material/BaseMaterial.dart';
+import 'package:rock_carrot/Material/RockTile.dart';
 import 'package:rock_carrot/Web/Sandstein.dart';
 import 'package:rock_carrot/Web/SandsteinSql.dart';
 
@@ -67,22 +68,7 @@ class _RocksMaterialState
       itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
         final rock = baseitem_list[i] as Rock;
-        return Column(children: [
-          // only first time generate a devider
-          (i == 0)
-              ? Divider(
-                  height: 1,
-                  thickness: 1,
-                )
-              : Container(),
-          BaseItemTile(
-            rock,
-          ),
-          Divider(
-            height: 1,
-            thickness: 1,
-          ),
-        ]);
+        return RockTile(rock);
       },
     );
   }
