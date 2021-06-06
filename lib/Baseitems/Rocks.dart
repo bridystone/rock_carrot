@@ -61,6 +61,14 @@ class Rock extends BaseItem {
     return _gipfelId;
   }
 
+  String get type {
+    return '[$_gipfelTyp]';
+  }
+  
+  String get status {
+    return '[$_gipfelStatus]';
+  }
+
   /// returns longitude value or 0
   double get longitude {
     return double.tryParse(_vgrd) ?? 0;
