@@ -120,7 +120,11 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
           },
         ),*/
     return AppBar(
-      title: Text(baseitem.name),
+      title: RichText(
+        text: TextSpan(
+          text: baseitem.name,
+        ),
+      ),
       actions: iconButtons,
     );
   }
