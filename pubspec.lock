@@ -263,6 +263,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  pool:
+    dependency: "direct main"
+    description:
+      name: pool
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.0"
   process:
     dependency: transitive
     description:
@@ -270,6 +277,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.1"
+  semaphore:
+    dependency: "direct main"
+    description:
+      name: semaphore
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
