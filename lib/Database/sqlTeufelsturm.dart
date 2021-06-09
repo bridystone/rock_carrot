@@ -75,27 +75,79 @@ extension SqlHandlerTeufelsturm on SqlHandler {
   /// perform caching to TT to Sandstein mapping views to tables
   ///
   /// needs to be called after Scraping was done
-  Future<void> cacheTTMapping() async {
+  Future<void> cacheTTMapping(int areaid) async {
     return database.then((db) {
       final batch = db.batch();
-      batch.delete(SqlHandler.ttMappingAreasTablename);
-      batch.execute('''
-        INSERT INTO tt_mapping_areas
-        SELECT *
-        FROM tt_mapping_areas_view;
-        ''');
-      batch.delete(SqlHandler.ttMappingRocksTablename);
-      batch.execute('''
+      batch.delete(
+        SqlHandler.ttMappingRocksTablename,
+        where: 'tt_areaid = ?',
+        whereArgs: [areaid],
+      );
+      batch.execute(
+        '''
         INSERT INTO tt_mapping_rocks
-        SELECT *
-        FROM tt_mapping_rocks_view;
-        ''');
-      batch.delete(SqlHandler.ttMappingRoutesTablename);
-      batch.execute('''
+          SELECT 
+            tt_rocks.id as tt_rockid, 
+            gipfel.gipfel_id as sandstein_rockid,
+            ?
+          FROM tt_rocks
+            INNER JOIN tt_mapping_areas -- or tt_mapping_areas_view
+            ON tt_areaid = tt_rocks.areaid AND tt_areaid = ?
+            INNER JOIN gipfel
+            ON sandstein_areaid = sektorid
+            LEFT JOIN tt_mapping_rocks_static
+            ON gipfel.gipfelname_d = tt_mapping_rocks_static.sandstein_rockname 
+          WHERE name = gipfelname_d OR name = tt_rockname
+        ''',
+        [areaid, areaid],
+      );
+      batch.delete(
+        SqlHandler.ttMappingRoutesTablename,
+        where: 'tt_areaid = ?',
+        whereArgs: [areaid],
+      );
+      batch.execute(
+        '''
         INSERT INTO tt_mapping_routes
-        SELECT *
-        FROM tt_mapping_routes_view;
-        ''');
+          SELECT 
+            id as tt_routeid, 
+            weg_id as sandstein_routeid,
+            ?
+          FROM "tt_routes"
+            INNER JOIN tt_mapping_rocks -- or tt_mapping_rocks_view
+            ON tt_rockid = rockid AND tt_areaid = ?
+            INNER JOIN wege
+            ON sandstein_rockid = gipfelid
+            LEFT JOIN tt_mapping_routes_static
+            ON REPLACE(wege.wegname_d,'*','') = tt_mapping_routes_static.sandstein_routename
+              WHERE 
+              REPLACE(
+              REPLACE(
+                name 
+              ,'-','')
+              ,' ','')
+              = 
+              REPLACE(
+              REPLACE(
+                REPLACE(
+                  REPLACE(
+                    wegname_d,
+                  '*',''),
+                'ss','ß') -- sometimes replaced - but not always
+              ,'-','')
+              ,' ','')
+                collate nocase 
+              OR
+              name = 
+                REPLACE(
+                  wegname_d,
+                '*','')collate nocase -- sometimes ß replaced - but not always
+              OR 
+              name = tt_mapping_routes_static.tt_routename collate nocase
+              GROUP BY id
+        ''',
+        [areaid, areaid],
+      );
       return batch.commit();
     });
   }

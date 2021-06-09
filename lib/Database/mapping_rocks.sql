@@ -1,3 +1,51 @@
+DROP TABLE IF EXISTS "mapping_rocks";
+CREATE TABLE IF NOT EXISTS "mapping_rocks" (
+	"sandstein_rockname" TEXT NOT NULL COLLATE NOCASE,
+	"tt_rockname" TEXT NOT NULL COLLATE NOCASE,
+	PRIMARY KEY("sandstein_rockname")
+);
+
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Pascher (Dreifreundeturm)', 'Pascher');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Gemeinschaftsturm (Einsamer Turm)', 'Gemeinschaftsturm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Keule (Osterspitze)', 'Keule');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Rabensteinturm (Ameisenturm)', 'Rabensteinturm' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Rätselturm (Späte Zinne)', 'Rätselturm' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Hexe (Hänsel)', 'Hexe' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Lößnitzturm (Brandriff)', 'Lößnitzturm' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Meilerstein (Stumpfes Horn)', 'Meilerstein' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Tarzan (Rotweinspitze)', 'Tarzan' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Pilzwand (Pilzturm)', 'Pilzwand' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Panoramascheibe (Rauensteinscheibe)', 'Panoramascheibe' );
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Dornröschen (Kapellenwand)', 'Dornröschen');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Waldschrat','Waldschratt');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Großer Felsenbrückenturm','Felsenbrückenturm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Liebespaar, Südturm','Südturm Liebespaar');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Liebespaar, Nordturm','Nordturm Liebespaar');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Gralsburg, Nordostzinne','NO-Zinne Gralsburg');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Gralsburg, Südwestzinne','SW-Zinne Gralsburg');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Friedensturm (Pilzturm)','Pilzturm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('1. Zerborstener Turm','Erster Zerborstener Turm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('2. Zerborstener Turm','Zweiter Zerborstener Turm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Festung Königstein','Königstein');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Lilienstein - Westecke','Lilienstein-Westecke');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Pfaffenkopf (Buchfinkenturm)','Buchfinkenturm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Zwergfels','Zwerg');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Südturm','Südturm Fünf Gipfel');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Nordwestturm','Nordwestturm Fünf Gipfel');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Nordostturm','Nordostturm Fünf Gipfel');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Siamesische Zwillinge, Doof','Doof Siamesische Zwillinge');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Siamesische Zwillinge, Dick','Dick Siamesische Zwillinge');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Lokomotive-Esse','Lokomotive - Esse');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Burgenerturm','Burgener Turm');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Litfasssäule','Litfaßsäule');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Amboss','Amboß');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Kleiner Amboss','Kleiner Amboß');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Bloßstock','Bloszstock');
+INSERT INTO mapping_rocks (sandstein_rockname, tt_rockname) VALUES ('Kleingießhübeler Turm','Kleingießhübler Turm');
+
+
+
+
 -- caching table
 CREATE TABLE IF NOT EXISTS tt_mapping_rocks (
 	tt_rockid INT PRIMARY KEY,
@@ -22,77 +70,6 @@ FROM tt_rocks
 	ON tt_areaid = tt_rocks.areaid
 	INNER JOIN gipfel
 	ON sandstein_areaid = sektorid
-AND
-(
-name = gipfelname_d collate nocase
-OR 
-name = REPLACE(gipfelname_d,'ss','ß') collate nocase
-OR 
-name = REPLACE(gipfelname_d,'ß','sz') collate nocase
-OR 
-name = REPLACE(gipfelname_d, ' (Dreifreundeturm)','') collate nocase --Pascher
-OR 
-name = REPLACE(gipfelname_d, ' (Einsamer Turm)','') collate nocase --Gemeinschaftsturm
-OR 
-name = REPLACE(gipfelname_d, ' (Osterspitze)','') collate nocase --Keule
-OR 
-name = REPLACE(gipfelname_d, ' (Ameisenturm)','') collate nocase --Rabensteinturm
-OR 
-name = REPLACE(gipfelname_d, ' (Späte Zinne)','') collate nocase --Rätselturm
-OR 
-name = REPLACE(gipfelname_d, ' (Hänsel)','') collate nocase --Rätselturm
-OR 
-name = REPLACE(gipfelname_d, ' (Brandriff)','') collate nocase --Lößnitzturm
-OR 
-name = REPLACE(gipfelname_d, ' (Stumpfes Horn)','') collate nocase --Meilerstein
-OR 
-name = REPLACE(gipfelname_d, ' (Rotweinspitze)','') collate nocase --Tarzan
-OR 
-name = REPLACE(gipfelname_d, ' (Buchfinkenturm)','') collate nocase --Pfaffenkopf
-OR 
-name = REPLACE(gipfelname_d, ' (Pilzturm)','') collate nocase --Pilzwand
-OR 
-name = REPLACE(gipfelname_d, ' (Rauensteinscheibe)','') collate nocase --Panoramascheibe
-OR 
-name = REPLACE(gipfelname_d, ' (Kapellenwand)','') collate nocase --Dornröschen
-OR 
-name = REPLACE(gipfelname_d, 'Waldschrat','Waldschratt') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Großer Felsenbrückenturm','Felsenbrückenturm') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Liebespaar, Südturm','Südturm Liebespaar') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Liebespaar, Nordturm','Nordturm Liebespaar') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Gralsburg, Nordostzinne','NO-Zinne Gralsburg') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Gralsburg, Südwestzinne','SW-Zinne Gralsburg') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Friedensturm (Pilzturm)','Pilzturm') collate nocase
-OR 
-name = REPLACE(gipfelname_d, '1. Zerborstener Turm','Erster Zerborstener Turm') collate nocase
-OR 
-name = REPLACE(gipfelname_d, '2. Zerborstener Turm','Zweiter Zerborstener Turm') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Festung Königstein','Königstein') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Lilienstein - Westecke','Lilienstein-Westecke') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Pfaffenkopf (Buchfinkenturm)','Buchfinkenturm') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Zwergfels','Zwerg') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Fünf Gipfel, Südturm','Südturm Fünf Gipfel') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Fünf Gipfel, Nordwestturm','Nordwestturm Fünf Gipfel') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Fünf Gipfel, Nordostturm','Nordostturm Fünf Gipfel') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Siamesische Zwillinge, Doof','Doof Siamesische Zwillinge') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Siamesische Zwillinge, Dick','Dick Siamesische Zwillinge') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Lokomotive-Esse','Lokomotive - Esse') collate nocase
-OR 
-name = REPLACE(gipfelname_d, 'Burgenerturm','Burgener Turm') collate nocase
-)
+	LEFT JOIN mapping_rocks
+	ON gipfel.gipfelname_d = mapping_rocks.sandstein_rockname 
+WHERE name = gipfelname_d OR name = tt_rockname

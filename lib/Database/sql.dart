@@ -38,6 +38,10 @@ class SqlHandler {
   static const ttMappingRocksTablename = 'tt_mapping_rocks';
   static const ttMappingRoutesTablename = 'tt_mapping_routes';
 
+  /// constant mapping tables to map rocks/routes staticly
+  static const ttMappingRocksStaticTablename = 'tt_mapping_rocks_static';
+  static const ttMappingRoutesStaticTablename = 'tt_mapping_routes_static';
+
   /// table configuration in database
   static const databaseTableColumns = {
     countriesTablename: {
@@ -153,10 +157,20 @@ class SqlHandler {
     ttMappingRocksTablename: {
       'tt_rockid': 'INT PRIMARY KEY',
       'sandstein_rockid': 'INT',
+      'tt_areaid': 'INT',
     },
     ttMappingRoutesTablename: {
       'tt_routeid': 'INT PRIMARY KEY',
       'sandstein_routeid': 'INT',
+      'tt_areaid': 'INT',
+    },
+    ttMappingRocksStaticTablename: {
+      'tt_rockname': 'TEXT NOT NULL COLLATE NOCASE',
+      'sandstein_rockname': 'TEXT NOT NULL COLLATE NOCASE PRIMARY KEY',
+    },
+    ttMappingRoutesStaticTablename: {
+      'tt_routename': 'TEXT NOT NULL COLLATE NOCASE',
+      'sandstein_routename': 'TEXT NOT NULL COLLATE NOCASE PRIMARY KEY',
     },
   };
 
@@ -246,179 +260,103 @@ class SqlHandler {
       'CREATE INDEX idx_tt_mapping_routes_sandstein ON tt_mapping_routes (sandstein_routeid)',
     );
 
-    /// mapping views for Teufelsturm
     // mapping between TT and sandsteinklettern
     db.execute(
       '''
-      CREATE VIEW tt_mapping_areas_view AS
-        SELECT 10 as tt_areaid, 123 as sandstein_areaid --	Affensteine
-        UNION
-        SELECT 2, 124 --	Bielatal
-        UNION
-        SELECT 11, 125 --	Erzgebirgsgrenzgebiet
-        UNION
-        SELECT 9, 126 --	Großer Zschand
-        UNION
-        SELECT 13, 127 --	Hinterhermsdorf
-        UNION
-        SELECT 7, 128 --	Brand
-        UNION
-        SELECT 8, 129 --	Kleiner Zschand
-        UNION
-        SELECT 5, 130 --	Rathen
-        UNION
-        SELECT 4, 131 --	Schmilka
-        UNION
-        SELECT 3, 132 --	Schrammsteine
-        UNION
-        SELECT 1, 133 --	Gebiet der Steine
-        UNION
-        SELECT 6, 134 --	Wehlen
-        UNION
-        SELECT 12, 135 --	Wildensteiner Gebiet
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (10,123); -- Affensteine
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (2,124); --	Bielatal
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (11,125); --	Erzgebirgsgrenzgebiet
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (9,126); --	Großer Zschand
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (13,127); --	Hinterhermsdorf
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (7,128); --	Brand
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (8,129); --	Kleiner Zschand
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (5,130); --	Rathen
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (4,131); --	Schmilka
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (3,132); --	Schrammsteine
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (1,133); --	Gebiet der Steine
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (6,134); --	Wehlen
+      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (12,135); --	Wildensteiner Gebiet
       ''',
     );
 
     db.execute('''
-        CREATE VIEW tt_mapping_rocks_view AS 
-        /*
-        only 3 Rocks are missing in DB Sandsteinklettern
-        */
-        SELECT tt_rocks.id as tt_rockid, gipfel.gipfel_id as sandstein_rockid
-        FROM tt_rocks
-          INNER JOIN tt_mapping_areas -- or tt_mapping_areas_view
-          ON tt_areaid = tt_rocks.areaid
-          INNER JOIN gipfel
-          ON sandstein_areaid = sektorid
-        AND
-        (
-        name = gipfelname_d collate nocase
-        OR 
-        name = REPLACE(gipfelname_d,'ss','ß') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d,'ß','sz') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, ' (Dreifreundeturm)','') collate nocase --Pascher
-        OR 
-        name = REPLACE(gipfelname_d, ' (Einsamer Turm)','') collate nocase --Gemeinschaftsturm
-        OR 
-        name = REPLACE(gipfelname_d, ' (Osterspitze)','') collate nocase --Keule
-        OR 
-        name = REPLACE(gipfelname_d, ' (Ameisenturm)','') collate nocase --Rabensteinturm
-        OR 
-        name = REPLACE(gipfelname_d, ' (Späte Zinne)','') collate nocase --Rätselturm
-        OR 
-        name = REPLACE(gipfelname_d, ' (Hänsel)','') collate nocase --Rätselturm
-        OR 
-        name = REPLACE(gipfelname_d, ' (Brandriff)','') collate nocase --Lößnitzturm
-        OR 
-        name = REPLACE(gipfelname_d, ' (Stumpfes Horn)','') collate nocase --Meilerstein
-        OR 
-        name = REPLACE(gipfelname_d, ' (Rotweinspitze)','') collate nocase --Tarzan
-        OR 
-        name = REPLACE(gipfelname_d, ' (Buchfinkenturm)','') collate nocase --Pfaffenkopf
-        OR 
-        name = REPLACE(gipfelname_d, ' (Pilzturm)','') collate nocase --Pilzwand
-        OR 
-        name = REPLACE(gipfelname_d, ' (Rauensteinscheibe)','') collate nocase --Panoramascheibe
-        OR 
-        name = REPLACE(gipfelname_d, ' (Kapellenwand)','') collate nocase --Dornröschen
-        OR 
-        name = REPLACE(gipfelname_d, 'Waldschrat','Waldschratt') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Großer Felsenbrückenturm','Felsenbrückenturm') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Liebespaar, Südturm','Südturm Liebespaar') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Liebespaar, Nordturm','Nordturm Liebespaar') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Gralsburg, Nordostzinne','NO-Zinne Gralsburg') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Gralsburg, Südwestzinne','SW-Zinne Gralsburg') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Friedensturm (Pilzturm)','Pilzturm') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, '1. Zerborstener Turm','Erster Zerborstener Turm') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, '2. Zerborstener Turm','Zweiter Zerborstener Turm') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Festung Königstein','Königstein') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Lilienstein - Westecke','Lilienstein-Westecke') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Pfaffenkopf (Buchfinkenturm)','Buchfinkenturm') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Zwergfels','Zwerg') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Fünf Gipfel, Südturm','Südturm Fünf Gipfel') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Fünf Gipfel, Nordwestturm','Nordwestturm Fünf Gipfel') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Fünf Gipfel, Nordostturm','Nordostturm Fünf Gipfel') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Siamesische Zwillinge, Doof','Doof Siamesische Zwillinge') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Siamesische Zwillinge, Dick','Dick Siamesische Zwillinge') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Lokomotive-Esse','Lokomotive - Esse') collate nocase
-        OR 
-        name = REPLACE(gipfelname_d, 'Burgenerturm','Burgener Turm') collate nocase
-        )    
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Pascher (Dreifreundeturm)', 'Pascher');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Gemeinschaftsturm (Einsamer Turm)', 'Gemeinschaftsturm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Keule (Osterspitze)', 'Keule');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Rabensteinturm (Ameisenturm)', 'Rabensteinturm' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Rätselturm (Späte Zinne)', 'Rätselturm' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Hexe (Hänsel)', 'Hexe' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Lößnitzturm (Brandriff)', 'Lößnitzturm' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Meilerstein (Stumpfes Horn)', 'Meilerstein' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Tarzan (Rotweinspitze)', 'Tarzan' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Pilzwand (Pilzturm)', 'Pilzwand' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Panoramascheibe (Rauensteinscheibe)', 'Panoramascheibe' );
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Dornröschen (Kapellenwand)', 'Dornröschen');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Waldschrat','Waldschratt');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Großer Felsenbrückenturm','Felsenbrückenturm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Liebespaar, Südturm','Südturm Liebespaar');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Liebespaar, Nordturm','Nordturm Liebespaar');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Gralsburg, Nordostzinne','NO-Zinne Gralsburg');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Gralsburg, Südwestzinne','SW-Zinne Gralsburg');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Friedensturm (Pilzturm)','Pilzturm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('1. Zerborstener Turm','Erster Zerborstener Turm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('2. Zerborstener Turm','Zweiter Zerborstener Turm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Festung Königstein','Königstein');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Lilienstein - Westecke','Lilienstein-Westecke');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Pfaffenkopf (Buchfinkenturm)','Buchfinkenturm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Zwergfels','Zwerg');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Südturm','Südturm Fünf Gipfel');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Nordwestturm','Nordwestturm Fünf Gipfel');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Nordostturm','Nordostturm Fünf Gipfel');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Siamesische Zwillinge, Doof','Doof Siamesische Zwillinge');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Siamesische Zwillinge, Dick','Dick Siamesische Zwillinge');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Lokomotive-Esse','Lokomotive - Esse');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Burgenerturm','Burgener Turm');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Litfasssäule','Litfaßsäule');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Amboss','Amboß');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Kleiner Amboss','Kleiner Amboß');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Bloßstock','Bloszstock');
+      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Kleingießhübeler Turm','Kleingießhübler Turm');
     ''');
     db.execute('''
-        CREATE VIEW tt_mapping_routes_view AS
-        /*
-        lots of routes are still missing
-        */
-        SELECT id as tt_routeid, weg_id as sandstein_routeid
-        FROM "tt_routes"
-          INNER JOIN tt_mapping_rocks -- or tt_mapping_rocks_view
-          ON tt_rockid = rockid
-          INNER JOIN wege
-          ON sandstein_rockid = gipfelid
-          AND 
-          (
-          name = wegname_d collate nocase
-          OR
-          REPLACE(name, 'AW', 'Alter Weg') = REPLACE(wegname_d, '*', '')
-          OR 
-          REPLACE(name, 'ß', 'ss') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'NW-', 'Nordwest') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'N-', 'Nord') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'NO-', 'Nordost') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'O-', 'Ost') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'SO-', 'Südost') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'S-', 'Süd') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'SW-', 'Südwest') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'W-', 'West') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'Var.', 'Variante') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'EV', 'Variante') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-          REPLACE(name, 'EV', 'Einstiegsvariante') = REPLACE(wegname_d, '*', '') collate nocase
-          OR 
-    			REPLACE(wegname_d, 'ß', 'ss') = REPLACE(name, '*', '') collate nocase
-          OR 
-          REPLACE(name, ' ', '') = REPLACE(wegname_d, '*', '') collate nocase
-          OR           
-          REPLACE(name, ' ', '-') = REPLACE(wegname_d, '*', '') collate nocase
-          OR           
-          name = REPLACE(REPLACE(wegname_d, '*', ''), ' ', '') collate nocase
-          OR           
-          name = REPLACE(REPLACE(wegname_d, '*', ''), ' ', '-') collate nocase
-          OR
-          name = TRIM(REPLACE(wegname_d,'*','')) collate nocase
-          )
-        GROUP BY id -- because der is duplicates in db-sandsteinklettern
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('Alter Weg', 'AW');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('Alter Weg direkt', 'AW direkt');
+
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordweg', 'N-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostweg', 'NO-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostweg', 'O-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostweg', 'SO-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südweg', 'S-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestweg', 'SW-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westweg', 'W-Weg');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestweg', 'NW-Weg');
+
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwand', 'N-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostwand', 'NO-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostwand', 'O-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostwand', 'SO-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwand', 'S-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestwand', 'SW-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westwand', 'W-wand');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestwand', 'NW-wand');
+
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordkante', 'N-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostkante', 'NO-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostkante', 'O-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostkante', 'SO-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südkante', 'S-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestkante', 'SW-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westkante', 'W-kante');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestkante', 'NW-kante');
+
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordkamin', 'N-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostkamin', 'NO-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostkamin', 'O-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostkamin', 'SO-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südkamin', 'S-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestkamin', 'SW-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westkamin', 'W-kamin');
+      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestkamin', 'NW-kamin');
       ''');
   }
 

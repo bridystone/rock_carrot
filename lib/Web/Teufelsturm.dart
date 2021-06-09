@@ -127,7 +127,7 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
         StreamController<Map<String, int>>();
 
     /// pool that limites the request
-    final pool = Pool(100, timeout: Duration(seconds: 30));
+    final pool = Pool(50, timeout: Duration(seconds: 30));
 
     /// semaphore that signals the finish line :)
     final semaphoreRoutes = LocalSemaphore(1);
@@ -296,7 +296,7 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
     await SqlHandler().commitInsertJsonData(batchComments);
 
     // now perform the cache of mapping tables
-    await SqlHandler().cacheTTMapping();
+    await SqlHandler().cacheTTMapping(areaId);
 
     return rockCount;
   }
