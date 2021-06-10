@@ -123,19 +123,33 @@ class CommentsSheet with Comments, FutureBuilderHelper {
       // statusrow bottom
       Column(children: [
         Row(children: [
-          Text('qual:' + comment.quality),
-          Icon(Icons.thumb_up),
-          Text(' | sicher:' + comment.safety),
-          Text(' | nass:' + comment.wetness),
+          comment.hasQualityRoute ? Text('quality:') : Container(),
+          comment.hasQualityRoute
+              ? Icon(
+                  comment.qualityRouteIcon ?? Icons.minimize,
+                  size: 15,
+                )
+              : Container(),
+          comment.hasSafetyRoute ? Text(' | safety:') : Container(),
+          comment.hasSafetyRoute
+              ? Icon(
+                  comment.safetyRouteIcon ?? Icons.minimize,
+                  size: 15,
+                )
+              : Container(),
+          comment.hasWetnessRoute ? Text(' | wet:') : Container(),
+          comment.hasWetnessRoute
+              ? Icon(
+                  comment.wetnessRouteIcon ?? Icons.minimize,
+                  size: 15,
+                )
+              : Container(),
+          comment.hasDiffucultyRoute
+              ? Text(' | grade: ${comment.difficultyRoute}')
+              : Container(),
         ]),
-        Row(
-          children: [
-            Text('schwer:' + comment.difficulty),
-            Text(' | geklettert:' + comment.climbed),
-            Text(' | begehung:' + comment.climb),
-          ],
-        )
       ]),
+      Divider(),
     ]);
   }
 }

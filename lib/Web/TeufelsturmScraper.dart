@@ -138,12 +138,12 @@ class TeufelsturmScraper {
       // parse the routes
       final routeElements = RegExp(
         r'<td.*?<font.*?>(?<id>.*?)</font>.*?'
-        r'<td.*?<font.*?>\s*?(?<rockName>.*?)\s*?</font>.*?'
-        r'<td.*?<font.*?<a href=.*?(?<routeId>\d+).*?>\s*?(?<routeName>.*?)\s*?</a>.*?'
+        r'<td.*?<font.*?>\s*(?<rockName>.*?)\s*</font>.*?'
+        r'<td.*?<font.*?<a href=.*?(?<routeId>\d+).*?>\s*(?<routeName>.*?)\s*</a>.*?'
         r'<td.*?<font.*?<img.*?/(?<quality>.*?)\.gif.*?</font>.*?'
-        r'<td.*?<font.*?>(?<difficulty>.*?)</font>.*?'
-        r'<td.*?<font.*?>(?<areaName>.*?)</font>.*?'
-        r'<td.*?<font.*?>(?<status>.*?)</font>.*?',
+        r'<td.*?<font.*?>\s*(?<difficulty>.*?)\s*</font>.*?'
+        r'<td.*?<font.*?>\s*(?<areaName>.*?)\s*</font>.*?'
+        r'<td.*?<font.*?>\s*(?<status>.*?)\s*</font>.*?',
         dotAll: true,
         multiLine: true,
       ).allMatches(routeRow.group(1).toString());
@@ -250,10 +250,10 @@ class TeufelsturmScraper {
     tableCommentsRows.forEach((commentRow) {
       // parse the comments
       final elements = RegExp(
-        r'<td.*?<font.*?><b>(?<user>.*?)</font>.*?'
+        r'<td.*?<font.*?><b>\s*(?<user>.*?)\s*</font>.*?'
         r'(?<date>\d+\.\d+\.\d+).*?(?<time>\d+\:\d+).*?'
-        r'<td.*?<font.*?>(?<comment>.*?)</font>.*?'
-        r'<td.*?<font.*?>(?<quality>.*?)</font>.*?',
+        r'<td.*?<font.*?>\s*(?<comment>.*?)\s*</font>.*?'
+        r'<td.*?<font.*?>\s*(?<quality>.*?)\s*</font>.*?',
         dotAll: true,
         multiLine: true,
       ).allMatches(commentRow.group(1).toString());

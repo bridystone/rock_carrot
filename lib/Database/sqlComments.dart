@@ -18,6 +18,9 @@ extension SqlHandlerComments on SqlHandler {
   ) {
     return database.then((db) => db.rawQuery(
           '''
+          SELECT * -- ORDER BY source
+          FROM (
+
           SELECT 
             komment_ID,
             userid,
@@ -61,6 +64,8 @@ extension SqlHandlerComments on SqlHandler {
             INNER JOIN tt_mapping_routes
             ON tt_comments.routeid = tt_mapping_routes.tt_routeid
           WHERE tt_mapping_routes.sandstein_routeid = ?
+
+          ) ORDER BY source
           ''',
           [wegid, wegid],
         ));

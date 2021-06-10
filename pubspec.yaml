@@ -89,6 +89,12 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
+# add DBSandsteinIcons
+  fonts:
+    - family:  DBSandsteinIcons
+      fonts:
+        - asset: fonts/DBSandsteinIcons.ttf
+
 # generate App Icons
 # run: 'flutter pub run flutter_launcher_icons:main'
 flutter_icons:
