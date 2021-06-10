@@ -259,102 +259,179 @@ class SqlHandler {
 
     // mapping between TT and sandsteinklettern
     db.execute(
-      '''
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (10,123); -- Affensteine
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (2,124); --	Bielatal
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (11,125); --	Erzgebirgsgrenzgebiet
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (9,126); --	Großer Zschand
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (13,127); --	Hinterhermsdorf
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (7,128); --	Brand
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (8,129); --	Kleiner Zschand
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (5,130); --	Rathen
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (4,131); --	Schmilka
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (3,132); --	Schrammsteine
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (1,133); --	Gebiet der Steine
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (6,134); --	Wehlen
-      INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (12,135); --	Wildensteiner Gebiet
-      ''',
-    );
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (10,123)'); // Affensteine
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (2,124)'); //	Bielatal
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (11,125)'); //	Erzgebirgsgrenzgebiet
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (9,126)'); //	Großer Zschand
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (13,127)'); //	Hinterhermsdorf
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (7,128)'); //	Brand
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (8,129)'); //	Kleiner Zschand
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (5,130)'); //	Rathen
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (4,131)'); //	Schmilka
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (3,132)'); //	Schrammsteine
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (1,133)'); //	Gebiet der Steine
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (6,134)'); //	Wehlen
+    db.execute(
+        'INSERT INTO tt_mapping_areas (tt_areaid, sandstein_areaid) VALUES (12,135)'); //	Wildensteiner Gebiet
 
-    db.execute('''
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Pascher (Dreifreundeturm)', 'Pascher');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Gemeinschaftsturm (Einsamer Turm)', 'Gemeinschaftsturm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Keule (Osterspitze)', 'Keule');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Rabensteinturm (Ameisenturm)', 'Rabensteinturm' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Rätselturm (Späte Zinne)', 'Rätselturm' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Hexe (Hänsel)', 'Hexe' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Lößnitzturm (Brandriff)', 'Lößnitzturm' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Meilerstein (Stumpfes Horn)', 'Meilerstein' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Tarzan (Rotweinspitze)', 'Tarzan' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Pilzwand (Pilzturm)', 'Pilzwand' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Panoramascheibe (Rauensteinscheibe)', 'Panoramascheibe' );
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Dornröschen (Kapellenwand)', 'Dornröschen');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Waldschrat','Waldschratt');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Großer Felsenbrückenturm','Felsenbrückenturm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Liebespaar, Südturm','Südturm Liebespaar');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Liebespaar, Nordturm','Nordturm Liebespaar');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Gralsburg, Nordostzinne','NO-Zinne Gralsburg');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Gralsburg, Südwestzinne','SW-Zinne Gralsburg');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Friedensturm (Pilzturm)','Pilzturm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('1. Zerborstener Turm','Erster Zerborstener Turm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('2. Zerborstener Turm','Zweiter Zerborstener Turm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Festung Königstein','Königstein');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Lilienstein - Westecke','Lilienstein-Westecke');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Pfaffenkopf (Buchfinkenturm)','Buchfinkenturm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Zwergfels','Zwerg');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Südturm','Südturm Fünf Gipfel');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Nordwestturm','Nordwestturm Fünf Gipfel');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Fünf Gipfel, Nordostturm','Nordostturm Fünf Gipfel');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Siamesische Zwillinge, Doof','Doof Siamesische Zwillinge');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Siamesische Zwillinge, Dick','Dick Siamesische Zwillinge');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Lokomotive-Esse','Lokomotive - Esse');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Burgenerturm','Burgener Turm');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Litfasssäule','Litfaßsäule');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Amboss','Amboß');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Kleiner Amboss','Kleiner Amboß');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Bloßstock','Bloszstock');
-      INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES ('Kleingießhübeler Turm','Kleingießhübler Turm');
-    ''');
-    db.execute('''
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('Alter Weg', 'AW');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('Alter Weg direkt', 'AW direkt');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Pascher (Dreifreundeturm)\', \'Pascher\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Gemeinschaftsturm (Einsamer Turm)\', \'Gemeinschaftsturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Keule (Osterspitze)\', \'Keule\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Rabensteinturm (Ameisenturm)\', \'Rabensteinturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Rätselturm (Späte Zinne)\', \'Rätselturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Hexe (Hänsel)\', \'Hexe\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Lößnitzturm (Brandriff)\', \'Lößnitzturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Meilerstein (Stumpfes Horn)\', \'Meilerstein\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Tarzan (Rotweinspitze)\', \'Tarzan\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Pilzwand (Pilzturm)\', \'Pilzwand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Panoramascheibe (Rauensteinscheibe)\', \'Panoramascheibe\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Dornröschen (Kapellenwand)\', \'Dornröschen\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Waldschrat\', \'Waldschratt\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Großer Felsenbrückenturm\', \'Felsenbrückenturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Liebespaar, Südturm\', \'Südturm Liebespaar\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Liebespaar, Nordturm\', \'Nordturm Liebespaar\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Gralsburg, Nordostzinne\', \'NO-Zinne Gralsburg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Gralsburg, Südwestzinne\', \'SW-Zinne Gralsburg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Friedensturm (Pilzturm)\', \'Pilzturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'1. Zerborstener Turm\', \'Erster Zerborstener Turm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'2. Zerborstener Turm\', \'Zweiter Zerborstener Turm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Festung Königstein\', \'Königstein\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Lilienstein - Westecke\', \'Lilienstein-Westecke\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Pfaffenkopf (Buchfinkenturm)\', \'Buchfinkenturm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Zwergfels\', \'Zwerg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Fünf Gipfel, Südturm\', \'Südturm Fünf Gipfel\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Fünf Gipfel, Nordwestturm\', \'Nordwestturm Fünf Gipfel\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Fünf Gipfel, Nordostturm\', \'Nordostturm Fünf Gipfel\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Siamesische Zwillinge, Doof\', \'Doof Siamesische Zwillinge\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Siamesische Zwillinge, Dick\', \'Dick Siamesische Zwillinge\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Lokomotive-Esse\', \'Lokomotive - Esse\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Burgenerturm\', \'Burgener Turm\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Litfasssäule\', \'Litfaßsäule\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Amboss\', \'Amboß\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Kleiner Amboss\', \'Kleiner Amboß\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Bloßstock\', \'Bloszstock\')');
+    db.execute(
+        'INSERT INTO tt_mapping_rocks_static (sandstein_rockname, tt_rockname) VALUES(\'Kleingießhübeler Turm\', \'Kleingießhübler Turm\')');
 
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordweg', 'N-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostweg', 'NO-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostweg', 'O-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostweg', 'SO-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südweg', 'S-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestweg', 'SW-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westweg', 'W-Weg');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestweg', 'NW-Weg');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'Alter Weg\', \'AW\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'Alter Weg direkt\', \'AW direkt\')');
 
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwand', 'N-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostwand', 'NO-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostwand', 'O-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostwand', 'SO-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwand', 'S-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestwand', 'SW-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westwand', 'W-wand');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestwand', 'NW-wand');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordweg\', \'N-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordostweg\', \'NO-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'ostweg\', \'O-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südostweg\', \'SO-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südweg\', \'S-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südwestweg\', \'SW-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'westweg\', \'W-Weg\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordwestweg\', \'NW-Weg\')');
 
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordkante', 'N-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostkante', 'NO-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostkante', 'O-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostkante', 'SO-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südkante', 'S-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestkante', 'SW-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westkante', 'W-kante');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestkante', 'NW-kante');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordwand\', \'N-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordostwand\', \'NO-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'ostwand\', \'O-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südostwand\', \'SO-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südwand\', \'S-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südwestwand\', \'SW-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'westwand\', \'W-wand\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordwestwand\', \'NW-wand\')');
 
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordkamin', 'N-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordostkamin', 'NO-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('ostkamin', 'O-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südostkamin', 'SO-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südkamin', 'S-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('südwestkamin', 'SW-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('westkamin', 'W-kamin');
-      INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES ('nordwestkamin', 'NW-kamin');
-      ''');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordkante\', \'N-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordostkante\', \'NO-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'ostkante\', \'O-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südostkante\', \'SO-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südkante\', \'S-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südwestkante\', \'SW-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'westkante\', \'W-kante\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordwestkante\', \'NW-kante\')');
+
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordkamin\', \'N-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordostkamin\', \'NO-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'ostkamin\', \'O-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südostkamin\', \'SO-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südkamin\', \'S-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'südwestkamin\', \'SW-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'westkamin\', \'W-kamin\')');
+    db.execute(
+        'INSERT INTO tt_mapping_routes_static (sandstein_routename, tt_routename) VALUES(\'nordwestkamin\', \'NW-kamin\')');
   }
 
   /// insert all items from retreived json data into datbase
