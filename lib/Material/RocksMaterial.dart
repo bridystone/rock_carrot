@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rock_carrot/Baseitems/Subareas.dart';
 import 'package:rock_carrot/Baseitems/Rocks.dart';
+import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
 import 'package:rock_carrot/Material/BaseMaterial.dart';
 import 'package:rock_carrot/Material/ProgressNotifier.dart';
 import 'package:rock_carrot/Material/RockTile.dart';
@@ -12,8 +13,10 @@ class RocksMaterial extends StatefulWidget {
   final Subarea parentItem;
   // support updateing the child Values
   final ProgressNotifier _parentProgressNotifier;
+  final UpdateCubit _parentUpdateCubit;
 
-  RocksMaterial(this.parentItem, this._parentProgressNotifier);
+  RocksMaterial(
+      this.parentItem, this._parentProgressNotifier, this._parentUpdateCubit);
 
   // transfer country to state object
   @override
@@ -45,7 +48,7 @@ class _RocksMaterialState
             int count;
             try {
               count = await Sandstein()
-                  .updateRocksIncludingSubitems(_rocks.parentSubArea.subareaId);
+                  .updateRocksIncludingSubitems(_rocks.parentSubArea);
             } catch (e) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(ErrorSnack(e.toString()));
@@ -54,6 +57,7 @@ class _RocksMaterialState
 
             // update parent Tile
             _parentProgressNotifier.setStaticValue(count);
+            widget._parentUpdateCubit.callGetValueAsync(_rocks.parentSubArea);
             setState(() {});
           },
           child: FutureBuilder<List<Rock>>(

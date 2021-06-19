@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rock_carrot/Baseitems/Countries.dart';
 import 'package:rock_carrot/Baseitems/Areas.dart';
+import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
 import 'package:rock_carrot/Material/BaseItemTile.dart';
 import 'package:rock_carrot/Material/BaseMaterial.dart';
 import 'package:rock_carrot/Material/ProgressNotifier.dart';
@@ -12,7 +14,9 @@ class AreasMaterial extends StatefulWidget {
   final Country _parentItem;
   // support updateing the child Values
   final ProgressNotifier _parentProgressNotifier;
-  AreasMaterial(this._parentItem, this._parentProgressNotifier);
+  final UpdateCubit _parentCubit;
+  AreasMaterial(
+      this._parentItem, this._parentProgressNotifier, this._parentCubit);
 
   // transfer country to state object
   @override
@@ -44,7 +48,7 @@ class _AreasMaterialState
           onRefresh: () async {
             int count;
             try {
-              count = await Sandstein().updateAreas(_areas.parentCountry.name);
+              count = await Sandstein().updateAreas(_areas.parentCountry);
             } catch (e) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(ErrorSnack(e.toString()));
@@ -52,6 +56,7 @@ class _AreasMaterialState
             }
             // update state of parent Scaffold
             _parentProgressNotifier.setStaticValue(count);
+            widget._parentCubit.callGetValueAsync(_areas.parentCountry);
             setState(() {});
             return Future<void>.value();
           },
@@ -90,12 +95,14 @@ class _AreasMaterialState
                   thickness: 1,
                 )
               : Container(),
-          BaseItemTile(
-            area,
-            updateFunction: Sandstein().updateSubareasInclComments,
-            updateAllFunction: Sandstein().updateSubareasInclAllSubitems,
-            deleteFunction: Sandstein().deleteSubareasFromDatabase,
-            functionParameter: area.areaId,
+          BlocProvider(
+            create: (context) => UpdateCubit(),
+            child: BaseItemTile(
+              area,
+              updateFunction: Sandstein().updateSubareasInclComments,
+              updateAllFunction: Sandstein().updateSubareasInclAllSubitems,
+              deleteFunction: Sandstein().deleteSubareasFromDatabase,
+            ),
           ),
           Divider(
             height: 1,

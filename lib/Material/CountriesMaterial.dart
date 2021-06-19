@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
 import 'package:rock_carrot/Baseitems/Countries.dart';
+import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
 import 'package:rock_carrot/Material/BaseItemTile.dart';
 import 'package:rock_carrot/Material/BaseMaterial.dart';
 import 'package:rock_carrot/Material/Snackbar.dart';
@@ -77,11 +79,14 @@ class _CountryMaterialState
                   thickness: 1,
                 )
               : Container(),
-          BaseItemTile(
-            country,
-            updateFunction: Sandstein().updateAreas,
-            deleteFunction: Sandstein().deleteAreasFromDatabase,
-            functionParameter: country.name,
+          // Cubit for updating Timestamp
+          BlocProvider(
+            create: (context) => UpdateCubit(),
+            child: BaseItemTile(
+              country,
+              updateFunction: Sandstein().updateAreas,
+              deleteFunction: Sandstein().deleteAreasFromDatabase,
+            ),
           ),
           Divider(
             height: 1,

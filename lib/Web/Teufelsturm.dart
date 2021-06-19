@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:pool/pool.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:rock_carrot/Baseitems/Subareas.dart';
+import 'package:rock_carrot/Baseitems/UpdateStati.dart';
 import 'package:rock_carrot/Database/sql.dart';
 import 'package:rock_carrot/Database/sqlTeufelsturm.dart';
 import 'package:rock_carrot/Material/ProgressNotifier.dart';
@@ -25,6 +27,22 @@ const Map<String, int> sandsteinNameTeufelsturmAreaIdMap = {
   'Wildensteiner Gebiet': 12,
   'Hinterhermsdorf': 13,
 };
+const List<int> teufelsturmAreaIdSandsteinSubareaIdMap = [
+  0, // nothing
+  133, //1
+  124,
+  132,
+  131,
+  130,
+  134,
+  128,
+  129,
+  126,
+  123,
+  125,
+  135,
+  127, //13
+];
 
 /// receive data from Teufelsturm via Web scraping
 class Teufelsturm with WebHelper, TeufelsturmScraper {
@@ -52,7 +70,10 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
   /// update data from Sandsteinklettern
   ///
   /// fetch the data, then delete records, finally insert new data
-  Future<int> updateTTComments(int areaId, ProgressNotifier progress) async {
+  Future<int> updateTTComments(
+      Subarea subarea, ProgressNotifier progress) async {
+    final ttAreaId = sandsteinNameTeufelsturmAreaIdMap[subarea.name]!;
+
     /// stream that holds the requested items
     final webRequestDataControllerRoutes = StreamController<Map<String, int>>();
     final webRequestDataControllerComments =
@@ -66,15 +87,15 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
 
     progress.startProgress('Rocks');
     // get Rocks of Areas ID;
-    final rockResponse = await fetchRocksByArea(areaId);
+    final rockResponse = await fetchRocksByArea(ttAreaId);
 
     progress.updatePercentage(33);
 
-    final jsonData = parseRocks(rockResponse, areaId: areaId);
+    final jsonData = parseRocks(rockResponse, areaId: ttAreaId);
 
     progress.updatePercentage(66);
 
-    await SqlHandler().deleteTTRocks(areaId);
+    await SqlHandler().deleteTTRocks(ttAreaId);
     final rockCount = SqlHandler().insertJsonData(
       SqlHandler.ttRocksTablename,
       jsonData,
@@ -89,9 +110,9 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
     ///
     // get all Routes by RockID
     // remove old Routes
-    await SqlHandler().deleteTTRoutesbyArea(areaId);
+    await SqlHandler().deleteTTRoutesbyArea(ttAreaId);
     // iterate through all Rocks and receive routes
-    final sqlRockIds = await SqlHandler().queryRockIdsByArea(areaId);
+    final sqlRockIds = await SqlHandler().queryRockIdsByArea(ttAreaId);
     // prepare sql batch
     final batchRoutes = await SqlHandler().prepareInsertJsonData();
 
@@ -135,7 +156,7 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
         final jsonRoutes = parseRoutesRegEx(
           response.body,
           rockId: id,
-          areaId: areaId,
+          areaId: ttAreaId,
         );
         final routesCount = SqlHandler().enqueueInsertJsonData(
           batchRoutes,
@@ -169,10 +190,10 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
     ///COMMENTS
     ///
     // first remove old comments
-    await SqlHandler().deleteTTCommentsbyArea(areaId);
+    await SqlHandler().deleteTTCommentsbyArea(ttAreaId);
 
     // iterate through all Routes and receive comments
-    final sqlRoutes = await SqlHandler().queryRouteIdsByArea(areaId);
+    final sqlRoutes = await SqlHandler().queryRouteIdsByArea(ttAreaId);
     // prepare sql batch
     final batchComments = await SqlHandler().prepareInsertJsonData();
 
@@ -223,7 +244,7 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
           response.body,
           routeId: id,
           rockId: rockId,
-          areaId: areaId,
+          areaId: ttAreaId,
         );
         final routesCount = SqlHandler().enqueueInsertJsonData(
           batchComments,
@@ -252,8 +273,12 @@ class Teufelsturm with WebHelper, TeufelsturmScraper {
 
     progress.startProgress('Caching');
     // now perform the cache of mapping tables
-    await SqlHandler().cacheTTMapping(areaId);
+    await SqlHandler().cacheTTMapping(ttAreaId);
     progress.finishProgress();
+
+    // store update time in json
+    (await UpdateStati.getInstance()).setNewData(subarea, true);
+
     return rockCount;
   }
 }

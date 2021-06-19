@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:rock_carrot/Baseitems/Areas.dart';
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
 import 'package:rock_carrot/Baseitems/Subareas.dart';
+import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
 import 'package:rock_carrot/Material/ProgressNotifier.dart';
 import 'package:rock_carrot/Material/Snackbar.dart';
 import 'package:rock_carrot/Web/Teufelsturm.dart';
@@ -14,25 +16,21 @@ class BaseItemTile extends StatefulWidget {
   final Function? _updateFunction;
   final Function? _updateAllFunction;
   final Function? _deleteFunction;
-  final dynamic _functionParameter;
 
   /// Constructor
   ///
   /// [updateFunction] Function to update data
   /// [updateAllFunction] Only relevant for update Area!! and SubArea
   /// for Subarea its the link to update TT comments
-  /// [functionParameter] id Parameter, to be used in the function
   /// [deleteFunction] -> might be replace by favorites in future
   BaseItemTile(
     this._baseitem, {
     Function? updateFunction,
     Function? updateAllFunction,
     Function? deleteFunction,
-    dynamic functionParameter, // might be String or int
   })  : _updateFunction = updateFunction,
         _updateAllFunction = updateAllFunction,
-        _deleteFunction = deleteFunction,
-        _functionParameter = functionParameter;
+        _deleteFunction = deleteFunction;
 
   @override
   _BaseItemTileState createState() => _BaseItemTileState(
@@ -40,7 +38,6 @@ class BaseItemTile extends StatefulWidget {
         _updateFunction,
         _updateAllFunction,
         _deleteFunction,
-        _functionParameter,
       );
 }
 
@@ -50,7 +47,6 @@ class _BaseItemTileState extends State<BaseItemTile>
   final Function? _updateFunction;
   final Function? _updateAllFunction;
   final Function? _deleteFunction;
-  final dynamic _functionParameter; //might be String or int
 
   /// notifier to update progress
   final ProgressNotifier progressNotifier;
@@ -69,7 +65,6 @@ class _BaseItemTileState extends State<BaseItemTile>
     this._updateFunction,
     this._updateAllFunction,
     this._deleteFunction,
-    this._functionParameter,
   ) :
         // init progress notifier with STATIC Childcount (no progress)
         progressNotifier =
@@ -102,13 +97,16 @@ class _BaseItemTileState extends State<BaseItemTile>
 
           int records;
           try {
-            records = await _updateFunction!(_functionParameter) as int;
+            records = await _updateFunction!(_baseitem) as int;
           } catch (e) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(ErrorSnack(e.toString()));
             print(e.toString());
             records = 0;
           }
+          // update Cubit to current Value
+          context.read<UpdateCubit>().callGetValueAsync(_baseitem);
+
           progressNotifier.setStaticValue(records);
         },
       ));
@@ -131,8 +129,7 @@ class _BaseItemTileState extends State<BaseItemTile>
           int records;
           try {
             records =
-                await _updateAllFunction!(_functionParameter, progressNotifier)
-                    as int;
+                await _updateAllFunction!(_baseitem, progressNotifier) as int;
           } catch (e) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(ErrorSnack(e.toString()));
@@ -140,6 +137,8 @@ class _BaseItemTileState extends State<BaseItemTile>
             records = 0;
           }
 
+          // update Cubit to current Value
+          context.read<UpdateCubit>().callGetValueAsync(_baseitem);
           progressNotifier.setStaticValue(records);
         },
       ));
@@ -166,12 +165,10 @@ class _BaseItemTileState extends State<BaseItemTile>
           try {
             // first perform update of area
             // otherwise the caching of data will result in 0 values
-            records = await _updateFunction!(_functionParameter) as int;
+            records = await _updateFunction!(_baseitem) as int;
 
             // now perform the scraping
-            await _updateAllFunction!(
-                sandsteinNameTeufelsturmAreaIdMap[_baseitem.name],
-                progressNotifier) as int;
+            await _updateAllFunction!(_baseitem, progressNotifier) as int;
           } catch (e) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(ErrorSnack(e.toString()));
@@ -181,6 +178,8 @@ class _BaseItemTileState extends State<BaseItemTile>
 
           // set Results
           progressNotifier.setStaticValue(records);
+          // update Cubit to current Value
+          context.read<UpdateCubit>().callGetValueAsync(_baseitem);
         },
       ));
     }
@@ -190,7 +189,7 @@ class _BaseItemTileState extends State<BaseItemTile>
         color: Colors.red,
         icon: Icons.delete,
         onTap: () async {
-          await _deleteFunction!(_functionParameter);
+          await _deleteFunction!(_baseitem);
           progressNotifier.setStaticValue(0);
         },
       ));
@@ -210,7 +209,11 @@ class _BaseItemTileState extends State<BaseItemTile>
         Navigator.pushNamed(
           context,
           '/' + _baseitem.runtimeType.toString(),
-          arguments: [_baseitem, progressNotifier], // parent item
+          arguments: [
+            _baseitem,
+            progressNotifier,
+            context.read<UpdateCubit>(),
+          ], // parent item
         );
       },
       child: _customBaseItemTileContent(context),
@@ -221,6 +224,8 @@ class _BaseItemTileState extends State<BaseItemTile>
   Widget _customBaseItemTileContent(BuildContext context) {
     /// set progressnotifier to child count, if no update is in process
     progressNotifier.setStaticValue(_baseitem.childCountInt);
+    // update current UpdateValue
+    context.read<UpdateCubit>().callGetValueAsync(_baseitem);
 
     return ListTile(
       title: _baseitem.nr != 0
@@ -228,12 +233,65 @@ class _BaseItemTileState extends State<BaseItemTile>
           Text(_baseitem.nr.toString() + ' ' + _baseitem.name)
           : //concat number and name
           Text(_baseitem.name), // else show only name
-      subtitle: _baseitem.nameCZ != '2nd Language Name'
-          ? Text(_baseitem.nameCZ)
-          : null, //if second language set, show it, else don't
-      trailing: ValueListenableBuilder<ProgressStruct>(
-          valueListenable: progressNotifier,
-          builder: (context, progress, child) => Text(progress.Text)),
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _baseitem.nameCZ != '2nd Language Name'
+              ? Text(_baseitem.nameCZ)
+              : Container(), //if second language set, show it, else don't
+        ],
+      ),
+      trailing: Container(
+        width: 80,
+        child:
+            // TODO: maybe later replace ValueListenableNotidier wie Cubit
+            Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ValueListenableBuilder<ProgressStruct>(
+                valueListenable: progressNotifier,
+                builder: (context, progress, child) => Text(progress.Text)),
+            // Display update status data
+            // update data available
+            BlocBuilder<UpdateCubit, UpdateState>(
+              builder: (context, state) {
+                if (state is UpdateInitial) {
+                  return Text('init');
+                } else if (state is UpdateLoaded) {
+                  return Text(
+                    state.timestamp,
+                    textScaleFactor: 0.7,
+                  );
+                } else if (state is UpdateLoadedInclTT) {
+                  return Text(
+                    state.timestamp,
+                    textScaleFactor: 0.7,
+                  );
+                } else if (state is UpdateNoData) {
+                  return Text('N/A');
+                } else {
+                  return Text('else');
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  /// futureBuilder for receiving Update Data
+  Widget buildSubtitle(BuildContext context, AsyncSnapshot snapshot) {
+    if (snapshot.connectionState == ConnectionState.done) {
+      String? data = snapshot.data;
+      return data == null
+          ? Container()
+          : Text(
+              data,
+              textScaleFactor: 0.7,
+            );
+    }
+    // futurebuilder not yet finished
+    return Text('N/A');
   }
 }

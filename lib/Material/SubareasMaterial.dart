@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rock_carrot/Baseitems/Areas.dart';
 import 'package:rock_carrot/Baseitems/Subareas.dart';
+import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
 import 'package:rock_carrot/Material/BaseItemTile.dart';
 import 'package:rock_carrot/Material/BaseMaterial.dart';
 import 'package:rock_carrot/Material/ProgressNotifier.dart';
@@ -13,8 +15,10 @@ class SubAreasMaterial extends StatefulWidget {
   final Area _parentItem;
   // support updateing the child Values
   final ProgressNotifier _parentProgressNotifier;
+  final UpdateCubit _parentUpdateCubit;
 
-  SubAreasMaterial(this._parentItem, this._parentProgressNotifier);
+  SubAreasMaterial(
+      this._parentItem, this._parentProgressNotifier, this._parentUpdateCubit);
 
   // transfer country to state object
   @override
@@ -47,7 +51,7 @@ class _SubAreasMaterialState
             int count;
             try {
               count = await Sandstein()
-                  .updateSubareasInclComments(_subareas.parentArea.areaId);
+                  .updateSubareasInclComments(_subareas.parentArea);
             } catch (e) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(ErrorSnack(e.toString()));
@@ -56,6 +60,7 @@ class _SubAreasMaterialState
 
             // update parent tile
             _parentProgressNotifier.setStaticValue(count);
+            widget._parentUpdateCubit.callGetValueAsync(_subareas.parentArea);
 
             setState(() {});
           },
@@ -94,12 +99,14 @@ class _SubAreasMaterialState
                   thickness: 1,
                 )
               : Container(),
-          BaseItemTile(
-            subarea,
-            updateFunction: Sandstein().updateRocksIncludingSubitems,
-            updateAllFunction: Teufelsturm().updateTTComments,
-            deleteFunction: Sandstein().deleteRocksFromDatabase,
-            functionParameter: subarea.subareaId,
+          BlocProvider(
+            create: (context) => UpdateCubit(),
+            child: BaseItemTile(
+              subarea,
+              updateFunction: Sandstein().updateRocksIncludingSubitems,
+              updateAllFunction: Teufelsturm().updateTTComments,
+              deleteFunction: Sandstein().deleteRocksFromDatabase,
+            ),
           ),
           Divider(
             height: 1,

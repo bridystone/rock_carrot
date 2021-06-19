@@ -52,4 +52,5 @@ const _$UpdateTypeEnumMap = {
   UpdateType.area: 'area',
   UpdateType.subarea: 'subarea',
   UpdateType.rock: 'rock',
+  UpdateType.teufelsturm: 'teufelsturm',
 };

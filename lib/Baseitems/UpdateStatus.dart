@@ -9,6 +9,7 @@ enum UpdateType {
   area,
   subarea,
   rock,
+  teufelsturm,
 }
 
 @JsonSerializable()
