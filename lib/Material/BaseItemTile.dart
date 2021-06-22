@@ -35,18 +35,12 @@ class BaseItemTile extends StatefulWidget {
   @override
   _BaseItemTileState createState() => _BaseItemTileState(
         _baseitem,
-        _updateFunction,
-        _updateAllFunction,
-        _deleteFunction,
       );
 }
 
 class _BaseItemTileState extends State<BaseItemTile>
     with AutomaticKeepAliveClientMixin {
   final BaseItem _baseitem;
-  final Function? _updateFunction;
-  final Function? _updateAllFunction;
-  final Function? _deleteFunction;
 
   /// notifier to update progress
   final ProgressNotifier progressNotifier;
@@ -62,9 +56,6 @@ class _BaseItemTileState extends State<BaseItemTile>
 
   _BaseItemTileState(
     this._baseitem,
-    this._updateFunction,
-    this._updateAllFunction,
-    this._deleteFunction,
   ) :
         // init progress notifier with STATIC Childcount (no progress)
         progressNotifier =
@@ -82,7 +73,7 @@ class _BaseItemTileState extends State<BaseItemTile>
     List<Widget>? primarySlideActions = [];
     List<Widget>? secondarySlideActions = [];
     // implement update /delete is supplied
-    if (_updateFunction != null) {
+    if (widget._updateFunction != null) {
       secondarySlideActions.add(IconSlideAction(
         caption: 'Update',
         color: Colors.green,
@@ -97,7 +88,7 @@ class _BaseItemTileState extends State<BaseItemTile>
 
           int records;
           try {
-            records = await _updateFunction!(_baseitem) as int;
+            records = await widget._updateFunction!(_baseitem) as int;
           } catch (e) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(ErrorSnack(e.toString()));
@@ -112,7 +103,7 @@ class _BaseItemTileState extends State<BaseItemTile>
       ));
     }
     // Add UpdateAll possibility (ony if baseitem is Area)
-    if (_updateAllFunction != null && _baseitem is Area) {
+    if (widget._updateAllFunction != null && _baseitem is Area) {
       secondarySlideActions.add(IconSlideAction(
         caption: 'Update All',
         color: Colors.greenAccent,
@@ -129,7 +120,8 @@ class _BaseItemTileState extends State<BaseItemTile>
           int records;
           try {
             records =
-                await _updateAllFunction!(_baseitem, progressNotifier) as int;
+                await widget._updateAllFunction!(_baseitem, progressNotifier)
+                    as int;
           } catch (e) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(ErrorSnack(e.toString()));
@@ -144,7 +136,7 @@ class _BaseItemTileState extends State<BaseItemTile>
       ));
     }
     // Add UpdateTT Comments possibility (ony if baseitem is Subarea & in Sächsische Schweiz)
-    if (_updateAllFunction != null &&
+    if (widget._updateAllFunction != null &&
         _baseitem is Subarea &&
         sandsteinNameTeufelsturmAreaIdMap.keys.contains(_baseitem.name)) {
       secondarySlideActions.add(IconSlideAction(
@@ -165,10 +157,11 @@ class _BaseItemTileState extends State<BaseItemTile>
           try {
             // first perform update of area
             // otherwise the caching of data will result in 0 values
-            records = await _updateFunction!(_baseitem) as int;
+            records = await widget._updateFunction!(_baseitem) as int;
 
             // now perform the scraping
-            await _updateAllFunction!(_baseitem, progressNotifier) as int;
+            await widget._updateAllFunction!(_baseitem, progressNotifier)
+                as int;
           } catch (e) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(ErrorSnack(e.toString()));
@@ -183,13 +176,13 @@ class _BaseItemTileState extends State<BaseItemTile>
         },
       ));
     }
-    if (_deleteFunction != null) {
+    if (widget._deleteFunction != null) {
       primarySlideActions.add(IconSlideAction(
         caption: 'Delete',
         color: Colors.red,
         icon: Icons.delete,
         onTap: () async {
-          await _deleteFunction!(_baseitem);
+          await widget._deleteFunction!(_baseitem);
           progressNotifier.setStaticValue(0);
         },
       ));

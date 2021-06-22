@@ -23,7 +23,7 @@ class SubAreasMaterial extends StatefulWidget {
   // transfer country to state object
   @override
   _SubAreasMaterialState createState() {
-    return _SubAreasMaterialState(_parentItem, _parentProgressNotifier);
+    return _SubAreasMaterialState(_parentItem);
   }
 }
 
@@ -31,10 +31,8 @@ class _SubAreasMaterialState
     extends BaseItemsMaterialStatefulState<SubAreasMaterial> {
   /// All basic functionality is in this object (incl. parentItem)
   final Subareas _subareas;
-  final ProgressNotifier _parentProgressNotifier;
 
-  _SubAreasMaterialState(Area area, this._parentProgressNotifier)
-      : _subareas = Subareas(area) {
+  _SubAreasMaterialState(Area area) : _subareas = Subareas(area) {
     searchBar = initializeSearchBar(_subareas.parentArea);
     // default sorting ist by child count
     sortAlpha = false;
@@ -59,7 +57,7 @@ class _SubAreasMaterialState
             }
 
             // update parent tile
-            _parentProgressNotifier.setStaticValue(count);
+            widget._parentProgressNotifier.setStaticValue(count);
             widget._parentUpdateCubit.callGetValueAsync(_subareas.parentArea);
 
             setState(() {});

@@ -21,7 +21,7 @@ class AreasMaterial extends StatefulWidget {
   // transfer country to state object
   @override
   _AreasMaterialState createState() {
-    return _AreasMaterialState(_parentItem, _parentProgressNotifier);
+    return _AreasMaterialState(_parentItem);
   }
 }
 
@@ -29,10 +29,8 @@ class _AreasMaterialState
     extends BaseItemsMaterialStatefulState<AreasMaterial> {
   /// All basic functionality is in this object (incl. parentItem)
   final Areas _areas;
-  final ProgressNotifier _parentProgressNotifier;
 
-  _AreasMaterialState(Country country, this._parentProgressNotifier)
-      : _areas = Areas(country) {
+  _AreasMaterialState(Country country) : _areas = Areas(country) {
     searchBar = initializeSearchBar(_areas.parentCountry);
     // default sorting ist by child count
     sortAlpha = false;
@@ -55,7 +53,7 @@ class _AreasMaterialState
               count = 0;
             }
             // update state of parent Scaffold
-            _parentProgressNotifier.setStaticValue(count);
+            widget._parentProgressNotifier.setStaticValue(count);
             widget._parentCubit.callGetValueAsync(_areas.parentCountry);
             setState(() {});
             return Future<void>.value();

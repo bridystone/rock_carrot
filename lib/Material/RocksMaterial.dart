@@ -21,17 +21,15 @@ class RocksMaterial extends StatefulWidget {
   // transfer country to state object
   @override
   _RocksMaterialState createState() {
-    return _RocksMaterialState(parentItem, _parentProgressNotifier);
+    return _RocksMaterialState(parentItem);
   }
 }
 
 class _RocksMaterialState
     extends BaseItemsMaterialStatefulState<RocksMaterial> {
   final Rocks _rocks;
-  final ProgressNotifier _parentProgressNotifier;
 
-  _RocksMaterialState(Subarea subarea, this._parentProgressNotifier)
-      : _rocks = Rocks(subarea) {
+  _RocksMaterialState(Subarea subarea) : _rocks = Rocks(subarea) {
     searchBar = initializeSearchBar(_rocks.parentSubArea);
     // default sorting ist by number
     sortAlpha = false;
@@ -56,7 +54,7 @@ class _RocksMaterialState
             }
 
             // update parent Tile
-            _parentProgressNotifier.setStaticValue(count);
+            widget._parentProgressNotifier.setStaticValue(count);
             widget._parentUpdateCubit.callGetValueAsync(_rocks.parentSubArea);
             setState(() {});
           },
