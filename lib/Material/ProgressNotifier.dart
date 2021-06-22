@@ -74,6 +74,10 @@ class ProgressStruct {
     return _formatShownText();
   }
 
+  bool get isInProgress {
+    return _inProgress;
+  }
+
   ProgressStruct(
     this._value, [
     this._inProgress = false,

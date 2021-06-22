@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
@@ -84,14 +85,22 @@ abstract class BaseItemsMaterialStatefulState<T extends StatefulWidget>
           onPressed: () async {
             // check if OSMAnd is available - otherwise start google maps or apple Maps
             var preferredMap = MapType.osmand;
-            if (!(await MapLauncher.isMapAvailable(MapType.osmand) ?? false)) {
+            // use OSMAnd+ if available
+            final maps = await MapLauncher.installedMaps;
+            if (maps.firstWhereOrNull(
+                    (element) => element.mapType == MapType.osmandplus) !=
+                null) {
+              preferredMap = MapType.osmandplus;
+            }
+            if (!((await MapLauncher.isMapAvailable(MapType.osmandplus) ??
+                    false) ||
+                (await MapLauncher.isMapAvailable(MapType.osmand) ?? false))) {
               if (Platform.isIOS) {
                 preferredMap = MapType.apple;
               } else {
                 preferredMap = MapType.google;
               }
             }
-
             await MapLauncher.showMarker(
               mapType: preferredMap,
               coords: Coords(baseitem.latitude, baseitem.longitude),

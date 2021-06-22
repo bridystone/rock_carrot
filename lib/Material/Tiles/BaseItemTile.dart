@@ -243,7 +243,10 @@ class _BaseItemTileState extends State<BaseItemTile>
           children: [
             ValueListenableBuilder<ProgressStruct>(
                 valueListenable: progressNotifier,
-                builder: (context, progress, child) => Text(progress.Text)),
+                builder: (context, progress, child) => Text(
+                      progress.Text,
+                      textScaleFactor: progress.isInProgress ? 0.7 : 1,
+                    )),
             // Display update status data
             // update data available
             BlocBuilder<UpdateCubit, UpdateState>(
@@ -261,9 +264,9 @@ class _BaseItemTileState extends State<BaseItemTile>
                     textScaleFactor: 0.7,
                   );
                 } else if (state is UpdateNoData) {
-                  return Text('N/A');
+                  return Container(); //Text('N/A');
                 } else {
-                  return Text('else');
+                  return Text('shouldn\'t happen');
                 }
               },
             ),
