@@ -2,8 +2,8 @@ import 'package:flutter/material.dart' hide Route;
 import 'package:rock_carrot/Baseitems/BaseItems.dart';
 import 'package:rock_carrot/Baseitems/Rocks.dart';
 import 'package:rock_carrot/Baseitems/Routes.dart';
-import 'package:rock_carrot/Material/BaseMaterial.dart';
-import 'package:rock_carrot/Material/RouteTile.dart';
+import 'package:rock_carrot/Material/Routes/BaseMaterial.dart';
+import 'package:rock_carrot/Material/Tiles/RouteTile.dart';
 
 class RoutesMaterial extends StatefulWidget {
   final Rock parentItem;

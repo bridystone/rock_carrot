@@ -1,39 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rock_carrot/Baseitems/Countries.dart';
 import 'package:rock_carrot/Baseitems/Areas.dart';
-import 'package:rock_carrot/Baseitems/Subareas.dart';
 import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
-import 'package:rock_carrot/Material/BaseItemTile.dart';
-import 'package:rock_carrot/Material/BaseMaterial.dart';
+import 'package:rock_carrot/Material/Tiles/BaseItemTile.dart';
+import 'package:rock_carrot/Material/Routes/BaseMaterial.dart';
 import 'package:rock_carrot/Material/ProgressNotifier.dart';
 import 'package:rock_carrot/Material/Snackbar.dart';
 import 'package:rock_carrot/Web/Sandstein.dart';
 import 'package:rock_carrot/Web/SandsteinSql.dart';
-import 'package:rock_carrot/Web/Teufelsturm.dart';
 
-class SubAreasMaterial extends StatefulWidget {
-  final Area _parentItem;
+class AreasMaterial extends StatefulWidget {
+  final Country _parentItem;
   // support updateing the child Values
   final ProgressNotifier _parentProgressNotifier;
-  final UpdateCubit _parentUpdateCubit;
-
-  SubAreasMaterial(
-      this._parentItem, this._parentProgressNotifier, this._parentUpdateCubit);
+  final UpdateCubit _parentCubit;
+  AreasMaterial(
+      this._parentItem, this._parentProgressNotifier, this._parentCubit);
 
   // transfer country to state object
   @override
-  _SubAreasMaterialState createState() {
-    return _SubAreasMaterialState(_parentItem);
+  _AreasMaterialState createState() {
+    return _AreasMaterialState(_parentItem);
   }
 }
 
-class _SubAreasMaterialState
-    extends BaseItemsMaterialStatefulState<SubAreasMaterial> {
+class _AreasMaterialState
+    extends BaseItemsMaterialStatefulState<AreasMaterial> {
   /// All basic functionality is in this object (incl. parentItem)
-  final Subareas _subareas;
+  final Areas _areas;
 
-  _SubAreasMaterialState(Area area) : _subareas = Subareas(area) {
-    searchBar = initializeSearchBar(_subareas.parentArea);
+  _AreasMaterialState(Country country) : _areas = Areas(country) {
+    searchBar = initializeSearchBar(_areas.parentCountry);
     // default sorting ist by child count
     sortAlpha = false;
   }
@@ -48,23 +46,21 @@ class _SubAreasMaterialState
           onRefresh: () async {
             int count;
             try {
-              count = await Sandstein()
-                  .updateSubareasInclComments(_subareas.parentArea);
+              count = await Sandstein().updateAreas(_areas.parentCountry);
             } catch (e) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(ErrorSnack(e.toString()));
               count = 0;
             }
-
-            // update parent tile
+            // update state of parent Scaffold
             widget._parentProgressNotifier.setStaticValue(count);
-            widget._parentUpdateCubit.callGetValueAsync(_subareas.parentArea);
-
+            widget._parentCubit.callGetValueAsync(_areas.parentCountry);
             setState(() {});
+            return Future<void>.value();
           },
-          child: FutureBuilder<List<Subarea>>(
+          child: FutureBuilder<List<Area>>(
             builder: futureBuildItemList,
-            future: _subareas.getSubareas(),
+            future: _areas.getAreas(),
           ),
         ));
   }
@@ -88,7 +84,7 @@ class _SubAreasMaterialState
       padding: EdgeInsets.all(0),
       itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
-        final subarea = baseitem_list[i] as Subarea;
+        final area = baseitem_list[i] as Area;
         return Column(children: [
           // only first time generate a devider
           (i == 0)
@@ -100,10 +96,10 @@ class _SubAreasMaterialState
           BlocProvider(
             create: (context) => UpdateCubit(),
             child: BaseItemTile(
-              subarea,
-              updateFunction: Sandstein().updateRocksIncludingSubitems,
-              updateAllFunction: Teufelsturm().updateTTComments,
-              deleteFunction: Sandstein().deleteRocksFromDatabase,
+              area,
+              updateFunction: Sandstein().updateSubareasInclComments,
+              updateAllFunction: Sandstein().updateSubareasInclAllSubitems,
+              deleteFunction: Sandstein().deleteSubareasFromDatabase,
             ),
           ),
           Divider(

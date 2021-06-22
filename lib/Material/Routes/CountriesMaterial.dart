@@ -1,39 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rock_carrot/Baseitems/BaseItems.dart';
 import 'package:rock_carrot/Baseitems/Countries.dart';
-import 'package:rock_carrot/Baseitems/Areas.dart';
 import 'package:rock_carrot/Baseitems/cubit/update_cubit.dart';
-import 'package:rock_carrot/Material/BaseItemTile.dart';
-import 'package:rock_carrot/Material/BaseMaterial.dart';
-import 'package:rock_carrot/Material/ProgressNotifier.dart';
+import 'package:rock_carrot/Material/Tiles/BaseItemTile.dart';
+import 'package:rock_carrot/Material/Routes/BaseMaterial.dart';
 import 'package:rock_carrot/Material/Snackbar.dart';
 import 'package:rock_carrot/Web/Sandstein.dart';
 import 'package:rock_carrot/Web/SandsteinSql.dart';
 
-class AreasMaterial extends StatefulWidget {
-  final Country _parentItem;
-  // support updateing the child Values
-  final ProgressNotifier _parentProgressNotifier;
-  final UpdateCubit _parentCubit;
-  AreasMaterial(
-      this._parentItem, this._parentProgressNotifier, this._parentCubit);
-
-  // transfer country to state object
+class CountryMaterial extends StatefulWidget {
   @override
-  _AreasMaterialState createState() {
-    return _AreasMaterialState(_parentItem);
-  }
+  _CountryMaterialState createState() => _CountryMaterialState();
 }
 
-class _AreasMaterialState
-    extends BaseItemsMaterialStatefulState<AreasMaterial> {
-  /// All basic functionality is in this object (incl. parentItem)
-  final Areas _areas;
+class _CountryMaterialState
+    extends BaseItemsMaterialStatefulState<CountryMaterial> {
+  /// All basic functionality is in this object
+  final Countries _countries = Countries();
 
-  _AreasMaterialState(Country country) : _areas = Areas(country) {
-    searchBar = initializeSearchBar(_areas.parentCountry);
-    // default sorting ist by child count
-    sortAlpha = false;
+  _CountryMaterialState() {
+    searchBar = initializeSearchBar(BaseItem(
+      name: 'Countries',
+      childCountInt: -1,
+    ));
   }
 
   /// build the Scaffold
@@ -44,27 +34,23 @@ class _AreasMaterialState
         // enable Refresh data with pulldown
         body: RefreshIndicator(
           onRefresh: () async {
-            int count;
             try {
-              count = await Sandstein().updateAreas(_areas.parentCountry);
+              await Sandstein().updateCountries();
             } catch (e) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(ErrorSnack(e.toString()));
-              count = 0;
             }
-            // update state of parent Scaffold
-            widget._parentProgressNotifier.setStaticValue(count);
-            widget._parentCubit.callGetValueAsync(_areas.parentCountry);
+
             setState(() {});
-            return Future<void>.value();
           },
-          child: FutureBuilder<List<Area>>(
+          child: FutureBuilder<List<Country>>(
             builder: futureBuildItemList,
-            future: _areas.getAreas(),
+            future: _countries.getCountries(),
           ),
         ));
   }
 
+  /// generate Listview with all Country Data
   @override
   Widget buildItemList(AsyncSnapshot snapshot) {
     // store snapshot data in local list
@@ -79,12 +65,12 @@ class _AreasMaterialState
         },
       );
     }
-
+    // build the Widget
     return ListView.builder(
       padding: EdgeInsets.all(0),
       itemCount: baseitem_list.length,
       itemBuilder: (context, i) {
-        final area = baseitem_list[i] as Area;
+        final country = baseitem_list[i] as Country;
         return Column(children: [
           // only first time generate a devider
           (i == 0)
@@ -93,13 +79,13 @@ class _AreasMaterialState
                   thickness: 1,
                 )
               : Container(),
+          // Cubit for updating Timestamp
           BlocProvider(
             create: (context) => UpdateCubit(),
             child: BaseItemTile(
-              area,
-              updateFunction: Sandstein().updateSubareasInclComments,
-              updateAllFunction: Sandstein().updateSubareasInclAllSubitems,
-              deleteFunction: Sandstein().deleteSubareasFromDatabase,
+              country,
+              updateFunction: Sandstein().updateAreas,
+              deleteFunction: Sandstein().deleteAreasFromDatabase,
             ),
           ),
           Divider(
